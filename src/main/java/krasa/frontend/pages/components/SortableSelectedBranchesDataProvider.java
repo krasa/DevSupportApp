@@ -28,8 +28,6 @@ public class SortableSelectedBranchesDataProvider implements ISortableDataProvid
      */
     public SortableSelectedBranchesDataProvider() {
         // set default sort
-//        setSort("name", SortOrder.ASCENDING);
-        this.parentPath = parentPath;
         loadableDetachableModel = new LoadableDetachableModel<List<SvnFolder>>() {
             @Override
             protected List<SvnFolder> load() {

@@ -4,8 +4,8 @@ package krasa.frontend.pages.components;
  * @author Vojtech Krasa
  */
 public class SelectionWrapper<T> {
-    boolean selected;
-    T object;
+    private boolean selected;
+    private T object;
 
     public SelectionWrapper(T object) {
         this.object = object;

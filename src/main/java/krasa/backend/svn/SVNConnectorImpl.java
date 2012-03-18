@@ -17,10 +17,10 @@ import org.tmatesoft.svn.core.wc.SVNWCUtil;
 @Service
 public class SVNConnectorImpl implements SVNConnector {
     @Value("${svn.url}")
-    protected String url;
+    private String url;
 
-    protected String connectedURL;
-    SVNRepository connect;
+    private String connectedURL;
+    private SVNRepository connect;
 
     protected SVNConnectorImpl() {
     }
@@ -33,7 +33,7 @@ public class SVNConnectorImpl implements SVNConnector {
         if (connect == null || !url.equals(connectedURL)) {
             try {
                 connect = connect();
-                connectedURL = new String(url);
+                connectedURL = url;
             } catch (SVNException e) {
                 throw new RuntimeException(e);
             }

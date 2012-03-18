@@ -85,8 +85,7 @@ public abstract class AbstractDAO<T extends AbstractEntity> implements DAO<T> {
 
     protected Query query(String query) {
         try {
-            Query q = getSession().createQuery(query);
-            return q;
+            return getSession().createQuery(query);
         } catch (Exception e) {
             throw new HibernateException("Error while creating query: " + query, e);
         }

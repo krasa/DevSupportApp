@@ -32,7 +32,7 @@ import java.util.List;
  * @author Vojtech Krasa
  */
 public class MergeInfoResultPanel extends Panel {
-    ModalWindow modal = new ModalWindow("modal");
+    private ModalWindow modal = new ModalWindow("modal");
 
     public MergeInfoResultPanel(String id, final List<MergeInfoResultItem> model) {
         super(id);

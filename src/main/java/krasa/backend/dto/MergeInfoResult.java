@@ -8,7 +8,7 @@ import java.util.List;
  * @author Vojtech Krasa
  */
 public class MergeInfoResult implements Serializable {
-    List<MergeInfoResultItem> mergeInfoResultItems;
+    private List<MergeInfoResultItem> mergeInfoResultItems;
 
     public List<MergeInfoResultItem> getMergeInfoResultItems() {
         return mergeInfoResultItems;

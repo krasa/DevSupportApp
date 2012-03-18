@@ -30,8 +30,6 @@ public class ProfileDropDownPanel extends Panel {
         Form form = new Form("form");
         add(form);
 
-        ;
-
         form.add(getPhoneVendorDDC(form));
     }
 

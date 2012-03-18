@@ -133,8 +133,7 @@ public class FacadeImpl implements Facade {
     }
 
     public List<SvnFolder> getSuggestions(String parentName, String input) {
-        List<SvnFolder> branchesByNameLike = svnFolderDAO.findBranchesByNameLike(input, parentName);
-        return branchesByNameLike;
+        return svnFolderDAO.findBranchesByNameLike(input, parentName);
     }
 
 

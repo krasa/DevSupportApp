@@ -10,9 +10,9 @@ import java.util.List;
  * @author Vojtech Krasa
  */
 public class MergeInfoResultItem implements Serializable {
-    String from;
-    String to;
-    List<SVNLogEntry> merges;
+    private String from;
+    private String to;
+    private List<SVNLogEntry> merges;
 
     public MergeInfoResultItem(SvnFolder to, SvnFolder from, List<SVNLogEntry> merges) {
         this.from = from.getName();

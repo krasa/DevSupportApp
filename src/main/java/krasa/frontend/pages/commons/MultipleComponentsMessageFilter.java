@@ -6,6 +6,7 @@ import org.apache.wicket.feedback.IFeedbackMessageFilter;
 import org.apache.wicket.util.lang.Objects;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -26,9 +27,7 @@ public class MultipleComponentsMessageFilter implements IFeedbackMessageFilter {
      * @param components The component to filter on
      */
     public MultipleComponentsMessageFilter(Component... components) {
-        for (Component c : components) {
-            this.components.add(c);
-        }
+        Collections.addAll(this.components, components);
     }
 
     public MultipleComponentsMessageFilter() {

@@ -29,7 +29,7 @@ import java.util.List;
  * @author Vojtech Krasa
  */
 public class MergeInfoPage extends BasePage {
-    public static final String RESULT = "result";
+    private static final String RESULT = "result";
     @SpringBean
     private Facade facade;
     protected AjaxFallbackDefaultDataTable<SvnFolder> table;

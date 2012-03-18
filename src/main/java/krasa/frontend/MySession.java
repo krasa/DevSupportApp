@@ -23,7 +23,7 @@ public class MySession extends WebSession {
     @SpringBean
     private Facade facade;
 
-    Integer current;
+    private Integer current;
 
     /**
      * Constructor. Note that {@link org.apache.wicket.request.cycle.RequestCycle} is not available until this constructor returns.
@@ -68,8 +68,7 @@ public class MySession extends WebSession {
         if (session != null) {
             return session;
         } else {
-            MySession session1 = (MySession) Application.get().fetchCreateAndSetSession(RequestCycle.get());
-            return session1;
+            return (MySession) Application.get().fetchCreateAndSetSession(RequestCycle.get());
         }
     }
 

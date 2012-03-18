@@ -24,17 +24,16 @@ import java.util.logging.Logger;
 
 public class BranchSelectionAddAutocompletePanel extends Panel {
 
-    public static final int CHOICES_SIZE = 25;
+    private static final int CHOICES_SIZE = 25;
     @SpringBean
     private Facade facade;
     private static Logger logger = Logger.getLogger(BranchSelectionAddAutocompletePanel.class.getName());
     private AutoCompleteTextField<String> field;
-    private Form<Void> form;
 
     public BranchSelectionAddAutocompletePanel(String id, final Callback<AjaxRequestTarget> callback) {
         super(id);
 
-        form = new Form<Void>("form");
+        Form form = new Form("form");
         form.setOutputMarkupId(true);
         add(form);
 
