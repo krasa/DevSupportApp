@@ -1,0 +1,41 @@
+<html xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd"
+        >
+
+<wicket:extend>
+
+
+    <!--<div class="top-bar">-->
+    <form wicket:id="form">
+        <div>
+            <b wicket:id="parent"></b> <input wicket:id="refreshProjectBraches" type="submit"
+                                              wicket:message="value:refreshBranches"/>
+
+            find merges on subfolders only : <input type="checkbox" wicket:id="mergeOnSubfolders"/>
+        </div>
+    </form>
+    <!--</div>-->
+    <br>
+
+    <div>
+        <table class="dataview" cellspacing="0" wicket:id="table">[table]</table>
+
+    </div>
+
+    <input wicket:id="findMerges" type="submit"
+           wicket:message="value:findMerges"/>
+
+    <div wicket:id="mergeInfo">
+    </div>
+    <!--<ul class="nav">-->
+    <!--<li wicket:id="subdir">-->
+    <!--<a href="#" wicket:id="name"></a>-->
+    <!--</li>-->
+    <!--</ul>-->
+
+    <wicket:child/>
+    <!--<div  class="pravy_sloupecek">-->
+    <!--</div>-->
+</wicket:extend>
+</html>
+
+

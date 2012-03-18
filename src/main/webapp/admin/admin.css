@@ -1,0 +1,34 @@
+#section-list li {
+    margin-left: 15px;
+
+}
+
+#section-list ul {
+    padding-left: 0px;
+
+}
+
+.tinymce_class {
+    width: 100%;
+
+}
+
+.lfloat {
+    float: left;
+}
+
+.feedback {
+    color: red;
+
+}
+
+.levy_sloupecek {
+    float: left;
+    width: 30%;
+
+}
+
+.pravy_sloupecek {
+    float: right;
+    width: 70%;
+}

@@ -1,0 +1,70 @@
+p.file-link {
+    text-align: left;
+    clear: both;
+    font-size: .9em;
+}
+
+a.doc {
+    background: url('../imgs/filetypes/doc.gif') no-repeat 0px 50%;
+    padding-left: 25px;
+    padding-top: 5px;
+}
+
+a.jpg {
+    background: url('../imgs/filetypes/jpg.gif') no-repeat 0px 50%;
+    padding: 5px 0px 5px 20px;
+}
+
+a.pdf {
+    background: url('../imgs/filetypes/pdf.gif') no-repeat 0px 50%;
+    padding-top: 5px;
+    padding-left: 25px;
+}
+
+a.xls {
+    background: url('../imgs/filetypes/xls.gif') no-repeat 0px 50%;
+    padding-top: 5px;
+    padding-left: 25px;
+}
+
+a.gif {
+    background: url('../imgs/filetypes/gif.gif') no-repeat 0px 50%;
+    padding-top: 5px;
+    padding-left: 25px;
+}
+
+a.htm {
+    background: url('../imgs/filetypes/htm.gif') no-repeat 0px 50%;
+    padding-top: 5px;
+    padding-left: 25px;
+}
+
+a.html {
+    background: url('../imgs/filetypes/html.gif') no-repeat 0px 50%;
+    padding-top: 5px;
+    padding-left: 25px;
+}
+
+a.exe {
+    background: url('../imgs/filetypes/exe.gif') no-repeat 0px 50%;
+    padding-top: 5px;
+    padding-left: 25px;
+}
+
+a.zip {
+    background: url('../imgs/filetypes/zip.gif') no-repeat 0px 50%;
+    padding-top: 5px;
+    padding-left: 25px;
+}
+
+a.avi {
+    background: url('../imgs/filetypes/avi.gif') no-repeat 0px 50%;
+    padding-top: 5px;
+    padding-left: 25px;
+}
+
+a.bmp {
+    background: url('../imgs/filetypes/bmp.gif') no-repeat 0px 50%;
+    padding-top: 5px;
+    padding-left: 25px;
+}

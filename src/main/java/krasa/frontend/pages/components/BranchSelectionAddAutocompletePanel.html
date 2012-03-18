@@ -1,0 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd"
+
+      xmlns="http://www.w3.org/1999/xhtml"
+
+      xml:lang="en"
+      lang="en">
+<wicket:head>
+    <style>
+        div.wicket-aa {
+            font-family: "Lucida Grande", "Lucida Sans Unicode", Tahoma, Verdana;
+            font-size: 12px;
+            background-color: white;
+            border-width: 1px;
+            border-color: #cccccc;
+            border-style: solid;
+            padding: 2px;
+            margin: 1px 0 0 0;
+            text-align: left;
+        }
+
+        div.wicket-aa ul {
+            list-style: none;
+            padding: 2px;
+            margin: 0;
+        }
+
+        div.wicket-aa ul li.selected {
+            background-color: #FFFF00;
+            padding: 2px;
+            margin: 0;
+        }
+    </style>
+</wicket:head>
+
+<body>
+<wicket:panel>
+
+    <form wicket:id="form">
+        Find branch by name: <input type="text" wicket:id="ac" size="32"/>
+        <button wicket:id="submit">Přidat</button>
+    </form>
+
+
+</wicket:panel>
+</body>
+</html>

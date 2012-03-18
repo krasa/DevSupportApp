@@ -1,0 +1,60 @@
+.header {
+    HEIGHT: 105px
+}
+
+.header UL {
+    PADDING-BOTTOM: 0px;
+    MARGIN: 45px 0px 0px;
+    PADDING-LEFT: 0px;
+    PADDING-RIGHT: 0px;
+    HEIGHT: 1%;
+    PADDING-TOP: 0px
+}
+
+.right {
+    HEIGHT: 1%
+}
+
+.right .panel {
+    HEIGHT: 1%
+}
+
+.right .panel .title {
+    HEIGHT: 1%
+}
+
+.right .panel DIV {
+    HEIGHT: 1%
+}
+
+* HTML .data {;
+    WIDTH: expression(document.body.clientWidth < 790 ? "750px" : "auto")
+}
+
+.subpage {
+    POSITION: relative
+}
+
+.subpage UL {
+    HEIGHT: 1%
+}
+
+.subpage DIV.item {
+    DISPLAY: inline
+}
+
+.right .panel1 P.date {
+    _padding-right: 0
+}
+
+DIV.item IMG {
+    DISPLAY: block
+}
+
+.static FORM INPUT {
+    WIDTH: 97%
+}
+
+.static FORM TEXTAREA {
+    WIDTH: 97%
+}
