@@ -8,7 +8,6 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 
 public class LabelBookmarkablePageLink extends BookmarkablePageLink {
 
-    // private IModel<String> labelModel;
     private String label;
 
     public LabelBookmarkablePageLink(String id, Class pageClass, PageParameters parameters, IModel<String> labelModel) {
