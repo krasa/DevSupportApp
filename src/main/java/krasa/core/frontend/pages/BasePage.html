@@ -1,0 +1,55 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "../www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd"
+
+      xml:lang="cs" xmlns="http://www.w3.org/1999/xhtml" lang="cs">
+<head>
+    <meta http-equiv="content-language" content="cs"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
+    <meta http-equiv="Cache-control" content="no-cache"/>
+    <meta http-equiv="Pragma" content="no-cache"/>
+    <meta http-equiv="Expires" content="0"/>
+    <!--<title wicket:id="title"></title>-->
+    <!--<META wicket:id="description" NAME="DESCRIPTION" CONTENT=""/>-->
+    <!--<META wicket:id="keywords" NAME="KEYWORDS" CONTENT=""/>-->
+    <style media="all" type="text/css">@import "/admin/all.css";</style>
+    <!--<style media="all" type="text/css">@import "http://code.jquery.com/jquery-1.7.1.min.js";</style>-->
+    <!--<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>-->
+    <!--<script type="text/javascript" src="/res/tag-it.js"></script>-->
+    <!--<script type="text/javascript" src="/res/jquery.tagit.css"></script>-->
+    <!--<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>-->
+    <!--<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>-->
+    <!--<link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1/themes/flick/jquery-ui.css">-->
+    <!--<link href="css/jquery.tagit.css" rel="stylesheet" type="text/css">-->
+</head>
+
+<body>
+
+<div id="main">
+    <div id="header">
+        <!--<a href="AdminPage" class="logo"><img src="img/logo.gif" width="101" height="29" alt=""/></a>-->
+        <ul id="top-navigation" wicket:id="top">
+        </ul>
+    </div>
+    <div id="middle">
+        <div id="left-column">
+
+            <div wicket:id="left"></div>
+            <!--<div wicket:id="links"></div>-->
+            <!--<a wicket:id="logoff">Odhlásit se</a>-->
+
+        </div>
+
+        <div id="center-column">
+            <div wicket:id="feedback">#######################</div>
+            <div wicket:id="current"></div>
+
+            <wicket:child/>
+        </div>
+
+
+    </div>
+    <div id="footer"></div>
+</div>
+</body>
+</html>

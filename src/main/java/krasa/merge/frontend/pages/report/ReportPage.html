@@ -1,0 +1,29 @@
+<html xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd"
+        >
+
+<wicket:extend>
+    <wicket:child/>
+    <div wicket:id="ac"></div>
+    <div wicket:id="branchesTable"></div>
+    <form wicket:id="form">
+        <button wicket:id="getReport" type="submit" wicket:message="value:getReport">Get Report</button>
+        <button wicket:id="findNotTagged" type="submit" wicket:message="value:findNotTagged">Find not tagged commits
+        </button>
+        <button wicket:id="runRNS" type="submit" wicket:message="value:runRNS">runRNS</button>
+        <button wicket:id="runSvnHeadVsLastTag" type="submit" wicket:message="value:runSvnHeadVsLastTag">
+            runSvnHeadVsLastTag
+        </button>
+        <button wicket:id="runVersionsOnPrgens" type="submit" wicket:message="value:runVersionsOnPrgens">
+            runVersionsOnPrgens
+        </button>
+        <!--<input wicket:id="tagit" type="text" class="ui-widget-content ui-autocomplete-input" autocomplete="on"-->
+        <!--role="textbox" aria-autocomplete="list" aria-haspopup="true">-->
+    </form>
+
+    <div wicket:id="result"></div>
+    <div wicket:id="resultLabel"></div>
+
+</wicket:extend>
+</html>
+
+

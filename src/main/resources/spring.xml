@@ -5,20 +5,22 @@
 	   xmlns:context="http://www.springframework.org/schema/context"
 	   xmlns:jdbc="http://www.springframework.org/schema/jdbc"
 	   xmlns:util="http://www.springframework.org/schema/util" xmlns:task="http://www.springframework.org/schema/task"
+	   xmlns:aop="http://www.springframework.org/schema/aop"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans
            http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
            http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
            http://www.springframework.org/schema/context
            http://www.springframework.org/schema/context/spring-context-3.1.xsd
+           	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
            http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
            http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.1.xsd http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd">
 
 
 	<context:component-scan base-package="krasa"/>
+	<aop:aspectj-autoproxy proxy-target-class="true"/>
 
-	<task:annotation-driven/>
-
-	<bean id="wicketApplication" class="krasa.frontend.WicketApplication"/>
+	<tx:annotation-driven transaction-manager="txManager" proxy-target-class="true"/>
+	<bean id="wicketApplication" class="krasa.core.frontend.WicketApplication"/>
 
 
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
@@ -32,24 +34,10 @@
 		<prop key="hibernate.dialect">org.hibernate.dialect.HSQLDialect</prop>
 	</util:properties>
 
-	<bean id="placeholderConfigurer"
-		  class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-		<property name="ignoreUnresolvablePlaceholders" value="false"/>
-		<property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
-		<property name="ignoreResourceNotFound" value="false"/>
-		<property name="locations">
-			<list>
-				<value>classpath*:/application.properties</value>
-			</list>
-		</property>
-	</bean>
-
-	<tx:annotation-driven transaction-manager="txManager" proxy-target-class="true"/>
-	<!--<aop:aspectj-autoproxy />-->
 
 	<!-- setup transaction manager  -->
 	<bean id="txManager"
-		  class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		  class="org.springframework.orm.hibernate4.HibernateTransactionManager">
 		<property name="sessionFactory" ref="sessionFactory"/>
 	</bean>
 
@@ -58,7 +46,7 @@
 
 	<!-- hibernate session factory -->
 	<bean id="sessionFactory"
-		  class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+		  class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
 		<property name="dataSource" ref="dataSource"/>
 		<property name="hibernateProperties">
 			<props>
@@ -66,16 +54,17 @@
 				<prop key="hibernate.dialect">org.hibernate.dialect.HSQLDialect</prop>
 				<prop key="hibernate.connection.pool_size">5</prop>
 				<!--<prop key="hibernate.current_session_context_class">thread</prop>-->
-				<prop key="hibernate.show_sql">true</prop>
+				<prop key="hibernate.show_sql">false</prop>
 				<!--<prop key="hibernate.cglib.use_reflection_optimizer">true</prop>-->
 				<!--<prop key="hibernate.cache.provider_class">org.hibernate.search.store.RAMDirectoryProvider</prop>-->
-				<prop key="hibernate.hibernate.cache.use_query_cache">false</prop>
+				<prop key="hibernate.hibernate.cache.use_query_cache">true</prop>
 			</props>
 		</property>
 		<property name="entityInterceptor" ref="interceptor"/>
 		<property name="packagesToScan">
 			<list>
-				<value>krasa.backend.domain</value>
+				<value>krasa.merge.backend.domain</value>
+				<value>krasa.*.backend.domain</value>
 			</list>
 		</property>
 	</bean>

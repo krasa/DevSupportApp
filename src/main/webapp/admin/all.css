@@ -394,14 +394,14 @@ input.text {
 
 /* main container */
 #main {
-    width: 992px;
+    width: 1262px;
     margin: 0 auto;
 }
 
 /* header */
 #header {
     position: relative;
-    width: 992px;
+    width: 1262px;
     height: 106px;
     background: url(../img/bg-header.gif) no-repeat left bottom;
 }
@@ -472,7 +472,7 @@ a.logo {
 /* middle */
 #middle {
     float: left;
-    width: 967px;
+    width: 1237px;
     background: url(../img/bg-middle.gif) repeat-y left;
     padding: 0 13px 0 12px;
 }
@@ -494,14 +494,14 @@ a.logo {
 /* center column */
 #center-column {
     float: left;
-    width: 750px;
+    width: 1020px;
     /*background: url(../img/bg-center-column2.jpg) no-repeat left top;*/
     min-height: 584px;
     padding: 12px 16px 0 13px;
 }
 
 * html #center-column {
-    height: 584px;
+    height: 854px;
 }
 
 /* footer */
