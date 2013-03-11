@@ -20,4 +20,5 @@ public interface ProfileProvider {
 
 	List<String> getSelectedBranchesNames();
 
+	void addSelectedBranches(List<SvnFolder> branches);
 }

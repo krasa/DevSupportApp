@@ -58,13 +58,4 @@ public class SvnConventionsStrategy {
 		return result;
 	}
 
-	public List<String> getAlphabeticallyLowerBranchNameForMatchAll(SvnFolder svnFolder) {
-		return Collections.emptyList();
-	}
-
-	public String getVersion(SvnFolder svnFolder) {
-		String name = svnFolder.getName();
-		String version = name.substring(name.lastIndexOf("-") + 1);
-		return version;
-	}
 }

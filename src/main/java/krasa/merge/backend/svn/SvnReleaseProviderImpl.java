@@ -37,6 +37,7 @@ public class SvnReleaseProviderImpl implements SvnReleaseProvider {
 	public List<Profile> getReleases() {
 		ArrayList<Profile> releases = new ArrayList<Profile>();
 		SVNRepository repository = svnConnector.connect(url);
+
 		try {
 			Collection projects = repository.getDir(path, -1, null, (Collection) null);
 			Iterator iterator = projects.iterator();

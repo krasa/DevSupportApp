@@ -124,6 +124,9 @@ public class FacadeImpl implements Facade {
 		SvnFolder branchByInCaseSensitiveName = findBranchByInCaseSensitiveName(objectAsString);
 		if (branchByInCaseSensitiveName != null) {
 			profileProvider.addSelectedBranch(branchByInCaseSensitiveName.getName());
+		} else {
+			List<SvnFolder> branches = findBranchesByNameLike(objectAsString);
+			profileProvider.addSelectedBranches(branches);
 		}
 	}
 

@@ -61,4 +61,13 @@ public class ProfileProviderImpl implements ProfileProvider {
 		return getCurrentProfile().getBranchesNames();
 	}
 
+	@Override
+	public void addSelectedBranches(List<SvnFolder> branches) {
+		Profile profile = getCurrentProfile();
+		for (SvnFolder branch : branches) {
+			profile.addBranch(branch.getName());
+		}
+		save(profile);
+	}
+
 }
