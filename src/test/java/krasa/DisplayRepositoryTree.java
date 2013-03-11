@@ -3,7 +3,7 @@ package krasa;
 import java.util.Collection;
 import java.util.Iterator;
 
-import krasa.merge.backend.svn.SVNConnectorImpl;
+import krasa.merge.backend.svn.connection.SVNConnector;
 
 import org.tmatesoft.svn.core.SVNDirEntry;
 import org.tmatesoft.svn.core.SVNException;
@@ -15,7 +15,7 @@ import org.tmatesoft.svn.core.io.SVNRepository;
  */
 public class DisplayRepositoryTree {
 	public static void main(String[] args) throws SVNException {
-		SVNRepository repository = new SVNConnectorImpl("http://svn.apache.org/repos/asf/").getBaseRepositoryConnection();
+		SVNRepository repository = new SVNConnector("http://svn.apache.org/repos/asf/").getBaseRepositoryConnection();
 
 		listEntries(repository, "");
 

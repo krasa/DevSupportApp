@@ -87,7 +87,7 @@ public class SvnFolderBrowsePage extends BasePage {
 						new LoadableDetachableModel<MergeInfoResult>() {
 							@Override
 							protected MergeInfoResult load() {
-								return facade.getMergeInfo(path);
+								return facade.getMergeInfoForProject(path);
 							}
 						});
 				ajaxRequestTarget.add(mergeInfo1);

@@ -11,8 +11,8 @@ import krasa.merge.backend.domain.SvnFolder;
 import krasa.merge.backend.dto.MergeInfoResult;
 import krasa.merge.backend.dto.MergeInfoResultItem;
 import krasa.merge.backend.service.conventions.ConventionsStrategyHolder;
-import krasa.merge.backend.svn.SVNConnector;
 import krasa.merge.backend.svn.SvnMergeInfoProvider;
+import krasa.merge.backend.svn.connection.SVNConnector;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

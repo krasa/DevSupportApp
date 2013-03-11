@@ -5,7 +5,7 @@ import java.util.List;
 import krasa.merge.backend.dao.SvnFolderDAO;
 import krasa.merge.backend.domain.SvnFolder;
 import krasa.merge.backend.domain.Type;
-import krasa.merge.backend.svn.SVNConnector;
+import krasa.merge.backend.svn.connection.SVNConnector;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -40,7 +40,7 @@ public class MergeInfoPage extends BasePage {
 						new LoadableDetachableModel<MergeInfoResult>() {
 							@Override
 							protected MergeInfoResult load() {
-								return facade.getMergeInfo();
+								return facade.getMergeInfoForAllSelectedBranches();
 							}
 						});
 

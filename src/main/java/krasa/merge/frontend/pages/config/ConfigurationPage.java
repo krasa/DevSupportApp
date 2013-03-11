@@ -43,7 +43,7 @@ public class ConfigurationPage extends BasePage {
 		form.add(new IndicatingAjaxButton("refreshProjectsAndBranches") {
 			@Override
 			protected void onSubmit(AjaxRequestTarget ajaxRequestTarget, Form<?> components) {
-				svnLoaderProcessor.refreshProjects(false);
+				svnLoaderProcessor.refreshProjects();
 				svnLoaderProcessor.refreshAllBranches();
 				ajaxRequestTarget.add(form);
 				info("Processing");

@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import krasa.merge.backend.SvnException;
 import krasa.merge.backend.domain.SvnFolder;
 import krasa.merge.backend.domain.Type;
 
@@ -52,7 +53,7 @@ public class SvnFolderProvider {
 				}
 			}
 		} catch (SVNException e) {
-			throw new RuntimeException(e.getMessage(), e);
+			throw new SvnException(e);
 		}
 		log.debug("getProjects finished");
 		return result;
@@ -72,7 +73,7 @@ public class SvnFolderProvider {
 				}
 			}
 		} catch (SVNException e) {
-			throw new RuntimeException(e.getMessage(), e);
+			throw new SvnException(e);
 		}
 	}
 
@@ -112,7 +113,7 @@ public class SvnFolderProvider {
 			log.info("iteration of branch subdirs finnished");
 			return result;
 		} catch (SVNException e) {
-			throw new RuntimeException(e.getMessage(), e);
+			throw new SvnException(e);
 		}
 	}
 
@@ -125,7 +126,7 @@ public class SvnFolderProvider {
 			String path = name + "/tags";
 			tags = repository.getDir(path, -1, null, (Collection) null);
 		} catch (SVNException e) {
-			throw new RuntimeException(e);
+			throw new SvnException(e);
 		}
 		Iterator iterator = tags.iterator();
 		while (iterator.hasNext()) {

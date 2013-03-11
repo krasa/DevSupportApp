@@ -127,13 +127,13 @@ public class FacadeImpl implements Facade {
 		}
 	}
 
-	public MergeInfoResult getMergeInfo() {
+	public MergeInfoResult getMergeInfoForAllSelectedBranches() {
 		List<Branch> selectedBranches = profileProvider.getSelectedBranches();
 		List<SvnFolder> branchesByNames = svnFolderDAO.findBranchesByNames(selectedBranches);
 		return mergeInfoService.findMerges(branchesByNames);
 	}
 
-	public MergeInfoResult getMergeInfo(String projectPath) {
+	public MergeInfoResult getMergeInfoForProject(String projectPath) {
 		List<Branch> selectedBranches = profileProvider.getSelectedBranches();
 		List<SvnFolder> branchesByNames = svnFolderDAO.findBranchesByNames(projectPath, selectedBranches);
 		return mergeInfoService.findMerges(branchesByNames);
@@ -184,10 +184,6 @@ public class FacadeImpl implements Facade {
 
 	public ReportResult getReport() {
 		return reportService.getReport();
-	}
-
-	public List<String> getSuggestions(String parentName, String input) {
-		return svnFolderDAO.findBranchesByNameLike(parentName, input);
 	}
 
 	public List<Profile> getReleasesFromSvn() {

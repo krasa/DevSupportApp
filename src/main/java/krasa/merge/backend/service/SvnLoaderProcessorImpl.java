@@ -3,9 +3,10 @@ package krasa.merge.backend.service;
 import java.util.List;
 import java.util.Set;
 
+import krasa.merge.backend.SvnException;
 import krasa.merge.backend.domain.SvnFolder;
-import krasa.merge.backend.svn.SVNConnector;
 import krasa.merge.backend.svn.SvnFolderProvider;
+import krasa.merge.backend.svn.connection.SVNConnector;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -25,16 +26,22 @@ public class SvnLoaderProcessorImpl implements SvnLoaderProcessor {
 	@Autowired
 	private SvnFolderService folderService;
 
-	public void refreshProjectBranches(SvnFolder project, boolean force) {
-		if (force) {
-			for (SvnFolder svnFolder : project.getChilds()) {
-				folderService.delete(svnFolder);
-			}
-		}
-
+	public void refreshProjectBranches(SvnFolder project, boolean deleteProjectIfNotExists) {
 		SvnFolderProvider provider = new SvnFolderProvider(svnConnection.getBaseRepositoryConnection());
 
-		List<SvnFolder> branches = provider.getBranchesByProjectName(project.getName());
+		List<SvnFolder> branches = null;
+		try {
+			branches = provider.getBranchesByProjectName(project.getName());
+		} catch (SvnException e) {
+			if ("160013: Filesystem has no item".equals(e.getErrorCode().toString())) {
+				if (deleteProjectIfNotExists) {
+					folderService.delete(project);
+					return;
+				} else {
+					throw e;
+				}
+			}
+		}
 		for (SvnFolder branch : branches) {
 			Set<String> branchNamesAsSet = project.getBranchNamesAsSet();
 			if (!branchNamesAsSet.contains(branch.getName())) {
@@ -54,11 +61,8 @@ public class SvnLoaderProcessorImpl implements SvnLoaderProcessor {
 		}
 	}
 
-	public void refreshProjects(boolean force) {
+	public void refreshProjects() {
 		SvnFolderProvider svnFolderProvider = new SvnFolderProvider(svnConnection.getBaseRepositoryConnection());
-		if (force)
-			folderService.deleteAll();
-
 		List<SVNDirEntry> projects = svnFolderProvider.getProjects();
 		for (SVNDirEntry project : projects) {
 			if (folderService.findProjectByName(project.getName()) == null) {
@@ -69,7 +73,7 @@ public class SvnLoaderProcessorImpl implements SvnLoaderProcessor {
 
 	public void refreshAllBranches() {
 		for (SvnFolder svnFolder : folderService.findAllProjects()) {
-			refreshProjectBranches(svnFolder, false);
+			refreshProjectBranches(svnFolder, true);
 		}
 	}
 

@@ -1,4 +1,4 @@
-package krasa.merge.backend.svn;
+package krasa.merge.backend.svn.connection;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -15,17 +15,17 @@ import org.tmatesoft.svn.core.wc.SVNWCUtil;
  * @author Vojtech Krasa
  */
 @Service
-public class SVNConnectorImpl implements SVNConnector {
+public class SVNConnector {
 	@Value("${svn.url}")
 	private String url;
 
 	private String connectedURL;
 	private SVNRepository connect;
 
-	protected SVNConnectorImpl() {
+	protected SVNConnector() {
 	}
 
-	public SVNConnectorImpl(String url) {
+	public SVNConnector(String url) {
 		this.url = url;
 	}
 

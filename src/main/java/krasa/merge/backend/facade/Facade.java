@@ -39,9 +39,9 @@ public interface Facade {
 
 	void addSelectedBranch(String objectAsString);
 
-	MergeInfoResult getMergeInfo();
+	MergeInfoResult getMergeInfoForAllSelectedBranches();
 
-	MergeInfoResult getMergeInfo(String path);
+	MergeInfoResult getMergeInfoForProject(String path);
 
 	Profile getProfileByIdOrDefault(Integer id);
 
@@ -54,8 +54,6 @@ public interface Facade {
 	void setMergeOnSubFoldersForProject(String path, Boolean modelObject);
 
 	ReportResult getReport();
-
-	List<String> getSuggestions(String parentName, String input);
 
 	List<Profile> getReleasesFromSvn();
 

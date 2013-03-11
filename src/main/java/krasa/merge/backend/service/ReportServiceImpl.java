@@ -7,9 +7,9 @@ import krasa.merge.backend.dao.SvnFolderDAO;
 import krasa.merge.backend.domain.Branch;
 import krasa.merge.backend.domain.SvnFolder;
 import krasa.merge.backend.dto.ReportResult;
-import krasa.merge.backend.svn.SVNConnector;
 import krasa.merge.backend.svn.SvnFolderProvider;
 import krasa.merge.backend.svn.SvnReportProvider;
+import krasa.merge.backend.svn.connection.SVNConnector;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

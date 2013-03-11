@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import krasa.merge.backend.domain.Profile;
+import krasa.merge.backend.svn.connection.SVNConnector;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

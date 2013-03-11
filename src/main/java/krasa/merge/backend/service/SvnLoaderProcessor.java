@@ -6,7 +6,7 @@ import krasa.merge.backend.domain.SvnFolder;
  * @author Vojtech Krasa
  */
 public interface SvnLoaderProcessor {
-	void refreshProjects(boolean force);
+	void refreshProjects();
 
 	void refreshAllBranches();
 
