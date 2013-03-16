@@ -4,7 +4,7 @@ Web application with following features:
 - custom build tool (connects via ssh and sends commands)
 
 
-![Finding merges](https://github.com/krasa/SVNMergeInfo/blob/master/screenshot.png)
+![Finding merges](https://raw.github.com/krasa/SVNMergeInfo/master/screenshot.png)
 
 
-![Building](https://github.com/krasa/SVNMergeInfo/blob/master/screenshotBuild.png)
+![Building](https://raw.github.com/krasa/SVNMergeInfo/master/screenshotBuild.png)
