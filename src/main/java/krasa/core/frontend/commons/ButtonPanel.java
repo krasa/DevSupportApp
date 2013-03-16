@@ -1,4 +1,4 @@
-package krasa.core.frontend.components;
+package krasa.core.frontend.commons;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;

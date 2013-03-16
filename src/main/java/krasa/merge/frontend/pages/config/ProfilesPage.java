@@ -71,6 +71,7 @@ public class ProfilesPage extends BasePage {
 		};
 	}
 
+	@Override
 	protected Component newCurrentPanel(String id) {
 		return new ProfileEditPanel(id, actualProfile);
 	}

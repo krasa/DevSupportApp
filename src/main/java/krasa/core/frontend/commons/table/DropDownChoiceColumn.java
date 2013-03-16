@@ -1,6 +1,8 @@
-package krasa.core.frontend.commons;
+package krasa.core.frontend.commons.table;
 
 import java.util.List;
+
+import krasa.core.frontend.commons.DropDownChoicePanel;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
@@ -18,6 +20,7 @@ public abstract class DropDownChoiceColumn<T, S> extends AbstractColumn<T, S> {
 		this.propertyExpression = propertyExpression1;
 	}
 
+	@Override
 	public void populateItem(Item<ICellPopulator<T>> item, String componentId, final IModel<T> rowModel) {
 		item.add(new DropDownChoicePanel(componentId, new PropertyModel<String>(rowModel, propertyExpression),
 				getDisplayModel(rowModel)) {

@@ -1,8 +1,8 @@
-package krasa.core.frontend.commons;
+package krasa.core.frontend.commons.table;
 
 import java.util.Date;
 
-import krasa.core.frontend.components.DateModel;
+import krasa.core.frontend.commons.DateModel;
 
 import org.apache.wicket.extensions.markup.html.repeater.data.table.PropertyColumn;
 import org.apache.wicket.model.IModel;

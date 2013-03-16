@@ -66,6 +66,7 @@ public class SvnMergeInfoProvider {
 			this.svnLogEntries = svnLogEntries;
 		}
 
+		@Override
 		public void handleLogEntry(SVNLogEntry logEntry) throws SVNException {
 			if (logEntry.getMessage().startsWith("##admin Creating a new branch")) {
 				return;

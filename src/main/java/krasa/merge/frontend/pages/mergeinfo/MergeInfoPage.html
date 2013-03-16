@@ -1,21 +1,23 @@
-<html xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd"
-        >
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
+<body>
 
 <wicket:extend>
+
     <wicket:child/>
-    <div wicket:id="ac"></div>
+
+    <span wicket:id="addBranchPanel"></span>
+
     <div wicket:id="branchesTable"></div>
-    <form wicket:id="form">
+    <form wicket:id="findMergesForm">
         <button wicket:id="findMerges" type="submit" wicket:message="value:findMerges">Find merges</button>
 
     </form>
 
 
-    <div wicket:id="result">
-
-    </div>
+    <div wicket:id="result"></div>
 
 </wicket:extend>
+</body>
 </html>
-
 

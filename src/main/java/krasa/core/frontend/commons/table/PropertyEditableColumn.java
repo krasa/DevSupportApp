@@ -1,4 +1,6 @@
-package krasa.core.frontend.commons;
+package krasa.core.frontend.commons.table;
+
+import krasa.core.frontend.commons.EditablePanel;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
@@ -32,6 +34,7 @@ public class PropertyEditableColumn extends AbstractColumn {
 		this.size = size;
 	}
 
+	@Override
 	public void populateItem(Item item, String componentId, IModel rowModel) {
 		item.add(new EditablePanel(componentId, new PropertyModel(rowModel, propertyExpression)));
 		item.add(new AttributeModifier("style", "width:" + size + "px"));

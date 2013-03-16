@@ -11,22 +11,23 @@ import krasa.build.backend.execution.adapter.ProcessAdapter;
 import krasa.build.backend.facade.BuildFacade;
 import krasa.build.frontend.pages.LogPage;
 import krasa.core.frontend.MySession;
-import krasa.core.frontend.commons.DateColumn;
-import krasa.core.frontend.commons.DummyModelDataProvider;
 import krasa.core.frontend.commons.MyFeedbackPanel;
-import krasa.core.frontend.components.ButtonColumn;
-import krasa.core.frontend.components.CheckBoxColumn;
+import krasa.core.frontend.commons.table.ButtonColumn;
+import krasa.core.frontend.commons.table.CheckBoxColumn;
+import krasa.core.frontend.commons.table.DateColumn;
+import krasa.core.frontend.commons.table.DummyModelDataProvider;
+import krasa.core.frontend.components.BasePanel;
 import krasa.merge.backend.dto.BuildRequest;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.atmosphere.Subscribe;
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackDefaultDataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.PropertyColumn;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
-import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
@@ -38,28 +39,31 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Vojtech Krasa
  */
-public class ComponentsTablePanel extends Panel {
+public class ComponentsTablePanel extends BasePanel {
 	protected final Logger log = LoggerFactory.getLogger(getClass());
 	private final IModel<Environment> environmentIModel;
 	protected Form form;
 	protected final FeedbackPanel feedback;
 	protected final AjaxButton deploySelectedButton;
 	@SpringBean
-	private BuildFacade facade;
+	private BuildFacade buildFacade;
 
 	public ComponentsTablePanel(String id, final IModel<Environment> environmentIModel) {
 		super(id);
-		// form = new Form("form");
-		// form.setOutputMarkupId(true);
-		// add(form);
 		this.environmentIModel = environmentIModel;
-		setOutputMarkupId(true);
-		feedback = new MyFeedbackPanel("feedback");
-		add(feedback);
-		add(new AjaxFallbackDefaultDataTable<ComponentBuild, String>("branches", getColumns(),
-				getModel(environmentIModel), 100));
-		deploySelectedButton = deployButton();
-		add(deploySelectedButton);
+		add(feedback = new MyFeedbackPanel("feedback"));
+		add(createTable(environmentIModel));
+		add(deploySelectedButton = deployButton());
+	}
+
+	private AjaxFallbackDefaultDataTable<ComponentBuild, String> createTable(IModel<Environment> environmentIModel) {
+		return new AjaxFallbackDefaultDataTable<ComponentBuild, String>("branches", getColumns(),
+				getModel(environmentIModel), 100);
+	}
+
+	@Subscribe
+	public void receiveMessage(AjaxRequestTarget target, String message) {
+		target.add(this);
 	}
 
 	private AjaxButton deployButton() {
@@ -78,7 +82,7 @@ public class ComponentsTablePanel extends Panel {
 					Environment env = getEnvironment();
 					List<String> scheduledBranchesByEnvironmentId = MySession.get().getScheduledBranchesByEnvironmentId(
 							env);
-					ProcessAdapter deploy = facade.build(new BuildRequest(scheduledBranchesByEnvironmentId,
+					ProcessAdapter deploy = buildFacade.build(new BuildRequest(scheduledBranchesByEnvironmentId,
 							env.getName()));
 					MySession.get().clear(env);
 					setResponsePage(new LogPage(deploy));
@@ -100,7 +104,7 @@ public class ComponentsTablePanel extends Panel {
 		return new DummyModelDataProvider<ComponentBuild>(new LoadableDetachableModel<List<ComponentBuild>>() {
 			@Override
 			protected List<ComponentBuild> load() {
-				return facade.getBranchBuilds(model.getObject());
+				return buildFacade.getBranchBuilds(model.getObject());
 			}
 		});
 	}
@@ -150,7 +154,7 @@ public class ComponentsTablePanel extends Panel {
 					IModel<ComponentBuild> model) {
 				super.populateItem(components, s, model);
 				String componentName = model.getObject().getName();
-				ProcessAdapter refresh = facade.refresh(getDeploymentRequest(componentName));
+				ProcessAdapter refresh = buildFacade.refresh(getDeploymentRequest(componentName));
 				components.setEnabled(refresh != null);
 			}
 
@@ -173,7 +177,7 @@ public class ComponentsTablePanel extends Panel {
 			protected void onSubmit(IModel<ComponentBuild> model, AjaxRequestTarget target, Form<?> form) {
 				String componentName = model.getObject().getName();
 				try {
-					facade.build(getDeploymentRequest(componentName));
+					buildFacade.build(getDeploymentRequest(componentName));
 					target.add(form);
 				} catch (ProcessAlreadyRunning e) {
 					info("already building");
@@ -187,7 +191,7 @@ public class ComponentsTablePanel extends Panel {
 		return new ButtonColumn<ComponentBuild>(new Model<String>("Delete")) {
 			@Override
 			protected void onSubmit(IModel<ComponentBuild> model, AjaxRequestTarget target, Form<?> form) {
-				facade.deleteComponent(getEnvironment(), model.getObject());
+				buildFacade.deleteComponent(getEnvironment(), model.getObject());
 				target.add(form);
 			}
 		};

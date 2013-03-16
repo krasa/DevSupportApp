@@ -1,4 +1,4 @@
-package krasa.merge.frontend.components;
+package krasa.merge.frontend.component;
 
 import java.util.List;
 

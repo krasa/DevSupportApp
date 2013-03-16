@@ -98,6 +98,7 @@ public class MergeInfoTest {
 		// SVNDirEntry svnDirEntry1 = svnDirEntries1.get(2);
 		svnDiffClient.doGetLogEligibleMergeInfo(SVNURL.parseURIDecoded(s), SVNRevision.HEAD,
 				SVNURL.parseURIDecoded(s1), SVNRevision.HEAD, true, null, new ISVNLogEntryHandler() {
+					@Override
 					public void handleLogEntry(SVNLogEntry logEntry) throws SVNException {
 						System.err.println(logEntry.getRevision());
 					}

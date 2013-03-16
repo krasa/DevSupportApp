@@ -53,11 +53,13 @@ public class StringBufferTail implements Appendable {
 		return this;
 	}
 
+	@Override
 	public StringBufferTail append(CharSequence s) {
 		buffer.append(s);
 		return this;
 	}
 
+	@Override
 	public StringBufferTail append(CharSequence s, int start, int end) {
 		buffer.append(s, start, end);
 		return this;
@@ -78,6 +80,7 @@ public class StringBufferTail implements Appendable {
 		return this;
 	}
 
+	@Override
 	public StringBufferTail append(char c) {
 		buffer.append(c);
 		return this;
@@ -127,6 +130,7 @@ public class StringBufferTail implements Appendable {
 		while (!isStop() && (line = r.readLine()) != null) {
 			append(line).newLine();
 			if (until.equals(line)) {
+				log.debug("until condition received: " + line);
 				return;
 			}
 		}
@@ -165,5 +169,10 @@ public class StringBufferTail implements Appendable {
 				}
 			}
 		});
+	}
+
+	@Override
+	public String toString() {
+		return buffer.toString();
 	}
 }

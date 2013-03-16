@@ -1,11 +1,13 @@
-package krasa.merge.frontend.components;
+package krasa.merge.frontend.component.table;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import krasa.core.frontend.commons.CheckBoxPanel;
-import krasa.core.frontend.commons.DropDownChoiceColumn;
+import krasa.core.frontend.commons.table.ButtonColumn;
+import krasa.core.frontend.commons.table.DropDownChoiceColumn;
+import krasa.core.frontend.components.BasePanel;
 import krasa.core.frontend.components.SortableSelectedBranchesDataProvider;
 import krasa.merge.backend.domain.SvnFolder;
 import krasa.merge.backend.facade.Facade;
@@ -16,7 +18,7 @@ import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulato
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.PropertyColumn;
-import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
@@ -27,17 +29,41 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 /**
  * @author Vojtech Krasa
  */
-public class SelectedBranchesTablePanel extends Panel {
+public class SelectedBranchesTablePanel extends BasePanel {
 	@SpringBean
 	private Facade facade;
 
 	protected AjaxFallbackDefaultDataTable<SvnFolder, String> table;
+	protected final Form form;
 
 	public SelectedBranchesTablePanel(String id) {
 		super(id);
-		setOutputMarkupId(true);
+		add(form = createForm());
+		form.add(table = createTable());
+	}
+
+	private Form createForm() {
+		return new Form("form");
+	}
+
+	private AjaxFallbackDefaultDataTable<SvnFolder, String> createTable() {
+		List<IColumn<SvnFolder, String>> columns = createColumns();
+		return new AjaxFallbackDefaultDataTable<SvnFolder, String>("table", columns,
+				new SortableSelectedBranchesDataProvider(), 80);
+	}
+
+	private List<IColumn<SvnFolder, String>> createColumns() {
 		List<IColumn<SvnFolder, String>> columns = new ArrayList<IColumn<SvnFolder, String>>();
-		columns.add(new AbstractColumn<SvnFolder, String>(new Model<String>("")) {
+		// columns.add(createCheckBoxColumn());
+		columns.add(new PropertyColumn<SvnFolder, String>(new Model<String>("name"), "name", "name"));
+		columns.add(createSearchFromColumn());
+		columns.add(createDeleteColumn());
+		return columns;
+	}
+
+	private AbstractColumn<SvnFolder, String> createCheckBoxColumn() {
+		return new AbstractColumn<SvnFolder, String>(new Model<String>("")) {
+			@Override
 			public void populateItem(Item<ICellPopulator<SvnFolder>> cellItem, String componentId,
 					IModel<SvnFolder> model) {
 				cellItem.add(new CheckBoxPanel<SvnFolder>(componentId, model) {
@@ -54,10 +80,11 @@ public class SelectedBranchesTablePanel extends Panel {
 					}
 				});
 			}
-		});
-		columns.add(new PropertyColumn<SvnFolder, String>(new Model<String>("name"), "name", "name"));
+		};
+	}
 
-		columns.add(new DropDownChoiceColumn<SvnFolder, String>(new Model<String>("searchFrom"), "searchFrom") {
+	private DropDownChoiceColumn<SvnFolder, String> createSearchFromColumn() {
+		return new DropDownChoiceColumn<SvnFolder, String>(new Model<String>("searchFrom"), "searchFrom") {
 
 			@Override
 			protected IModel<List<String>> getDisplayModel(final IModel<SvnFolder> rowModel) {
@@ -82,11 +109,16 @@ public class SelectedBranchesTablePanel extends Panel {
 				super.onUpdate(target, model);
 				facade.updateBranch((SvnFolder) model.getInnermostModelOrObject());
 			}
-		});
+		};
+	}
 
-		table = new AjaxFallbackDefaultDataTable<SvnFolder, String>("table", columns,
-				new SortableSelectedBranchesDataProvider(), 80);
-		add(table);
-
+	private ButtonColumn<SvnFolder> createDeleteColumn() {
+		return new ButtonColumn<SvnFolder>(new Model<String>("Delete")) {
+			@Override
+			protected void onSubmit(IModel<SvnFolder> model, AjaxRequestTarget target, Form<?> form) {
+				facade.updateSelectionOfSvnFolder(model.getObject(), false);
+				target.add(form);
+			}
+		};
 	}
 }

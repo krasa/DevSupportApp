@@ -17,12 +17,14 @@ public class TMSvnConventionsStrategy extends SvnConventionsStrategy {
 
 	public static final Comparator<String> TM_NAME_COMPARATOR_BY_VERSION_STRING = new Comparator<String>() {
 
+		@Override
 		public int compare(String name, String name1) {
 			return getVersion(name).compareTo(getVersion(name1));
 		}
 	};
 
 	public static final Comparator<SvnFolder> TM_NAME_COMPARATOR_BY_VERSION = new Comparator<SvnFolder>() {
+		@Override
 		public int compare(SvnFolder o1, SvnFolder o2) {
 			return getVersion(o1).compareTo(getVersion(o2.getName()));
 		}
@@ -44,6 +46,7 @@ public class TMSvnConventionsStrategy extends SvnConventionsStrategy {
 
 	public static final String TMSVN_CONVENTIONS_STRATEGY = "TMSvnConventionsStrategy";
 
+	@Override
 	public List<SvnFolder> resolveFromBranches(SvnFolder svnFolder) {
 		List<SvnFolder> result = new ArrayList<SvnFolder>();
 		String searchFrom = svnFolder.getSearchFrom();

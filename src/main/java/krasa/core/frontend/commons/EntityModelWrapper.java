@@ -14,14 +14,17 @@ public class EntityModelWrapper<T extends AbstractEntity> implements IModel<T> {
 		id = wrappedModel.getObject().getId();
 	}
 
+	@Override
 	public T getObject() {
 		return wrappedModel.getObject();
 	}
 
+	@Override
 	public void detach() {
 		wrappedModel.detach();
 	}
 
+	@Override
 	public void setObject(AbstractEntity object) {
 		throw new UnsupportedOperationException(getClass() + " does not support #setObject(T entity)");
 	}

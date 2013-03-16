@@ -1,4 +1,4 @@
-package krasa.core.frontend.components;
+package krasa.core.frontend.commons;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

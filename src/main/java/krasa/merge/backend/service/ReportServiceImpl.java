@@ -36,6 +36,7 @@ public class ReportServiceImpl implements ReportService {
 	@Autowired
 	private GlobalSettingsProvider globalSettingsProvider;
 
+	@Override
 	public ReportResult getReport() {
 		ReportResult reportResult = new ReportResult();
 		SvnReportProvider svnReportProvider = new SvnReportProvider(svnConnection.getBaseRepositoryConnection());

@@ -1,6 +1,7 @@
 package krasa.merge.backend.dao;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -28,6 +29,7 @@ public class SvnFolderDAOImpl extends AbstractDAO<SvnFolder> implements SvnFolde
 		return SvnFolder.class;
 	}
 
+	@Override
 	@Transactional
 	public void replaceBranches(List<SVNDirEntry> svnDirEntries) {
 		deleteAll();
@@ -36,6 +38,7 @@ public class SvnFolderDAOImpl extends AbstractDAO<SvnFolder> implements SvnFolde
 		}
 	}
 
+	@Override
 	public List<SvnFolder> getSubDirsByParentPath(String name) {
 		Query query = getSession().createQuery(
 				"from " + getEntityName() + " s where s.parent.name = :name order by s.name");
@@ -43,12 +46,14 @@ public class SvnFolderDAOImpl extends AbstractDAO<SvnFolder> implements SvnFolde
 		return query.list();
 	}
 
+	@Override
 	public SvnFolder findByPath(String path) {
 		Query query = getSession().createQuery("from " + getEntityName() + " s where s.path = :path");
 		query.setString("path", path);
 		return (SvnFolder) query.uniqueResult();
 	}
 
+	@Override
 	public List<SvnFolder> findAllProjects() {
 		Query query = getSession().createQuery("from " + getEntityName() + " s where s.type = :type order by s.name");
 		query.setParameter("type", Type.PROJECT);
@@ -56,6 +61,7 @@ public class SvnFolderDAOImpl extends AbstractDAO<SvnFolder> implements SvnFolde
 
 	}
 
+	@Override
 	public List<SvnFolder> findBranchesByNames(List<Branch> selectedBranches) {
 		if (selectedBranches.isEmpty()) {
 			return Collections.emptyList();
@@ -75,6 +81,7 @@ public class SvnFolderDAOImpl extends AbstractDAO<SvnFolder> implements SvnFolde
 		return names.toArray();
 	}
 
+	@Override
 	public List<SvnFolder> findBranchesByNameLike(String name) {
 		Query query = getSession().createQuery(
 				"from " + getEntityName()
@@ -84,6 +91,7 @@ public class SvnFolderDAOImpl extends AbstractDAO<SvnFolder> implements SvnFolde
 		return query.list();
 	}
 
+	@Override
 	public List<SvnFolder> findBranchesByNamePrefix(String name) {
 		Query query = getSession().createQuery(
 				"from " + getEntityName()
@@ -93,6 +101,7 @@ public class SvnFolderDAOImpl extends AbstractDAO<SvnFolder> implements SvnFolde
 		return query.list();
 	}
 
+	@Override
 	public SvnFolder findBranchByInCaseSensitiveName(String name) {
 		Query query = getSession().createQuery(
 				"from " + getEntityName() + " s where lower(s.name) = lower(:name)  and s.type = :type ");
@@ -101,6 +110,7 @@ public class SvnFolderDAOImpl extends AbstractDAO<SvnFolder> implements SvnFolde
 		return (SvnFolder) query.uniqueResult();
 	}
 
+	@Override
 	public List<SvnFolder> findBranchesByNames(String parent, List<Branch> selectedBranches) {
 		if (selectedBranches.isEmpty()) {
 			return Collections.emptyList();
@@ -114,13 +124,21 @@ public class SvnFolderDAOImpl extends AbstractDAO<SvnFolder> implements SvnFolde
 		return query.list();
 	}
 
+	@Override
 	public SvnFolder findProjectByName(String name) {
 		Query query = getSession().createQuery("from " + getEntityName() + " s where s.name = :name and s.type = :type");
 		query.setString("name", name);
 		query.setParameter("type", Type.PROJECT);
-		return (SvnFolder) query.uniqueResult();
+		List list = query.list();
+		if (list.isEmpty()) {
+			return null;
+		} else if (list.size() > 1) {
+			throw new IllegalStateException(Arrays.toString(list.toArray()));
+		}
+		return (SvnFolder) list.get(0);
 	}
 
+	@Override
 	public List<String> findBranchesByNameLike(String parentName, String input) {
 		Query query = getSession().createQuery(
 				"select s.name from "
@@ -133,6 +151,7 @@ public class SvnFolderDAOImpl extends AbstractDAO<SvnFolder> implements SvnFolde
 
 	}
 
+	@Override
 	public SvnFolder findBranchByName(String name2) {
 		Query query = getSession().createQuery(
 				"from " + getEntityName() + " s where s.name = :name  and s.type = :type ");
@@ -141,6 +160,7 @@ public class SvnFolderDAOImpl extends AbstractDAO<SvnFolder> implements SvnFolde
 		return (SvnFolder) query.uniqueResult();
 	}
 
+	@Override
 	public void replaceProjects(List<SVNDirEntry> svnDirEntries) {
 		log.debug("replaceProjects, size: {}", svnDirEntries.size());
 		for (SVNDirEntry svnDirEntry : svnDirEntries) {

@@ -1,4 +1,4 @@
-package krasa.merge.frontend.components;
+package krasa.merge.frontend.component.table;
 
 import java.util.Iterator;
 import java.util.List;
@@ -43,6 +43,7 @@ public class SortableSvnFolderDataProvider implements ISortableDataProvider<SvnF
 		return facade;
 	}
 
+	@Override
 	public Iterator<? extends SvnFolder> iterator(long first, long count) {
 		return loadableDetachableModel.getObject().iterator();
 
@@ -51,6 +52,7 @@ public class SortableSvnFolderDataProvider implements ISortableDataProvider<SvnF
 	/**
 	 * @see org.apache.wicket.markup.repeater.data.IDataProvider#size()
 	 */
+	@Override
 	public long size() {
 		return loadableDetachableModel.getObject().size();
 	}
@@ -58,14 +60,17 @@ public class SortableSvnFolderDataProvider implements ISortableDataProvider<SvnF
 	/**
 	 * @see org.apache.wicket.markup.repeater.data.IDataProvider#model(java.lang.Object)
 	 */
+	@Override
 	public IModel<SvnFolder> model(SvnFolder object) {
 		return new MyModel(object);
 	}
 
+	@Override
 	public void detach() {
 		loadableDetachableModel.detach();
 	}
 
+	@Override
 	public ISortState getSortState() {
 		return new SingleSortState();
 	}

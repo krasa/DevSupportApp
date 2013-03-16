@@ -26,6 +26,7 @@ public class SvnLoaderProcessorImpl implements SvnLoaderProcessor {
 	@Autowired
 	private SvnFolderService folderService;
 
+	@Override
 	public void refreshProjectBranches(SvnFolder project, boolean deleteProjectIfNotExists) {
 		SvnFolderProvider provider = new SvnFolderProvider(svnConnection.getBaseRepositoryConnection());
 
@@ -61,6 +62,7 @@ public class SvnLoaderProcessorImpl implements SvnLoaderProcessor {
 		}
 	}
 
+	@Override
 	public void refreshProjects() {
 		SvnFolderProvider svnFolderProvider = new SvnFolderProvider(svnConnection.getBaseRepositoryConnection());
 		List<SVNDirEntry> projects = svnFolderProvider.getProjects();
@@ -71,12 +73,14 @@ public class SvnLoaderProcessorImpl implements SvnLoaderProcessor {
 		}
 	}
 
+	@Override
 	public void refreshAllBranches() {
 		for (SvnFolder svnFolder : folderService.findAllProjects()) {
 			refreshProjectBranches(svnFolder, true);
 		}
 	}
 
+	@Override
 	public void refreshBranchesByProjectName(String name) {
 		SvnFolder project = folderService.findProjectByName(name);
 		refreshProjectBranches(project, false);

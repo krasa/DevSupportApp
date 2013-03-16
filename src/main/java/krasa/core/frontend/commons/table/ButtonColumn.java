@@ -1,4 +1,6 @@
-package krasa.core.frontend.components;
+package krasa.core.frontend.commons.table;
+
+import krasa.core.frontend.commons.ButtonPanel;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
@@ -19,6 +21,7 @@ public abstract class ButtonColumn<T> extends AbstractColumn<T, String> {
 		super(displayModel);
 	}
 
+	@Override
 	public void populateItem(Item<ICellPopulator<T>> components, String s, final IModel<T> model) {
 		components.add(new ButtonPanel(s, ButtonColumn.this.getDisplayModel().getObject()) {
 			@Override

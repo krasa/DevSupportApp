@@ -37,7 +37,7 @@ public interface Facade {
 
 	SvnFolder findBranchByInCaseSensitiveName(String objectAsString);
 
-	void addSelectedBranch(String objectAsString);
+	void addBranchIntoProfile(String objectAsString);
 
 	MergeInfoResult getMergeInfoForAllSelectedBranches();
 
@@ -74,4 +74,7 @@ public interface Facade {
 	void updateBranch(SvnFolder folder);
 
 	List<SvnFolder> getAllBranchesByProjectNme(String name);
+
+	void addAllMatchingBranchesIntoProfile(String fieldValue);
+
 }

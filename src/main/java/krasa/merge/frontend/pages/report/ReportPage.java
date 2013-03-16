@@ -6,40 +6,50 @@ import krasa.core.frontend.MySession;
 import krasa.core.frontend.pages.BasePage;
 import krasa.merge.backend.domain.Profile;
 import krasa.merge.backend.dto.ReportResult;
-import krasa.merge.frontend.components.BranchSelectionAddAutoCompletePanel;
-import krasa.merge.frontend.components.SelectedBranchesTablePanel;
+import krasa.merge.frontend.component.AddBranchFormPanel;
+import krasa.merge.frontend.component.table.SelectedBranchesTablePanel;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.model.ResourceModel;
 
 /**
  * @author Vojtech Krasa
  */
 public class ReportPage extends BasePage {
 	public static final String RESULT = "result";
-	protected final SelectedBranchesTablePanel branchesTable;
+	protected SelectedBranchesTablePanel branchesTable;
 	protected MultiLineLabel resultLabel;
 
 	public ReportPage() {
-		add(new BranchSelectionAddAutoCompletePanel("ac", new ResourceModel("branchName")) {
-			@Override
-			public void process(AjaxRequestTarget target, String objectAsString) {
-				facade.addSelectedBranch(objectAsString);
-				target.add(branchesTable);
-			}
-		});
+		add(createAddBranchIntoProfileFormPanel());
+		add(createResultLabel());
+		add(createResultPanel());
+		add(createForm());
+		add(createBranchesTable());
+
+	}
+
+	private SelectedBranchesTablePanel createBranchesTable() {
+		return branchesTable = new SelectedBranchesTablePanel("branchesTable");
+	}
+
+	private Component createResultLabel() {
 		resultLabel = new MultiLineLabel("resultLabel", new Model<Serializable>());
-		resultLabel.setOutputMarkupPlaceholderTag(true);
-		add(resultLabel);
+		return resultLabel.setOutputMarkupPlaceholderTag(true);
+	}
+
+	private EmptyPanel createResultPanel() {
 		EmptyPanel emptyPanel = new EmptyPanel(RESULT);
 		emptyPanel.setOutputMarkupPlaceholderTag(true);
-		add(emptyPanel);
-		// initSelectedBranchesList();
+		return emptyPanel;
+	}
+
+	private Form createForm() {
 		Form form = new Form("form");
 		form.add(new IndicatingAjaxButton("getReport") {
 			@Override
@@ -145,10 +155,16 @@ public class ReportPage extends BasePage {
 		//
 		// }
 		// });
-		add(form);
-		branchesTable = new SelectedBranchesTablePanel("branchesTable");
-		add(branchesTable);
+		return form;
+	}
 
+	private AddBranchFormPanel createAddBranchIntoProfileFormPanel() {
+		return new AddBranchFormPanel("addBranchPanel") {
+			@Override
+			protected void onUpdate(AjaxRequestTarget target) {
+				target.add(branchesTable);
+			}
+		};
 	}
 
 }

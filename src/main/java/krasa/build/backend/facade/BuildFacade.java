@@ -29,4 +29,6 @@ public interface BuildFacade {
 	void deleteComponent(Environment environment, ComponentBuild object);
 
 	void deleteEnvironment(Integer id);
+
+	void addAllMatchingComponents(Environment object, String fieldValue);
 }

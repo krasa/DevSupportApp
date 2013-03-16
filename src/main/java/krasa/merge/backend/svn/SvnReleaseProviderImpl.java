@@ -34,6 +34,7 @@ public class SvnReleaseProviderImpl implements SvnReleaseProvider {
 	@Autowired
 	SVNConnector svnConnector;
 
+	@Override
 	public List<Profile> getReleases() {
 		ArrayList<Profile> releases = new ArrayList<Profile>();
 		SVNRepository repository = svnConnector.connect(url);

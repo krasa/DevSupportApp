@@ -1,4 +1,4 @@
-package krasa.core.frontend.components;
+package krasa.core.frontend.commons.table;
 
 import krasa.core.frontend.commons.CheckBoxPanel;
 
@@ -17,6 +17,7 @@ public abstract class CheckBoxColumn<BranchBuild> extends AbstractColumn<BranchB
 		super(displayModel);
 	}
 
+	@Override
 	public void populateItem(Item<ICellPopulator<BranchBuild>> cellItem, String componentId, IModel<BranchBuild> model) {
 		cellItem.add(new CheckBoxPanel<BranchBuild>(componentId, model) {
 			@Override

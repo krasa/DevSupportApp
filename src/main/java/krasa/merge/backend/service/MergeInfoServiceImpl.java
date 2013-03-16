@@ -38,6 +38,7 @@ public class MergeInfoServiceImpl implements MergeInfoService {
 	@Autowired
 	private GlobalSettingsProvider globalSettingsProvider;
 
+	@Override
 	public MergeInfoResult findMerges(List<SvnFolder> branches) {
 
 		MergeInfoResult mergeInfoResult = new MergeInfoResult();
@@ -88,6 +89,7 @@ public class MergeInfoServiceImpl implements MergeInfoService {
 
 	private void sortByName(List<SvnFolder> branchesByProject) {
 		Collections.sort(branchesByProject, new Comparator<SvnFolder>() {
+			@Override
 			public int compare(SvnFolder o1, SvnFolder o2) {
 				String name = o2.getName();
 				String name1 = o1.getName();

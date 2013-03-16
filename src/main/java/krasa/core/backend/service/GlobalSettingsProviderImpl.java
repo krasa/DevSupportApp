@@ -24,6 +24,7 @@ public class GlobalSettingsProviderImpl implements GlobalSettingsProvider {
 		this.globalSettingsDAO = genericDAO.build(GlobalSettings.class);
 	}
 
+	@Override
 	public GlobalSettings getGlobalSettings() {
 		if (first == null) {
 			first = globalSettingsDAO.findFirst();

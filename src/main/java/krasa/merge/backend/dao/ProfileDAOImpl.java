@@ -22,6 +22,7 @@ public class ProfileDAOImpl extends AbstractDAO<Profile> implements ProfileDAO {
 		return Profile.class;
 	}
 
+	@Override
 	public List<Profile> findAllByType(Profile.Type fromSvn) {
 		Query query = getSession().createQuery("from " + getEntityName() + " s where s.type = :type  order by s.name");
 		query.setParameter("type", fromSvn);

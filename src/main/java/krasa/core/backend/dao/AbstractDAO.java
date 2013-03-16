@@ -42,15 +42,18 @@ public abstract class AbstractDAO<T extends AbstractEntity> implements DAO<T> {
 		return crit.list();
 	}
 
+	@Override
 	public void deleteAll() {
 		Query query = getSession().createQuery("delete from " + getEntityName());
 		query.executeUpdate();
 	}
 
+	@Override
 	public T findById(Integer id) {
 		return (T) getSession().get(getEntityClass(), id);
 	}
 
+	@Override
 	public List<T> findAll() {
 		return getSession().createQuery("from " + getEntityName()).list();
 	}
@@ -59,6 +62,7 @@ public abstract class AbstractDAO<T extends AbstractEntity> implements DAO<T> {
 		return getEntityClass().getCanonicalName();
 	}
 
+	@Override
 	public T findFirst() {
 		Object o = getSession().createQuery("SELECT min(id) from " + getEntityName()).uniqueResult();
 		if (o == null) {
@@ -68,6 +72,7 @@ public abstract class AbstractDAO<T extends AbstractEntity> implements DAO<T> {
 		return findById(id);
 	}
 
+	@Override
 	public T findLast() {
 		Object o = getSession().createQuery("SELECT max(id) from " + getEntityName()).uniqueResult();
 		if (o == null) {
@@ -77,6 +82,7 @@ public abstract class AbstractDAO<T extends AbstractEntity> implements DAO<T> {
 		return findById(id);
 	}
 
+	@Override
 	public T save(T object) {
 		if (object.getId() == null) {
 			getSession().persist(object);
@@ -87,11 +93,13 @@ public abstract class AbstractDAO<T extends AbstractEntity> implements DAO<T> {
 		return (T) object;
 	}
 
+	@Override
 	public int count() {
 		return Integer.valueOf(getSession().createQuery("SELECT COUNT(*) FROM " + getEntityName()).uniqueResult().toString());
 
 	}
 
+	@Override
 	public void delete(T object) {
 		getSession().delete(object);
 	}

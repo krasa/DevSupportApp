@@ -11,6 +11,7 @@ import krasa.build.backend.execution.StringBufferTail;
 import krasa.build.backend.execution.ssh.SCPInfo;
 import krasa.build.backend.execution.ssh.SSHManager;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -51,10 +52,16 @@ public class SshBuildProcess implements Process {
 		processStatus.setStatus(Status.IN_PROGRESS);
 		try {
 			stringBufferTail.newLine().append("--- PROCESS STARTED ---");
-			doWork();
+			int i = doWork();
+
+			if (i == 0) {
+				stringBufferTail.newLine().append("--- PROCESS FINISHED ---");
+				processStatus.setStatus(Status.SUCCESS);
+			} else {
+				processStatus.setStatus(Status.FAILED);
+				stringBufferTail.newLine().append("--- PROCESS FAILED ---");
+			}
 			// close only after all commands are sent
-			stringBufferTail.newLine().append("--- PROCESS FINISHED ---");
-			processStatus.setStatus(Status.SUCCESS);
 		} catch (Exception e) {
 			processStatus.setStatus(Status.EXCEPTION);
 			stringBufferTail.newLine().append("--- PROCESS FAILED ---");
@@ -70,7 +77,7 @@ public class SshBuildProcess implements Process {
 		notifyListeners();
 	}
 
-	protected void doWork() throws IOException {
+	protected int doWork() throws IOException {
 		instance = new SSHManager(new SCPInfo(userName, password, connectionIP));
 		// call sendCommand for each command and the output
 		// (without prompts) is returned
@@ -83,9 +90,21 @@ public class SshBuildProcess implements Process {
 		int exitStatus = channel.getExitStatus();
 
 		log.debug("exit status: " + exitStatus);
-		if (exitStatus != 0) {
-			throw new IllegalStateException("exit status=" + exitStatus);
+		exitStatus = getExitStatusFromLog(exitStatus, stringBufferTail.toString());
+		return exitStatus;
+	}
+
+	protected static int getExitStatusFromLog(int exitStatus, String logContent) {
+		int start1 = logContent.length() - 100;
+		String substring = StringUtils.substring(logContent, start1 > 0 ? start1 : 0);
+		if (substring.contains("returned code [")) {
+			int start = substring.indexOf("returned code [") + "returned code [".length();
+			int end = substring.indexOf("]", start);
+			String substring1 = substring.substring(start, end);
+			exitStatus = Integer.parseInt(substring1.trim());
+			log.debug("exit status from log: " + exitStatus);
 		}
+		return exitStatus;
 	}
 
 	protected void notifyListeners() {

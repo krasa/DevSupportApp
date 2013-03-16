@@ -17,7 +17,9 @@ import krasa.build.backend.execution.adapter.ProcessAdapterHolder;
 import krasa.core.backend.dao.GenericDAO;
 import krasa.core.backend.dao.GenericDaoBuilder;
 import krasa.core.frontend.WicketApplication;
+import krasa.merge.backend.domain.SvnFolder;
 import krasa.merge.backend.dto.BuildRequest;
+import krasa.merge.backend.facade.Facade;
 
 import org.apache.wicket.Application;
 import org.apache.wicket.atmosphere.EventBus;
@@ -40,10 +42,13 @@ public class BuildFacadeImpl implements BuildFacade {
 	@Autowired
 	private CommonBuildDao commonBuildDao;
 	@Autowired
+	private Facade facade;
+	@Autowired
 	private AsyncTaskExecutor taskExecutor;
 	@Autowired
 	private krasa.build.backend.execution.ProcessBuilder processBuilder;
 
+	@Override
 	public synchronized ProcessAdapter build(BuildRequest request) {
 		request.validate();
 		processAdapterHolder.checkPreviousBuilds(request);
@@ -86,13 +91,33 @@ public class BuildFacadeImpl implements BuildFacade {
 	@Override
 	public void addComponnet(Environment object, String branchName) {
 		object = environmentDAO.refresh(object);
-		ComponentBuild componentBuild = ComponentBuild.newComponent(branchName);
-		componentBuild.setEnvironment(object);
-		componentBuildDAO.save(componentBuild);
-		object.getComponentBuilds().add(componentBuild);
+		addComponent(object, branchName);
 		environmentDAO.save(object);
 	}
 
+	@Override
+	public void addAllMatchingComponents(Environment object, String fieldValue) {
+		object = environmentDAO.refresh(object);
+		SvnFolder svnFolder = facade.findBranchByInCaseSensitiveName(fieldValue);
+		if (svnFolder != null) {
+			addComponnet(object, svnFolder.getName());
+		} else {
+			List<SvnFolder> branches = facade.findBranchesByNameLike(fieldValue);
+			for (SvnFolder branch : branches) {
+				String name = branch.getName();
+				addComponent(object, name);
+			}
+		}
+	}
+
+	private void addComponent(Environment object, String name) {
+		ComponentBuild componentBuild = ComponentBuild.newComponent(name);
+		componentBuild.setEnvironment(object);
+		componentBuildDAO.save(componentBuild);
+		object.getComponentBuilds().add(componentBuild);
+	}
+
+	@Override
 	public void onResult(BuildRequest request, ProcessStatus processStatus) {
 		List<ComponentBuild> componentBuild = request.getComponentBuild();
 		for (ComponentBuild build : componentBuild) {
@@ -133,10 +158,12 @@ public class BuildFacadeImpl implements BuildFacade {
 
 	}
 
+	@Override
 	public List<Environment> getEnvironments() {
 		return environmentDAO.findAll();
 	}
 
+	@Override
 	public void createEnvironment(String environmentName) {
 		List<Environment> by = environmentDAO.findBy(Environment.NAME, environmentName);
 		if (by.isEmpty()) {
@@ -146,6 +173,7 @@ public class BuildFacadeImpl implements BuildFacade {
 		}
 	}
 
+	@Override
 	public List<ComponentBuild> getBranchBuilds(Environment environment) {
 		Environment byId = environmentDAO.findById(environment.getId());
 		List<ComponentBuild> componentBuilds = new ArrayList<ComponentBuild>(byId.getComponentBuilds());

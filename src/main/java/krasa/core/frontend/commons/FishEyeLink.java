@@ -1,4 +1,4 @@
-package krasa.merge.frontend.components;
+package krasa.core.frontend.commons;
 
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.markup.ComponentTag;

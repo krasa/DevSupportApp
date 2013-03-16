@@ -3,7 +3,7 @@ package krasa.build.frontend.pages.components;
 import krasa.build.backend.dto.Result;
 import krasa.build.backend.execution.adapter.ProcessAdapter;
 import krasa.build.frontend.components.PocessKillButton;
-import krasa.core.frontend.components.SpanMultiLineLabel;
+import krasa.core.frontend.commons.SpanMultiLineLabel;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;

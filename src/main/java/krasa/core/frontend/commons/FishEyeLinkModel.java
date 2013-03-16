@@ -1,4 +1,4 @@
-package krasa.merge.frontend.components;
+package krasa.core.frontend.commons;
 
 import org.apache.wicket.model.IModel;
 
@@ -9,13 +9,16 @@ public class FishEyeLinkModel implements IModel<String> {
 		this.revision = revision;
 	}
 
+	@Override
 	public String getObject() {
 		return String.valueOf(revision);
 	}
 
+	@Override
 	public void setObject(String object) {
 	}
 
+	@Override
 	public void detach() {
 
 	}

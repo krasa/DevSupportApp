@@ -6,7 +6,7 @@ import java.util.List;
 import krasa.core.frontend.commons.CheckBoxPanel;
 import krasa.merge.backend.domain.SvnFolder;
 import krasa.merge.backend.facade.Facade;
-import krasa.merge.frontend.components.SortableSvnFolderDataProvider;
+import krasa.merge.frontend.component.table.SortableSvnFolderDataProvider;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackDefaultDataTable;
@@ -48,6 +48,7 @@ public class BranchesTablePanel extends Panel {
 	private List<IColumn<SvnFolder, String>> getColumns() {
 		List<IColumn<SvnFolder, String>> columns = new ArrayList<IColumn<SvnFolder, String>>();
 		columns.add(new AbstractColumn<SvnFolder, String>(new Model<String>("")) {
+			@Override
 			public void populateItem(Item<ICellPopulator<SvnFolder>> cellItem, String componentId,
 					IModel<SvnFolder> model) {
 				cellItem.add(new CheckBoxPanel<SvnFolder>(componentId, model) {

@@ -28,6 +28,7 @@ import org.tmatesoft.svn.core.SVNDirEntry;
 public class SvnFolder extends AbstractEntity {
 
 	public static final Comparator<SvnFolder> NAME_COMPARATOR = new Comparator<SvnFolder>() {
+		@Override
 		public int compare(SvnFolder o1, SvnFolder o2) {
 			return o2.getName().compareTo(o1.getName());
 		}

@@ -1,6 +1,6 @@
 package krasa.core.backend.config;
 
-import krasa.common.ExternalPropertiesLoader;
+import krasa.core.backend.common.ExternalPropertiesLoader;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

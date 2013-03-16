@@ -7,7 +7,7 @@ import java.util.Map;
 
 import krasa.merge.backend.domain.SvnFolder;
 import krasa.merge.backend.dto.ReportResult;
-import krasa.merge.frontend.components.SVNLogEntryTablePanel;
+import krasa.merge.frontend.component.table.SVNLogEntryTablePanel;
 
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackDefaultDataTable;
 import org.apache.wicket.markup.html.basic.Label;

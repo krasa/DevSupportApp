@@ -76,6 +76,7 @@ public class Branch extends AbstractEntity implements Serializable, Comparable {
 		this.includedFolders = includedFolders;
 	}
 
+	@Override
 	public int compareTo(Object o) {
 		return this.name.compareTo(((Branch) o).getName());
 	}

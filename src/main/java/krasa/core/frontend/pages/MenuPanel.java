@@ -3,7 +3,7 @@ package krasa.core.frontend.pages;
 import java.util.logging.Logger;
 
 import krasa.build.frontend.pages.BuildPage;
-import krasa.merge.frontend.components.ProfileDropDownPanel;
+import krasa.merge.frontend.component.ProfileDropDownPanel;
 import krasa.merge.frontend.pages.config.ConfigurationPage;
 import krasa.merge.frontend.pages.config.ProfilesPage;
 import krasa.merge.frontend.pages.mergeinfo.MergeInfoPage;

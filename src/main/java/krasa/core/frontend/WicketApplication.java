@@ -3,10 +3,14 @@ package krasa.core.frontend;
 import krasa.build.frontend.pages.BuildPage;
 import krasa.merge.frontend.pages.mergeinfo.MergeInfoPage;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.Page;
 import org.apache.wicket.Session;
+import org.apache.wicket.application.IComponentInstantiationListener;
 import org.apache.wicket.atmosphere.EventBus;
 import org.apache.wicket.atmosphere.ResourceRegistrationListener;
+import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.Request;
 import org.apache.wicket.request.Response;
@@ -61,6 +65,15 @@ public class WicketApplication extends WebApplication {
 			@Override
 			public void resourceRegistered(String uuid, Page page) {
 				System.out.println("Registered " + uuid);
+			}
+		});
+		getComponentInstantiationListeners().add(new IComponentInstantiationListener() {
+			public void onInstantiation(Component component) {
+				if (component instanceof Form)
+					component.setOutputMarkupId(true);
+				if (component instanceof WebMarkupContainer)
+					return;
+				component.setOutputMarkupId(true);
 			}
 		});
 	}

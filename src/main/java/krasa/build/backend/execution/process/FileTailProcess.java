@@ -21,19 +21,24 @@ public class FileTailProcess implements Process {
 	public FileTailProcess(final StringBufferTail listener, final String pathname) {
 		tailer = new Tailer(new File(pathname), new TailerListener() {
 
+			@Override
 			public void init(Tailer tailer) {
 			}
 
+			@Override
 			public void fileNotFound() {
 			}
 
+			@Override
 			public void fileRotated() {
 			}
 
+			@Override
 			public void handle(String line) {
 				listener.append(line).append("\n");
 			}
 
+			@Override
 			public void handle(Exception ex) {
 			}
 		});

@@ -1,4 +1,4 @@
-package krasa.common;
+package krasa.core.backend.common;
 
 import java.io.IOException;
 import java.util.Properties;

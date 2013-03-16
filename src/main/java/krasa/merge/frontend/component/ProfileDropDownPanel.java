@@ -1,4 +1,4 @@
-package krasa.merge.frontend.components;
+package krasa.merge.frontend.component;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -43,6 +43,7 @@ public class ProfileDropDownPanel extends Panel {
 				"profiles", selected, choiceItems, new ChoiceRenderer<ProfileDropDownChoiceItem>("name", "id"));
 		// Add Ajax Behaviour...
 		profilesDDC.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+			@Override
 			protected void onUpdate(AjaxRequestTarget target) {
 				ProfileDropDownChoiceItem modelValue1 = profilesDDC.getModelObject();
 				if (modelValue1 != null) {

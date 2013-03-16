@@ -15,7 +15,8 @@ public class DummyProcess extends SshBuildProcess {
 		super(stringBufferTail, command);
 	}
 
-	protected void doWork() throws IOException {
+	@Override
+	protected int doWork() throws IOException {
 		int i = 0;
 		while (i < 50) {
 			stringBufferTail.append(++i).newLine();
@@ -26,6 +27,7 @@ public class DummyProcess extends SshBuildProcess {
 			}
 		}
 		status = Status.SUCCESS;
+		return 0;
 	}
 
 	@Override

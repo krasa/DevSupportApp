@@ -2,7 +2,7 @@ package krasa.core.frontend.pages;
 
 import krasa.core.frontend.commons.MyFeedbackPanel;
 import krasa.merge.backend.facade.Facade;
-import krasa.merge.frontend.components.SvnProjectsLeftMenuPanel;
+import krasa.merge.frontend.component.SvnProjectsLeftMenuPanel;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.WebPage;

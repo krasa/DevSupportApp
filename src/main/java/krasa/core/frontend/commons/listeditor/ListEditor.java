@@ -37,6 +37,7 @@ public abstract class ListEditor<T> extends RepeatingView implements IFormModelU
 		super.onBeforeRender();
 	}
 
+	@Override
 	public void updateModel() {
 		setModelObject(items);
 	}

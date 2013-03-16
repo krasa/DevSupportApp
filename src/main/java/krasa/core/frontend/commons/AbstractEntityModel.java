@@ -24,6 +24,7 @@ public abstract class AbstractEntityModel<T extends AbstractEntity<?>> implement
 		this.id = id;
 	}
 
+	@Override
 	public T getObject() {
 		if (entity == null) {
 			if (id != null) {
@@ -36,6 +37,7 @@ public abstract class AbstractEntityModel<T extends AbstractEntity<?>> implement
 		return entity;
 	}
 
+	@Override
 	public void detach() {
 		if (entity != null) {
 			if (entity.getId() != null) {
@@ -47,6 +49,7 @@ public abstract class AbstractEntityModel<T extends AbstractEntity<?>> implement
 
 	protected abstract T load(Class<?> clazz, Serializable id);
 
+	@Override
 	public void setObject(T object) {
 		throw new UnsupportedOperationException(getClass() + " does not support #setObject(T entity)");
 	}

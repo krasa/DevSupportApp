@@ -46,6 +46,7 @@ public class MultipleComponentsMessageFilter implements IFeedbackMessageFilter {
 	/**
 	 * @see org.apache.wicket.feedback.IFeedbackMessageFilter#accept(org.apache.wicket.feedback.FeedbackMessage)
 	 */
+	@Override
 	public boolean accept(FeedbackMessage message) {
 		// protection for duplicite messages
 

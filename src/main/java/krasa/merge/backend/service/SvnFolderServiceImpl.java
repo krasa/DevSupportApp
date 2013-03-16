@@ -24,28 +24,34 @@ public class SvnFolderServiceImpl implements SvnFolderService {
 	@Autowired
 	private SVNConnector svnConnection;
 
+	@Override
 	public void deleteAll() {
 		svnFolderDAO.deleteAll();
 	}
 
+	@Override
 	public void save(SvnFolder project) {
 		svnFolderDAO.save(project);
 	}
 
+	@Override
 	public void saveProjects(List<SVNDirEntry> projects) {
 		for (SVNDirEntry project : projects) {
 			saveProject(project);
 		}
 	}
 
+	@Override
 	public void delete(SvnFolder svnFolder) {
 		svnFolderDAO.delete(svnFolder);
 	}
 
+	@Override
 	public List<SvnFolder> findAllProjects() {
 		return svnFolderDAO.findAllProjects();
 	}
 
+	@Override
 	public SvnFolder findProjectByName(String name) {
 		try {
 			return svnFolderDAO.findProjectByName(name);

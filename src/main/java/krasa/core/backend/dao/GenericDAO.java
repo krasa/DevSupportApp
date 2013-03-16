@@ -15,6 +15,7 @@ public class GenericDAO<T extends AbstractEntity> extends AbstractDAO<T> impleme
 	public GenericDAO() {
 	}
 
+	@Override
 	public <R extends AbstractEntity> GenericDAO<R> build(Class<R> domainClass) {
 		GenericDAO<R> genericDAO = new GenericDAO<R>();
 		genericDAO.setSf(sf);

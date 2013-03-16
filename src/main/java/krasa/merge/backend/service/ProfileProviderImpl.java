@@ -20,6 +20,7 @@ public class ProfileProviderImpl implements ProfileProvider {
 	@Autowired
 	ProfileDAO profileDAO;
 
+	@Override
 	public Profile getFirstProfile() {
 		Profile profile = profileDAO.findFirst();
 		if (profile == null) {
@@ -29,6 +30,7 @@ public class ProfileProviderImpl implements ProfileProvider {
 		return profile;
 	}
 
+	@Override
 	public List<Branch> getSelectedBranches() {
 		return getCurrentProfile().getBranches();
 	}
@@ -37,6 +39,7 @@ public class ProfileProviderImpl implements ProfileProvider {
 		return MySession.get().getCurrent();
 	}
 
+	@Override
 	public void updateSelectionOfSvnFolder(SvnFolder object, Boolean selected) {
 		Profile profile = getCurrentProfile();
 		if (selected) {
@@ -51,12 +54,14 @@ public class ProfileProviderImpl implements ProfileProvider {
 		profileDAO.save(profile);
 	}
 
+	@Override
 	public void addSelectedBranch(String branchName) {
 		Profile profile = getCurrentProfile();
 		profile.addBranch(branchName);
 		save(profile);
 	}
 
+	@Override
 	public List<String> getSelectedBranchesNames() {
 		return getCurrentProfile().getBranchesNames();
 	}
