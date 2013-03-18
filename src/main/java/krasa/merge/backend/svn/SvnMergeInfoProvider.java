@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import krasa.merge.backend.domain.SvnFolder;
+import krasa.merge.backend.svn.connection.SVNConnector;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,8 +26,8 @@ public class SvnMergeInfoProvider {
 
 	private SVNRepository repository;
 
-	public SvnMergeInfoProvider(SVNRepository repository) {
-		this.repository = repository;
+	public SvnMergeInfoProvider(SVNConnector svnConnector) {
+		this.repository = svnConnector.getBaseRepositoryConnection();
 	}
 
 	public List<SVNLogEntry> getMerges(SvnFolder from, SvnFolder to) throws SVNException {

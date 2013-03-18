@@ -41,7 +41,7 @@ public interface Facade {
 
 	MergeInfoResult getMergeInfoForAllSelectedBranches();
 
-	MergeInfoResult getMergeInfoForProject(String path);
+	MergeInfoResult getMergeInfoForAllSelectedBranchesInProject(String path);
 
 	Profile getProfileByIdOrDefault(Integer id);
 

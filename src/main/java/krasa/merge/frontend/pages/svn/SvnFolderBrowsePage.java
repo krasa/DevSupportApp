@@ -5,7 +5,8 @@ import java.util.List;
 import krasa.core.frontend.pages.BasePage;
 import krasa.merge.backend.domain.SvnFolder;
 import krasa.merge.backend.dto.MergeInfoResult;
-import krasa.merge.backend.service.SvnLoaderProcessor;
+import krasa.merge.backend.service.SvnFolderRefreshService;
+import krasa.merge.frontend.component.table.BranchesTablePanel;
 import krasa.merge.frontend.pages.mergeinfo.MergeInfoResultPanel;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -25,7 +26,7 @@ import org.apache.wicket.util.string.StringValue;
  */
 public class SvnFolderBrowsePage extends BasePage {
 	@SpringBean
-	private SvnLoaderProcessor svnLoaderProcessor;
+	private SvnFolderRefreshService svnFolderResfreshService;
 
 	public static final String PATH_PARAMETER = "path";
 	public static final String MERGE_INFO = "mergeInfo";
@@ -38,18 +39,23 @@ public class SvnFolderBrowsePage extends BasePage {
 		super(parameters);
 		StringValue name = parameters.get(PATH_PARAMETER);
 		path = name.toString();
-		initRefreshButton();
-		EmptyPanel mergeInfo = new EmptyPanel(MERGE_INFO);
-		mergeInfo.setOutputMarkupId(true);
-		add(mergeInfo);
-		branchesTablePanel = new BranchesTablePanel("branchesTablePanel", path);
-		branchesTablePanel.setOutputMarkupId(true);
-
-		add(branchesTablePanel);
+		createForm();
+		add(createResultPanel());
+		add(branchesTablePanel = createTable());
 
 	}
 
-	private void initRefreshButton() {
+	private EmptyPanel createResultPanel() {
+		EmptyPanel mergeInfo = new EmptyPanel(MERGE_INFO);
+		mergeInfo.setOutputMarkupId(true);
+		return mergeInfo;
+	}
+
+	private BranchesTablePanel createTable() {
+		return new BranchesTablePanel("branchesTablePanel", path);
+	}
+
+	private void createForm() {
 		final Form form = new Form("form");
 		form.add(new Label("parent", path));
 
@@ -57,7 +63,7 @@ public class SvnFolderBrowsePage extends BasePage {
 		form.add(new IndicatingAjaxButton("refreshProjectBraches") {
 			@Override
 			protected void onSubmit(AjaxRequestTarget ajaxRequestTarget, Form<?> components) {
-				svnLoaderProcessor.refreshBranchesByProjectName(path);
+				svnFolderResfreshService.refreshBranchesByProjectName(path);
 				ajaxRequestTarget.add(form);
 				ajaxRequestTarget.add(branchesTablePanel);
 				info("Processing");
@@ -87,7 +93,7 @@ public class SvnFolderBrowsePage extends BasePage {
 						new LoadableDetachableModel<MergeInfoResult>() {
 							@Override
 							protected MergeInfoResult load() {
-								return facade.getMergeInfoForProject(path);
+								return facade.getMergeInfoForAllSelectedBranchesInProject(path);
 							}
 						});
 				ajaxRequestTarget.add(mergeInfo1);

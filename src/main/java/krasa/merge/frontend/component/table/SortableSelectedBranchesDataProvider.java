@@ -1,4 +1,4 @@
-package krasa.core.frontend.components;
+package krasa.merge.frontend.component.table;
 
 import java.util.Iterator;
 import java.util.List;

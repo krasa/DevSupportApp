@@ -22,7 +22,6 @@ import krasa.merge.backend.dto.ReportResult;
 import krasa.merge.backend.service.MergeInfoService;
 import krasa.merge.backend.service.ProfileProvider;
 import krasa.merge.backend.service.ReportService;
-import krasa.merge.backend.service.SvnFolderService;
 import krasa.merge.backend.svn.SvnReleaseProvider;
 
 import org.apache.wicket.util.io.IOUtils;
@@ -56,8 +55,6 @@ public class FacadeImpl implements Facade {
 	private GenericDAO<Environment> environmentDAO;
 	private GenericDAO<ComponentBuild> branchBuildDAO;
 	private GenericDAO<Branch> branchDAO;
-	@Autowired
-	private SvnFolderService folderService;
 	@Autowired
 	private ReportService reportService;
 	@Autowired
@@ -136,9 +133,9 @@ public class FacadeImpl implements Facade {
 	}
 
 	@Override
-	public MergeInfoResult getMergeInfoForProject(String projectPath) {
+	public MergeInfoResult getMergeInfoForAllSelectedBranchesInProject(String projectPath) {
 		List<Branch> selectedBranches = profileProvider.getSelectedBranches();
-		List<SvnFolder> branchesByNames = svnFolderDAO.findBranchesByNames(projectPath, selectedBranches);
+		List<SvnFolder> branchesByNames = svnFolderDAO.findFoldersByNames(projectPath, selectedBranches);
 		return mergeInfoService.findMerges(branchesByNames);
 	}
 
@@ -298,7 +295,7 @@ public class FacadeImpl implements Facade {
 
 	@Override
 	public List<SvnFolder> getProjects() {
-		return folderService.findAllProjects();
+		return svnFolderDAO.findAllProjects();
 	}
 
 	@Override

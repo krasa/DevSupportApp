@@ -59,22 +59,22 @@ public class SvnFolder extends AbstractEntity {
 	public SvnFolder() {
 	}
 
-	public SvnFolder(SVNDirEntry entry, String path) {
+	public SvnFolder(SVNDirEntry entry, final String path, Type type) {
 		name = entry.getName();
 		this.path = path;
-
-	}
-
-	public SvnFolder(SVNDirEntry child, Type branch) {
-		this(child, child.getURL().getPath());
-		setType(branch);
-	}
-
-	public SvnFolder(SVNDirEntry entry, String pathToParentDir, Type type) {
-		name = entry.getName();
-		this.path = pathToParentDir + "/" + name;
 		setType(type);
+	}
 
+	public static SvnFolder createTrunk(String projectName, String path) {
+		SvnFolder svnFolder = new SvnFolder();
+		svnFolder.setNameAsTrunk(projectName);
+		svnFolder.setPath(path);
+		svnFolder.setType(Type.TRUNK);
+		return svnFolder;
+	}
+
+	public void setNameAsTrunk(String projectName) {
+		setName(projectName + " [trunk]");
 	}
 
 	public void add(SvnFolder branch) {
@@ -98,9 +98,6 @@ public class SvnFolder extends AbstractEntity {
 	}
 
 	public void setName(String name) {
-		if (searchFrom == null) {
-
-		}
 		this.name = name;
 	}
 
@@ -187,4 +184,10 @@ public class SvnFolder extends AbstractEntity {
 		return strings;
 
 	}
+
+	public boolean branchAlreadyExists(SvnFolder branch) {
+		Set<String> branchNamesAsSet = getBranchNamesAsSet();
+		return branchNamesAsSet.contains(branch.getName());
+	}
+
 }

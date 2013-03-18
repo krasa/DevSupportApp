@@ -47,16 +47,16 @@ public class TMSvnConventionsStrategy extends SvnConventionsStrategy {
 	public static final String TMSVN_CONVENTIONS_STRATEGY = "TMSvnConventionsStrategy";
 
 	@Override
-	public List<SvnFolder> resolveFromBranches(SvnFolder svnFolder) {
+	public List<SvnFolder> resolveFromBranches(SvnFolder toFolder) {
 		List<SvnFolder> result = new ArrayList<SvnFolder>();
-		String searchFrom = svnFolder.getSearchFrom();
-		String branchName = svnFolder.getName();
-		List<SvnFolder> childs = svnFolder.getParent().getChilds();
+		String searchFrom = toFolder.getSearchFrom();
+		String branchName = toFolder.getName();
+		List<SvnFolder> childs = toFolder.getParent().getChilds();
 
 		if (searchFrom == null) {
 			Collections.sort(childs, TM_NAME_COMPARATOR_BY_VERSION);
 			Collections.reverse(childs);
-			searchFrom = getSearchFrom(svnFolder, childs);
+			searchFrom = getSearchFrom(toFolder, childs);
 		}
 		if (searchFrom == null) {
 			return Collections.emptyList();

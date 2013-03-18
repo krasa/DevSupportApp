@@ -24,16 +24,21 @@ public class SvnFolderProvider {
 	protected final Logger log = LoggerFactory.getLogger(getClass());
 	@Value("${svn.url.postfix}")
 	protected String urlPostfix;
+	@Value("${useTrunk}")
+	protected Boolean useTrunk;
 	private SVNRepository repository;
 
 	public SvnFolderProvider(SVNRepository repository) {
 		this.repository = repository;
 	}
 
-	public List<SvnFolder> getBranchesByProjectName(String projectName) {
+	public List<SvnFolder> getBranchesAndTrunkByProjectName(String projectName) {
 		log.debug("getBranches start");
-		ArrayList<SvnFolder> result = new ArrayList<SvnFolder>();
-		iterateProjectDirs(projectName, result);
+		List<SvnFolder> result = new ArrayList<SvnFolder>();
+		result.addAll(getBranches(projectName));
+		if (useTrunk) {
+			result.add(getTrunk(projectName));
+		}
 		log.debug("getBranches finished");
 		return result;
 	}
@@ -42,8 +47,7 @@ public class SvnFolderProvider {
 		log.debug("getProjects start");
 		List<SVNDirEntry> result = new ArrayList<SVNDirEntry>();
 		try {
-			Collection projects = null;
-			projects = repository.getDir(urlPostfix, -1, null, (Collection) null);
+			Collection projects = repository.getDir(urlPostfix, -1, null, (Collection) null);
 			Iterator iterator = projects.iterator();
 			while (iterator.hasNext()) {
 				SVNDirEntry project = (SVNDirEntry) iterator.next();
@@ -59,37 +63,75 @@ public class SvnFolderProvider {
 		return result;
 	}
 
-	private void iterateProjectDirs(String projectName, List<SvnFolder> result) {
-		Collection projectDirs = null;
+	private List<SvnFolder> getBranches(String projectName) {
+		List<SvnFolder> result = new ArrayList<SvnFolder>();
 		try {
-			projectDirs = repository.getDir(projectName, -1, null, (Collection) null);
-
+			Collection projectDirs = repository.getDir(projectName, -1, null, (Collection) null);
 			Iterator projectDirsIterator = projectDirs.iterator();
 			while (projectDirsIterator.hasNext()) {
 				SVNDirEntry entry = (SVNDirEntry) projectDirsIterator.next();
 				SvnUtils.printSubDir(projectName, entry);
 				if (isBranchesDir(entry)) {
-					iterateBranches(projectName + "/" + entry.getName(), result);
+					result.addAll(iterateFolder(projectName + "/" + entry.getName(), Type.BRANCH));
 				}
 			}
 		} catch (SVNException e) {
 			throw new SvnException(e);
 		}
+		return result;
 	}
 
-	private void iterateBranches(String pathToParentDir, List<SvnFolder> result) throws SVNException {
+	private SvnFolder getTrunk(String projectName) {
+		try {
+			Collection projectDirs = repository.getDir(projectName, -1, null, (Collection) null);
+			Iterator projectDirsIterator = projectDirs.iterator();
+			while (projectDirsIterator.hasNext()) {
+				SVNDirEntry entry = (SVNDirEntry) projectDirsIterator.next();
+				SvnUtils.printSubDir(projectName, entry);
+				if (isTrunkDir(entry)) {
+					SvnFolder trunk = findTrunk(projectName, entry);
+					if (trunk == null) {
+						trunk = SvnFolder.createTrunk(projectName, projectName + "/" + entry.getRelativePath());
+					}
+					return trunk;
+				}
+			}
+		} catch (SVNException e) {
+			throw new SvnException(e);
+		}
+		throw new IllegalStateException("no trunk found for " + projectName);
+	}
+
+	private SvnFolder findTrunk(String projectName, SVNDirEntry entry) throws SVNException {
+		List<SvnFolder> svnFolders = iterateFolder(projectName + "/" + entry.getName(), Type.BRANCH);
+		SvnFolder trunk = null;
+		for (SvnFolder svnFolder : svnFolders) {
+			if (svnFolder.getName().equals(projectName)) {
+				trunk = svnFolder;
+				trunk.setNameAsTrunk(projectName);
+			}
+		}
+		return trunk;
+	}
+
+	private boolean isTrunkDir(SVNDirEntry entry) {
+		return entry.getKind() == SVNNodeKind.DIR && (entry.getName().equalsIgnoreCase("trunk"));
+	}
+
+	private List<SvnFolder> iterateFolder(final String pathToParentDir, final Type type) throws SVNException {
+		List<SvnFolder> result = new ArrayList<SvnFolder>();
 		Collection branches = repository.getDir(pathToParentDir, -1, null, (Collection) null);
 		Iterator iterator = branches.iterator();
 		while (iterator.hasNext()) {
-			SVNDirEntry entry = (SVNDirEntry) iterator.next();
-			SvnUtils.printSubDir(pathToParentDir, entry);
-			if (entry.getKind() == SVNNodeKind.DIR) {
-				SvnUtils.printSubDir(pathToParentDir, entry);
-				result.add(new SvnFolder(entry, pathToParentDir, Type.BRANCH));
+			SVNDirEntry subFolderEntry = (SVNDirEntry) iterator.next();
+			SvnUtils.printSubDir(pathToParentDir, subFolderEntry);
+			if (subFolderEntry.getKind() == SVNNodeKind.DIR) {
+				SvnUtils.printSubDir(pathToParentDir, subFolderEntry);
+				result.add(new SvnFolder(subFolderEntry, pathToParentDir + "/" + subFolderEntry.getName(), type));
 			}
 		}
 		log.info("iteration of branches finnished");
-
+		return result;
 	}
 
 	private static boolean isBranchesDir(SVNDirEntry entry) {
@@ -97,9 +139,9 @@ public class SvnFolderProvider {
 				&& (entry.getName().equalsIgnoreCase("branch") || entry.getName().equalsIgnoreCase("branches"));
 	}
 
-	public List<SvnFolder> getBranchSubFolders(SvnFolder branch) {
+	public List<SvnFolder> getSubFolders(SvnFolder branch) {
 		try {
-			log.info("getBranchSubFolders start");
+			log.info("getSubFolders start");
 			ArrayList<SvnFolder> result = new ArrayList<SvnFolder>();
 			Collection branchSubDir = repository.getDir(branch.getPath(), -1, null, (Collection) null);
 			Iterator iterator = branchSubDir.iterator();
@@ -107,7 +149,7 @@ public class SvnFolderProvider {
 				SVNDirEntry entry = (SVNDirEntry) iterator.next();
 				if (entry.getKind() == SVNNodeKind.DIR) {
 					SvnUtils.printSubDir(branch.getPath() + "/Branches", entry);
-					result.add(new SvnFolder(entry, branch.getPath(), Type.BRANCH_SUBFOLDER));
+					result.add(new SvnFolder(entry, branch.getPath() + "/" + entry.getName(), Type.SUBFOLDER));
 				}
 			}
 			log.info("iteration of branch subdirs finnished");

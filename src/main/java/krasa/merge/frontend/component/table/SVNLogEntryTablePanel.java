@@ -8,8 +8,6 @@ import java.util.List;
 import krasa.core.frontend.commons.DateModel;
 import krasa.core.frontend.commons.FishEyeLink;
 import krasa.core.frontend.commons.FishEyeLinkModel;
-import krasa.merge.backend.dto.MergeInfoResult;
-import krasa.merge.backend.dto.MergeInfoResultItem;
 
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackDefaultDataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
@@ -24,7 +22,6 @@ import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.Item;
-import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
@@ -68,16 +65,6 @@ public class SVNLogEntryTablePanel extends Panel {
 			}
 		});
 		return columns;
-	}
-
-	private AbstractReadOnlyModel<List<? extends MergeInfoResultItem>> getAbstractReadOnlyModel(
-			final IModel<MergeInfoResult> model) {
-		return new AbstractReadOnlyModel<List<? extends MergeInfoResultItem>>() {
-			@Override
-			public List<? extends MergeInfoResultItem> getObject() {
-				return model.getObject().getMergeInfoResultItems();
-			}
-		};
 	}
 
 	private class DataProvider implements ISortableDataProvider<SVNLogEntry, String> {

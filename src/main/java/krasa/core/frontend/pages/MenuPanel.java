@@ -25,17 +25,6 @@ public final class MenuPanel extends Panel {
 		add(new BookmarkablePageLink("Build", BuildPage.class));
 		add(new BookmarkablePageLink("ReportPage", ReportPage.class));
 		add(new BookmarkablePageLink("ReleasesPage", ProfilesPage.class));
-		//
-		// add(new Link("categories") {
-		//
-		// @Override
-		// public void onClick() {
-		// CategoryAdminPanel categoryAdminPanel = new CategoryAdminPanel("current", parent);
-		// parent.setCurrentPanelTo(categoryAdminPanel);
-		// parent.setLeftPanel(new SvnProjectsLeftMenuPanel("left", parent, categoryAdminPanel));
-		// }
-		// });
-
 		add(new BookmarkablePageLink("config", ConfigurationPage.class));
 		add(new ProfileDropDownPanel("profile"));
 

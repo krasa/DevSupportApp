@@ -5,7 +5,7 @@ import java.util.logging.Logger;
 import krasa.core.frontend.pages.BasePage;
 import krasa.merge.backend.domain.Profile;
 import krasa.merge.backend.facade.Facade;
-import krasa.merge.backend.service.SvnLoaderProcessor;
+import krasa.merge.backend.service.SvnFolderRefreshService;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
@@ -25,7 +25,7 @@ public class ConfigurationPage extends BasePage {
 	@SpringBean
 	private Facade facade;
 	@SpringBean
-	private SvnLoaderProcessor svnLoaderProcessor;
+	private SvnFolderRefreshService svnFolderResfreshService;
 	protected IndicatingAjaxButton components;
 
 	public ConfigurationPage() {
@@ -43,8 +43,8 @@ public class ConfigurationPage extends BasePage {
 		form.add(new IndicatingAjaxButton("refreshProjectsAndBranches") {
 			@Override
 			protected void onSubmit(AjaxRequestTarget ajaxRequestTarget, Form<?> components) {
-				svnLoaderProcessor.refreshProjects();
-				svnLoaderProcessor.refreshAllBranches();
+				svnFolderResfreshService.reloadProjects();
+				svnFolderResfreshService.refreshAllBranches();
 				ajaxRequestTarget.add(form);
 				info("Processing");
 				// StatusLabel status1 = new StatusLabel("status", svnRefreshCallbackIModel);
