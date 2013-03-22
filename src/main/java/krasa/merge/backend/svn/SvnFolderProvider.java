@@ -24,8 +24,8 @@ public class SvnFolderProvider {
 	protected final Logger log = LoggerFactory.getLogger(getClass());
 	@Value("${svn.url.postfix}")
 	protected String urlPostfix;
-	@Value("${useTrunk}")
-	protected Boolean useTrunk;
+	@Value("${indexTrunk}")
+	protected Boolean indexTrunk;
 	private SVNRepository repository;
 
 	public SvnFolderProvider(SVNRepository repository) {
@@ -36,7 +36,7 @@ public class SvnFolderProvider {
 		log.debug("getBranches start");
 		List<SvnFolder> result = new ArrayList<SvnFolder>();
 		result.addAll(getBranches(projectName));
-		if (useTrunk) {
+		if (indexTrunk) {
 			result.add(getTrunk(projectName));
 		}
 		log.debug("getBranches finished");
