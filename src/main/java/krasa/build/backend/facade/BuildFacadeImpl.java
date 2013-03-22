@@ -74,7 +74,6 @@ public class BuildFacadeImpl implements BuildFacade {
 		for (ComponentBuild componentBuild : environment.getComponentBuilds()) {
 			if (strings.contains(componentBuild.getName())) {
 				componentBuild.setStatus(Status.IN_PROGRESS);
-				componentBuild.setBuilded(new Date());
 				componentBuildDAO.save(componentBuild);
 				componentBuilds.add(componentBuild);
 			}
@@ -122,7 +121,11 @@ public class BuildFacadeImpl implements BuildFacade {
 		List<ComponentBuild> componentBuild = request.getComponentBuild();
 		for (ComponentBuild build : componentBuild) {
 			ComponentBuild refresh = componentBuildDAO.refresh(build);
-			refresh.setStatus(processStatus.getStatus());
+			Status status = processStatus.getStatus();
+			if (status == Status.SUCCESS) {
+				refresh.setLastSuccessBuild(new Date());
+			}
+			refresh.setStatus(status);
 			componentBuildDAO.save(refresh);
 		}
 		log.debug("sending event REFRESH");

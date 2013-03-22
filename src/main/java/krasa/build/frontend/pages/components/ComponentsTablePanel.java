@@ -113,7 +113,8 @@ public class ComponentsTablePanel extends BasePanel {
 		final ArrayList<IColumn<ComponentBuild, String>> columns = new ArrayList<IColumn<ComponentBuild, String>>();
 		columns.add(checkBoxColumn());
 		columns.add(new PropertyColumn<ComponentBuild, String>(new Model<String>("name"), "name", "name"));
-		columns.add(new DateColumn<ComponentBuild>(new Model<String>("builded"), "builded", "builded"));
+		columns.add(new DateColumn<ComponentBuild>(new Model<String>("last successful build"), "lastSuccessBuild",
+				"lastSuccessBuild"));
 		columns.add(new PropertyColumn<ComponentBuild, String>(new Model<String>("status"), "status", "status"));
 		columns.add(buildColumn());
 		columns.add(goToProcessColumn());

@@ -54,11 +54,10 @@ public class LogPanel extends Panel {
 				new LoadableDetachableModel<String>() {
 					@Override
 					protected String load() {
-						// use a tailing api like "Tailer" in commons-io or may be just java.io.RandomAccessFile?
 						int length = last.getLength();
 						last = getProgress().getNextLog(length);
 						String text = last.getText();
-						text = text.replaceAll("\n", "</br>");
+						text = text.replaceAll("\n", "\n</br>");
 						return text;
 					}
 				}) {

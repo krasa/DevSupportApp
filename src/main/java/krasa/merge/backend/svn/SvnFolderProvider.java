@@ -25,7 +25,7 @@ public class SvnFolderProvider {
 	@Value("${svn.url.postfix}")
 	protected String urlPostfix;
 	@Value("${indexTrunk}")
-	protected Boolean indexTrunk;
+	protected Boolean indexTrunk = false;
 	private SVNRepository repository;
 
 	public SvnFolderProvider(SVNRepository repository) {

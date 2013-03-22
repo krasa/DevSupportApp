@@ -16,7 +16,7 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 @Entity
 public class ComponentBuild extends AbstractEntity implements Serializable {
 	private String name;
-	private Date builded;
+	private Date lastSuccessBuild;
 	private Status status;
 	@ManyToOne(optional = false)
 	private Environment environment;
@@ -27,14 +27,6 @@ public class ComponentBuild extends AbstractEntity implements Serializable {
 
 	public void setEnvironment(Environment environment) {
 		this.environment = environment;
-	}
-
-	public static ComponentBuild inProgress(String name) {
-		ComponentBuild componentBuild = new ComponentBuild();
-		componentBuild.setBuilded(new Date());
-		componentBuild.setName(name);
-		componentBuild.setStatus(Status.IN_PROGRESS);
-		return componentBuild;
 	}
 
 	public static ComponentBuild newComponent(String name) {
@@ -54,12 +46,12 @@ public class ComponentBuild extends AbstractEntity implements Serializable {
 	public ComponentBuild() {
 	}
 
-	public Date getBuilded() {
-		return builded;
+	public Date getLastSuccessBuild() {
+		return lastSuccessBuild;
 	}
 
-	public void setBuilded(Date builded) {
-		this.builded = builded;
+	public void setLastSuccessBuild(Date lastSuccessBuild) {
+		this.lastSuccessBuild = lastSuccessBuild;
 	}
 
 	public String getName() {
