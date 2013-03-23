@@ -178,6 +178,9 @@ public class FacadeImpl implements Facade {
 	@Override
 	public List<SvnFolder> getAllBranchesByProjectNme(String name) {
 		SvnFolder projectByName = svnFolderDAO.findProjectByName(name);
+		if (projectByName == null) {
+			throw new IllegalStateException("project not found: " + name);
+		}
 		List<SvnFolder> childs = projectByName.getChilds();
 		childs.size();
 		return childs;
@@ -195,6 +198,19 @@ public class FacadeImpl implements Facade {
 	public void addAllMatchingBranchesIntoProfile(String fieldValue) {
 		List<SvnFolder> branches = findBranchesByNameLike(fieldValue);
 		profileProvider.addSelectedBranches(branches);
+	}
+
+	@Override
+	public String resolveProjectByPath(String path) {
+		int endIndex = path.indexOf("/");
+		if (endIndex > 0) {
+			path = path.substring(0, endIndex);
+		}
+		SvnFolder branchByName = svnFolderDAO.findBranchByName(path);
+		if (branchByName != null) {
+			path = branchByName.getParent().getName();
+		}
+		return path;
 	}
 
 	@Override

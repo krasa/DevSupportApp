@@ -12,6 +12,7 @@ import krasa.build.backend.facade.BuildFacade;
 import krasa.build.frontend.pages.LogPage;
 import krasa.core.frontend.MySession;
 import krasa.core.frontend.commons.MyFeedbackPanel;
+import krasa.core.frontend.commons.table.BookmarkableColumn;
 import krasa.core.frontend.commons.table.ButtonColumn;
 import krasa.core.frontend.commons.table.CheckBoxColumn;
 import krasa.core.frontend.commons.table.DateColumn;
@@ -112,7 +113,7 @@ public class ComponentsTablePanel extends BasePanel {
 	private List<IColumn<ComponentBuild, String>> getColumns() {
 		final ArrayList<IColumn<ComponentBuild, String>> columns = new ArrayList<IColumn<ComponentBuild, String>>();
 		columns.add(checkBoxColumn());
-		columns.add(new PropertyColumn<ComponentBuild, String>(new Model<String>("name"), "name", "name"));
+		columns.add(new BookmarkableColumn<ComponentBuild, String>(new Model<String>("name"), "name", "name"));
 		columns.add(new DateColumn<ComponentBuild>(new Model<String>("last successful build"), "lastSuccessBuild",
 				"lastSuccessBuild"));
 		columns.add(new PropertyColumn<ComponentBuild, String>(new Model<String>("status"), "status", "status"));

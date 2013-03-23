@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import krasa.core.frontend.commons.CheckBoxPanel;
+import krasa.core.frontend.commons.table.BookmarkableColumn;
 import krasa.core.frontend.commons.table.DropDownChoiceColumn;
 import krasa.core.frontend.components.BasePanel;
 import krasa.merge.backend.domain.SvnFolder;
@@ -16,7 +17,6 @@ import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulato
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.ISortableDataProvider;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.PropertyColumn;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.AbstractReadOnlyModel;
@@ -66,8 +66,8 @@ public class BranchesTablePanel extends BasePanel {
 		return columns;
 	}
 
-	protected PropertyColumn<SvnFolder, String> createNameColumn() {
-		return new PropertyColumn<SvnFolder, String>(new Model<String>("name"), "name", "name");
+	protected AbstractColumn<SvnFolder, String> createNameColumn() {
+		return new BookmarkableColumn(new Model<String>("name"), "name", "path");
 	}
 
 	protected DropDownChoiceColumn<SvnFolder, String> createSearchFromColumn() {

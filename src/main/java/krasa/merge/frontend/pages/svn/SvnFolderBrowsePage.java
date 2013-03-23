@@ -1,7 +1,5 @@
 package krasa.merge.frontend.pages.svn;
 
-import java.util.List;
-
 import krasa.core.frontend.pages.BasePage;
 import krasa.merge.backend.domain.SvnFolder;
 import krasa.merge.backend.dto.MergeInfoResult;
@@ -31,14 +29,13 @@ public class SvnFolderBrowsePage extends BasePage {
 	public static final String PATH_PARAMETER = "path";
 	public static final String MERGE_INFO = "mergeInfo";
 
-	private IModel<List<SvnFolder>> model;
 	private String path;
 	private BranchesTablePanel branchesTablePanel;
 
 	public SvnFolderBrowsePage(PageParameters parameters) {
 		super(parameters);
 		StringValue name = parameters.get(PATH_PARAMETER);
-		path = name.toString();
+		path = facade.resolveProjectByPath(name.toString());
 		createForm();
 		add(createResultPanel());
 		add(branchesTablePanel = createTable());
@@ -110,4 +107,9 @@ public class SvnFolderBrowsePage extends BasePage {
 		add(form);
 	}
 
+	public static PageParameters parameters(IModel<SvnFolder> rowModel) {
+		PageParameters pageParameters = new PageParameters();
+		pageParameters.add("project", rowModel.getObject().getName());
+		return pageParameters;
+	}
 }

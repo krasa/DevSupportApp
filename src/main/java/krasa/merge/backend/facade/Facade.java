@@ -77,4 +77,5 @@ public interface Facade {
 
 	void addAllMatchingBranchesIntoProfile(String fieldValue);
 
+	String resolveProjectByPath(String path);
 }

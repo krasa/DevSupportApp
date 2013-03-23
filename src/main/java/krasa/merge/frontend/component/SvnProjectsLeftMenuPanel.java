@@ -10,6 +10,7 @@ import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.LoadableDetachableModel;
+import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
 public class SvnProjectsLeftMenuPanel extends Panel {
@@ -34,8 +35,8 @@ public class SvnProjectsLeftMenuPanel extends Panel {
 		projectsList = new ListView<SvnFolder>("project", loadableDetachableModel) {
 			@Override
 			protected void populateItem(ListItem<SvnFolder> listItem) {
-				listItem.add(new ProjectLink("name", listItem.getModel()));
-
+				listItem.add(new ProjectLink("name", new PropertyModel<String>(listItem.getModel(), "name"),
+						new PropertyModel<String>(listItem.getModel(), "path")));
 			}
 		};
 		add(projectsList);

@@ -1,13 +1,11 @@
 package krasa.core.frontend.commons;
 
-import krasa.merge.backend.domain.SvnFolder;
 import krasa.merge.frontend.pages.svn.SvnFolderBrowsePage;
 
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 
 /**
@@ -15,20 +13,18 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
  */
 public class ProjectLink extends BookmarkablePageLink<String> {
 
-	public ProjectLink(String name, IModel<SvnFolder> model) {
-		super(name, SvnFolderBrowsePage.class);
-		setDefaultModel(Model.of(model.getObject().getName()));
-	}
+	private IModel<String> linkParameter;
 
-	public ProjectLink(String name, String value) {
+	public ProjectLink(String name, IModel<String> labelModel, IModel<String> linkParameter) {
 		super(name, SvnFolderBrowsePage.class);
-		setDefaultModel(Model.of(value));
+		this.linkParameter = linkParameter;
+		setDefaultModel(labelModel);
 	}
 
 	@Override
 	public PageParameters getPageParameters() {
 		PageParameters pageParameters = new PageParameters();
-		pageParameters.add(SvnFolderBrowsePage.PATH_PARAMETER, getModelObject());
+		pageParameters.add(SvnFolderBrowsePage.PATH_PARAMETER, linkParameter.getObject());
 		return pageParameters;
 	}
 
