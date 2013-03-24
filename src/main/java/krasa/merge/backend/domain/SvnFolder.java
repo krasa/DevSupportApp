@@ -25,7 +25,7 @@ import org.tmatesoft.svn.core.SVNDirEntry;
  * @author Vojtech Krasa
  */
 @Entity
-public class SvnFolder extends AbstractEntity {
+public class SvnFolder extends AbstractEntity implements Displayable {
 
 	public static final Comparator<SvnFolder> NAME_COMPARATOR = new Comparator<SvnFolder>() {
 		@Override
@@ -35,7 +35,6 @@ public class SvnFolder extends AbstractEntity {
 	};
 	@Column
 	private String name;
-	private Boolean boolVal;
 	@Column
 	private String searchFrom;
 	@Column
@@ -47,14 +46,6 @@ public class SvnFolder extends AbstractEntity {
 	private List<SvnFolder> childs;
 	@ManyToOne
 	private SvnFolder parent;
-
-	public Boolean getBoolVal() {
-		return boolVal;
-	}
-
-	public void setBoolVal(Boolean boolVal) {
-		this.boolVal = boolVal;
-	}
 
 	public SvnFolder() {
 	}
@@ -176,7 +167,7 @@ public class SvnFolder extends AbstractEntity {
 		return HashCodeBuilder.reflectionHashCode(this);
 	}
 
-	public Set<String> getBranchNamesAsSet() {
+	public Set<String> getChildsNamesAsSet() {
 		HashSet<String> strings = new HashSet<String>();
 		for (SvnFolder child : childs) {
 			strings.add(child.getName());
@@ -185,9 +176,13 @@ public class SvnFolder extends AbstractEntity {
 
 	}
 
-	public boolean branchAlreadyExists(SvnFolder branch) {
-		Set<String> branchNamesAsSet = getBranchNamesAsSet();
+	public boolean childAlreadyExists(SvnFolder branch) {
+		Set<String> branchNamesAsSet = getChildsNamesAsSet();
 		return branchNamesAsSet.contains(branch.getName());
 	}
 
+	@Override
+	public String getDisplayableText() {
+		return getName();
+	}
 }

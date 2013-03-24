@@ -19,7 +19,7 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
  * @author Vojtech Krasa
  */
 @Entity
-public class Branch extends AbstractEntity implements Serializable, Comparable {
+public class Branch extends AbstractEntity implements Serializable, Comparable, Displayable {
 
 	@Column
 	private String name;
@@ -96,4 +96,8 @@ public class Branch extends AbstractEntity implements Serializable, Comparable {
 		return HashCodeBuilder.reflectionHashCode(this);
 	}
 
+	@Override
+	public String getDisplayableText() {
+		return getName();
+	}
 }

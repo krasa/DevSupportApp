@@ -44,7 +44,7 @@ public class ConfigurationPage extends BasePage {
 			@Override
 			protected void onSubmit(AjaxRequestTarget ajaxRequestTarget, Form<?> components) {
 				svnFolderResfreshService.reloadProjects();
-				svnFolderResfreshService.refreshAllBranches();
+				svnFolderResfreshService.refreshAllProjects();
 				ajaxRequestTarget.add(form);
 				info("Processing");
 				// StatusLabel status1 = new StatusLabel("status", svnRefreshCallbackIModel);

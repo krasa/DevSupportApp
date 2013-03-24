@@ -20,30 +20,22 @@ public class GlobalSettings extends AbstractEntity {
 	private Set<String> projectsWithSubfoldersMergeSearching = new HashSet<String>();
 
 	@ElementCollection(targetClass = String.class, fetch = FetchType.EAGER)
-	private Set<String> branchesForFindingOlderMerges = new HashSet<String>();
+	private Set<String> projectsWithLoadTags = new HashSet<String>();
 
-	public Set<String> getProjectsWithSubfoldersMergeSearching() {
-		return projectsWithSubfoldersMergeSearching;
+	public Boolean isLoadTags(String path) {
+		return projectsWithLoadTags.contains(path.toLowerCase());
 	}
 
-	public void setProjectsWithSubfoldersMergeSearching(Set<String> projectsWithSubfoldersMergeSearching) {
-		this.projectsWithSubfoldersMergeSearching = projectsWithSubfoldersMergeSearching;
+	public void setLoadTagsForProject(String path, Boolean modelObject) {
+		if (modelObject) {
+			projectsWithLoadTags.add(path.toLowerCase());
+		} else {
+			projectsWithLoadTags.remove(path.toLowerCase());
+		}
 	}
 
 	public Boolean isMergeOnSubFoldersForProject(String path) {
 		return projectsWithSubfoldersMergeSearching.contains(path.toLowerCase());
-	}
-
-	public Set<String> getBranchesForFindingOlderMerges() {
-		return branchesForFindingOlderMerges;
-	}
-
-	public boolean isBranchesForFindingOlderMerges(String path) {
-		return branchesForFindingOlderMerges.contains(path.toLowerCase());
-	}
-
-	public void setBranchesForFindingOlderMerges(Set<String> branchesForFindingOlderMerges) {
-		this.branchesForFindingOlderMerges = branchesForFindingOlderMerges;
 	}
 
 	public void addMergeOnSubFoldersForProject(String path) {
@@ -55,14 +47,6 @@ public class GlobalSettings extends AbstractEntity {
 			projectsWithSubfoldersMergeSearching.add(path.toLowerCase());
 		} else {
 			projectsWithSubfoldersMergeSearching.remove(path.toLowerCase());
-		}
-	}
-
-	public void setBranchesForFindingOlderMerges(String path, Boolean object) {
-		if (object) {
-			branchesForFindingOlderMerges.add(path.toLowerCase());
-		} else {
-			branchesForFindingOlderMerges.remove(path.toLowerCase());
 		}
 	}
 
@@ -80,4 +64,5 @@ public class GlobalSettings extends AbstractEntity {
 	public int hashCode() {
 		return HashCodeBuilder.reflectionHashCode(this);
 	}
+
 }

@@ -79,7 +79,7 @@ public class BranchesTablePanel extends BasePanel {
 					@Override
 					public List<String> getObject() {
 						String name = rowModel.getObject().getParent().getName();
-						List<SvnFolder> allBranchesByProjectNme = facade.getAllBranchesByProjectNme(name);
+						List<SvnFolder> allBranchesByProjectNme = facade.getAllBranchesByProjectName(name);
 						List<String> strings = new ArrayList<String>();
 						for (SvnFolder folder : allBranchesByProjectNme) {
 							strings.add(folder.getName());

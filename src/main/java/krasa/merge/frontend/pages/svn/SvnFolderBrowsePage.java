@@ -1,5 +1,6 @@
 package krasa.merge.frontend.pages.svn;
 
+import krasa.core.frontend.commons.StandaloneAjaxCheckBox;
 import krasa.core.frontend.pages.BasePage;
 import krasa.merge.backend.domain.SvnFolder;
 import krasa.merge.backend.dto.MergeInfoResult;
@@ -60,7 +61,7 @@ public class SvnFolderBrowsePage extends BasePage {
 		form.add(new IndicatingAjaxButton("refreshProjectBraches") {
 			@Override
 			protected void onSubmit(AjaxRequestTarget ajaxRequestTarget, Form<?> components) {
-				svnFolderResfreshService.refreshBranchesByProjectName(path);
+				svnFolderResfreshService.refreshProjectByName(path);
 				ajaxRequestTarget.add(form);
 				ajaxRequestTarget.add(branchesTablePanel);
 				info("Processing");
@@ -71,18 +72,8 @@ public class SvnFolderBrowsePage extends BasePage {
 				error("Error");
 			}
 		});
-		form.add(new AjaxCheckBox("mergeOnSubfolders", new LoadableDetachableModel<Boolean>() {
-			@Override
-			protected Boolean load() {
-				return facade.isMergeOnSubFoldersForProject(path);
-			}
-		}) {
-			@Override
-			protected void onUpdate(AjaxRequestTarget target) {
-				facade.setMergeOnSubFoldersForProject(path, getModelObject());
-				target.add(this);
-			}
-		});
+		form.add(createMergeOnSubfoldersCheckbox());
+		form.add(createLoadTagsCheckbox());
 		add(new IndicatingAjaxButton("findMerges", form) {
 			@Override
 			protected void onSubmit(AjaxRequestTarget ajaxRequestTarget, Form<?> components) {
@@ -105,6 +96,37 @@ public class SvnFolderBrowsePage extends BasePage {
 		});
 
 		add(form);
+	}
+
+	private StandaloneAjaxCheckBox createLoadTagsCheckbox() {
+		return new StandaloneAjaxCheckBox("loadTags") {
+			@Override
+			protected Boolean load() {
+				return facade.isLoadTags(path);
+			}
+
+			@Override
+			protected void onUpdate(AjaxRequestTarget target) {
+				facade.setLoadTagsForProject(path, getModelObject());
+				target.add(this);
+			}
+		};
+
+	}
+
+	private AjaxCheckBox createMergeOnSubfoldersCheckbox() {
+		return new StandaloneAjaxCheckBox("mergeOnSubfolders") {
+			@Override
+			protected Boolean load() {
+				return facade.isMergeOnSubFoldersForProject(path);
+			}
+
+			@Override
+			protected void onUpdate(AjaxRequestTarget target) {
+				facade.setMergeOnSubFoldersForProject(path, getModelObject());
+				target.add(this);
+			}
+		};
 	}
 
 	public static PageParameters parameters(IModel<SvnFolder> rowModel) {

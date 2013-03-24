@@ -2,6 +2,7 @@ package krasa.merge.backend.facade;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -15,8 +16,10 @@ import krasa.core.frontend.MySession;
 import krasa.merge.backend.dao.ProfileDAO;
 import krasa.merge.backend.dao.SvnFolderDAO;
 import krasa.merge.backend.domain.Branch;
+import krasa.merge.backend.domain.Displayable;
 import krasa.merge.backend.domain.Profile;
 import krasa.merge.backend.domain.SvnFolder;
+import krasa.merge.backend.domain.Type;
 import krasa.merge.backend.dto.MergeInfoResult;
 import krasa.merge.backend.dto.ReportResult;
 import krasa.merge.backend.service.MergeInfoService;
@@ -116,7 +119,17 @@ public class FacadeImpl implements Facade {
 
 	@Override
 	public List<SvnFolder> findBranchesByNameLike(String name) {
-		return svnFolderDAO.findBranchesByNameLike(name);
+		return svnFolderDAO.findFoldersByNameLike(name, Type.BRANCH);
+	}
+
+	@Override
+	public List<Displayable> findBranchesByNameLikeAsDisplayable(String name) {
+		return new ArrayList<Displayable>(findBranchesByNameLike(name));
+	}
+
+	@Override
+	public List<Displayable> findTagsByNameLikeAsDisplayable(String input) {
+		return new ArrayList<Displayable>(svnFolderDAO.findFoldersByNameLike(input, Type.TAG));
 	}
 
 	@Override
@@ -176,14 +189,8 @@ public class FacadeImpl implements Facade {
 	}
 
 	@Override
-	public List<SvnFolder> getAllBranchesByProjectNme(String name) {
-		SvnFolder projectByName = svnFolderDAO.findProjectByName(name);
-		if (projectByName == null) {
-			throw new IllegalStateException("project not found: " + name);
-		}
-		List<SvnFolder> childs = projectByName.getChilds();
-		childs.size();
-		return childs;
+	public List<SvnFolder> getAllBranchesByProjectName(String name) {
+		return svnFolderDAO.findByParentName(name, Type.BRANCH);
 	}
 
 	@Override
@@ -211,6 +218,16 @@ public class FacadeImpl implements Facade {
 			path = branchByName.getParent().getName();
 		}
 		return path;
+	}
+
+	@Override
+	public void setLoadTagsForProject(String path, Boolean modelObject) {
+		globalSettingsProvider.getGlobalSettings().setLoadTagsForProject(path, modelObject);
+	}
+
+	@Override
+	public Boolean isLoadTags(String path) {
+		return globalSettingsProvider.getGlobalSettings().isLoadTags(path);
 	}
 
 	@Override

@@ -38,7 +38,7 @@ public abstract class AddBranchFormPanel extends BasePanel {
 	private Form createAddBranchForm(ResourceModel labelModel) {
 		Form form = new Form("addBranchForm");
 		form.add(createLabel(labelModel));
-		form.add(autocomplete = createBranchAutoCompletePanel());
+		form.add(autocomplete = createAutoCompletePanel());
 		form.add(feedback = new MyFeedbackPanel("feedback"));
 		form.add(new AjaxButton("add") {
 			@Override
@@ -73,7 +73,7 @@ public abstract class AddBranchFormPanel extends BasePanel {
 		return form;
 	}
 
-	private BranchAutoCompletePanel createBranchAutoCompletePanel() {
+	protected BranchAutoCompletePanel createAutoCompletePanel() {
 		return new BranchAutoCompletePanel("autocomplete");
 	}
 

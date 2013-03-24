@@ -151,4 +151,5 @@ public abstract class AbstractDAO<T extends AbstractEntity> implements DAO<T> {
 	public T refresh(T object) {
 		return findById(object.getId());
 	}
+
 }

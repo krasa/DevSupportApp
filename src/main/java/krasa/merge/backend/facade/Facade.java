@@ -3,6 +3,7 @@ package krasa.merge.backend.facade;
 import java.util.List;
 
 import krasa.core.backend.domain.GlobalSettings;
+import krasa.merge.backend.domain.Displayable;
 import krasa.merge.backend.domain.Profile;
 import krasa.merge.backend.domain.SvnFolder;
 import krasa.merge.backend.dto.MergeInfoResult;
@@ -34,6 +35,10 @@ public interface Facade {
 	List<SvnFolder> getSelectedBranches();
 
 	List<SvnFolder> findBranchesByNameLike(String name);
+
+	List<Displayable> findBranchesByNameLikeAsDisplayable(String name);
+
+	List<Displayable> findTagsByNameLikeAsDisplayable(String input);
 
 	SvnFolder findBranchByInCaseSensitiveName(String objectAsString);
 
@@ -73,9 +78,14 @@ public interface Facade {
 
 	void updateBranch(SvnFolder folder);
 
-	List<SvnFolder> getAllBranchesByProjectNme(String name);
+	List<SvnFolder> getAllBranchesByProjectName(String name);
 
 	void addAllMatchingBranchesIntoProfile(String fieldValue);
 
 	String resolveProjectByPath(String path);
+
+	void setLoadTagsForProject(String path, Boolean modelObject);
+
+	Boolean isLoadTags(String path);
+
 }

@@ -67,11 +67,11 @@ public class SvnFolderDAO extends AbstractDAO<SvnFolder> {
 		return names.toArray();
 	}
 
-	public List<SvnFolder> findBranchesByNameLike(String name) {
+	public List<SvnFolder> findFoldersByNameLike(String name, final Type type) {
 		Query query = getSession().createQuery(
 				"from " + getEntityName()
 						+ " s where lower(s.name) like lower(:name) and s.type = :type  order by s.name  ");
-		query.setParameter("type", Type.BRANCH);
+		query.setParameter("type", type);
 		query.setString("name", "%" + name + "%");
 		return query.list();
 	}
@@ -150,4 +150,12 @@ public class SvnFolderDAO extends AbstractDAO<SvnFolder> {
 		save(project);
 	}
 
+	public List<SvnFolder> findByParentName(final String name, Type type) {
+		Query query = getSession().createQuery(
+				"from " + getEntityName()
+						+ " s where   s.type = :type and s.parent.name = :parentName  order by s.name ");
+		query.setParameter("type", type);
+		query.setString("parentName", name);
+		return query.list();
+	}
 }

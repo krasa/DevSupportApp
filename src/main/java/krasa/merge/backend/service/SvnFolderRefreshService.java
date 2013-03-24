@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import krasa.core.backend.service.GlobalSettingsProvider;
 import krasa.merge.backend.SvnException;
 import krasa.merge.backend.dao.SvnFolderDAO;
 import krasa.merge.backend.domain.SvnFolder;
@@ -28,6 +29,9 @@ public class SvnFolderRefreshService {
 	@Autowired
 	private SvnFolderDAO svnFolderDAO;
 
+	@Autowired
+	private GlobalSettingsProvider globalSettingsProvider;
+
 	public void reloadProjects() {
 		SvnFolderProvider svnFolderProvider = new SvnFolderProvider(svnConnection.getBaseRepositoryConnection());
 		List<SVNDirEntry> projects = svnFolderProvider.getProjects();
@@ -51,32 +55,33 @@ public class SvnFolderRefreshService {
 		}
 	}
 
-	public void refreshAllBranches() {
+	public void refreshAllProjects() {
 		for (SvnFolder svnFolder : svnFolderDAO.findAllProjects()) {
-			refreshProjectBranches(svnFolder, true);
+			refreshProject(svnFolder, true);
 		}
 	}
 
-	public void refreshBranchesByProjectName(String name) {
+	public void refreshProjectByName(String name) {
 		SvnFolder project = svnFolderDAO.findProjectByName(name);
-		refreshProjectBranches(project, false);
+		refreshProject(project, false);
 	}
 
-	private void refreshProjectBranches(SvnFolder project, boolean deleteProjectIfNotExistsInRepo) {
+	private void refreshProject(SvnFolder project, boolean deleteProjectIfNotExistsInRepo) {
 		SvnFolderProvider provider = new SvnFolderProvider(svnConnection.getBaseRepositoryConnection());
 		try {
-			List<SvnFolder> branches = provider.getBranchesAndTrunkByProjectName(project.getName());
-			Set<String> branchesSet = new HashSet<String>();
-			for (SvnFolder branch : branches) {
-				branchesSet.add(branch.getName());
-				if (!project.branchAlreadyExists(branch)) {
-					project.add(branch);
-					svnFolderDAO.save(branch);
-					List<SvnFolder> branchSubFolders = provider.getSubFolders(branch);
-					saveSubFolders(branch, branchSubFolders);
+			Boolean loadTags = globalSettingsProvider.getGlobalSettings().isLoadTags(project.getPath());
+			List<SvnFolder> childs = provider.getProjectContent(project.getName(), loadTags);
+			Set<String> childSet = new HashSet<String>();
+			for (SvnFolder child : childs) {
+				childSet.add(child.getName());
+				if (!project.childAlreadyExists(child)) {
+					project.add(child);
+					svnFolderDAO.save(child);
+					List<SvnFolder> branchSubFolders = provider.getSubFolders(child);
+					saveSubFolders(child, branchSubFolders);
 				}
 			}
-			deleteNotExisting(project, branchesSet);
+			deleteNotExisting(project, childSet);
 			svnFolderDAO.save(project);
 		} catch (SvnException e) {
 			if ("160013: Filesystem has no item".equals(e.getErrorCode().toString())) {

@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
-import krasa.merge.backend.domain.SvnFolder;
+import krasa.merge.backend.domain.Displayable;
 import krasa.merge.backend.facade.Facade;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -46,8 +46,8 @@ public class BranchAutoCompletePanel extends Panel {
 					return emptyList.iterator();
 				}
 				List<String> choices = new ArrayList<String>();
-				for (SvnFolder product : facade.findBranchesByNameLike(input)) {
-					String choice = product.getName();
+				for (Displayable product : getMatching(input)) {
+					String choice = product.getDisplayableText();
 
 					choices.add(choice);
 					if (choices.size() == CHOICES_SIZE) {
@@ -59,6 +59,10 @@ public class BranchAutoCompletePanel extends Panel {
 		};
 		components.setRequired(true);
 		return components;
+	}
+
+	protected List<Displayable> getMatching(String input) {
+		return facade.findBranchesByNameLikeAsDisplayable(input);
 	}
 
 	public void resetFieldValue(AjaxRequestTarget target) {

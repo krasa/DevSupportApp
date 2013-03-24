@@ -8,6 +8,7 @@ import krasa.build.backend.domain.ComponentBuild;
 import krasa.build.backend.domain.Environment;
 import krasa.build.backend.execution.ProcessStatus;
 import krasa.build.backend.execution.adapter.ProcessAdapter;
+import krasa.merge.backend.domain.Displayable;
 import krasa.merge.backend.dto.BuildRequest;
 
 public interface BuildFacade {
@@ -31,4 +32,6 @@ public interface BuildFacade {
 	void deleteEnvironment(Integer id);
 
 	void addAllMatchingComponents(Environment object, String fieldValue);
+
+	List<Displayable> getMatchingComponents(String input);
 }

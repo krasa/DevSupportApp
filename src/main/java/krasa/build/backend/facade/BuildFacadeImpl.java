@@ -17,6 +17,7 @@ import krasa.build.backend.execution.adapter.ProcessAdapterHolder;
 import krasa.core.backend.dao.GenericDAO;
 import krasa.core.backend.dao.GenericDaoBuilder;
 import krasa.core.frontend.WicketApplication;
+import krasa.merge.backend.domain.Displayable;
 import krasa.merge.backend.domain.SvnFolder;
 import krasa.merge.backend.dto.BuildRequest;
 import krasa.merge.backend.facade.Facade;
@@ -107,6 +108,13 @@ public class BuildFacadeImpl implements BuildFacade {
 				addComponent(object, name);
 			}
 		}
+	}
+
+	@Override
+	public List<Displayable> getMatchingComponents(String input) {
+		List<Displayable> branchesByNameLikeAsDisplayable = facade.findBranchesByNameLikeAsDisplayable(input);
+		branchesByNameLikeAsDisplayable.addAll(facade.findTagsByNameLikeAsDisplayable(input));
+		return branchesByNameLikeAsDisplayable;
 	}
 
 	private void addComponent(Environment object, String name) {

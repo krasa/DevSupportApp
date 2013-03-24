@@ -4,7 +4,6 @@ import krasa.build.backend.domain.Environment;
 import krasa.build.backend.facade.BuildFacade;
 import krasa.core.frontend.commons.EntityModelWrapper;
 import krasa.core.frontend.components.BasePanel;
-import krasa.merge.frontend.component.AddBranchFormPanel;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
@@ -58,8 +57,8 @@ public class EnvironmentDetailPanel extends BasePanel {
 		return new ComponentsTablePanel("builds", environmentEntityModelWrapper);
 	}
 
-	private AddBranchFormPanel createAddBranchFormPanel() {
-		final AddBranchFormPanel autocomplete = new AddBranchFormPanel("addBranchPanel", new ResourceModel(
+	private AddComponentFormPanel createAddBranchFormPanel() {
+		final AddComponentFormPanel autocomplete = new AddComponentFormPanel("addComponent", new ResourceModel(
 				"componentName")) {
 			@Override
 			protected void onUpdate(AjaxRequestTarget target) {
