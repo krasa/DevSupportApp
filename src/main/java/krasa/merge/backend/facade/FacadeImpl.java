@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import krasa.build.backend.domain.ComponentBuild;
+import krasa.build.backend.domain.BuildableComponent;
 import krasa.build.backend.domain.Environment;
 import krasa.core.backend.dao.GenericDAO;
 import krasa.core.backend.dao.GenericDaoBuilder;
@@ -56,7 +56,7 @@ public class FacadeImpl implements Facade {
 	@Autowired
 	private ProfileDAO profileDAO;
 	private GenericDAO<Environment> environmentDAO;
-	private GenericDAO<ComponentBuild> branchBuildDAO;
+	private GenericDAO<BuildableComponent> branchBuildDAO;
 	private GenericDAO<Branch> branchDAO;
 	@Autowired
 	private ReportService reportService;
@@ -79,7 +79,7 @@ public class FacadeImpl implements Facade {
 	public void setGenericDAO(GenericDaoBuilder genericDAO) {
 		this.genericDAO = genericDAO;
 		this.environmentDAO = genericDAO.build(Environment.class);
-		this.branchBuildDAO = genericDAO.build(ComponentBuild.class);
+		this.branchBuildDAO = genericDAO.build(BuildableComponent.class);
 		this.branchDAO = genericDAO.build(Branch.class);
 		this.globalSettingsDAO = genericDAO.build(GlobalSettings.class);
 	}

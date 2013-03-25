@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import krasa.build.backend.domain.ComponentBuild;
+import krasa.build.backend.domain.BuildableComponent;
 import krasa.build.backend.domain.Environment;
 import krasa.build.backend.exception.ProcessAlreadyRunning;
 import krasa.build.backend.execution.adapter.ProcessAdapter;
@@ -57,8 +57,8 @@ public class ComponentsTablePanel extends BasePanel {
 		add(deploySelectedButton = deployButton());
 	}
 
-	private AjaxFallbackDefaultDataTable<ComponentBuild, String> createTable(IModel<Environment> environmentIModel) {
-		return new AjaxFallbackDefaultDataTable<ComponentBuild, String>("branches", getColumns(),
+	private AjaxFallbackDefaultDataTable<BuildableComponent, String> createTable(IModel<Environment> environmentIModel) {
+		return new AjaxFallbackDefaultDataTable<BuildableComponent, String>("branches", getColumns(),
 				getModel(environmentIModel), 100);
 	}
 
@@ -101,39 +101,39 @@ public class ComponentsTablePanel extends BasePanel {
 		};
 	}
 
-	private DummyModelDataProvider<ComponentBuild> getModel(final IModel<Environment> model) {
-		return new DummyModelDataProvider<ComponentBuild>(new LoadableDetachableModel<List<ComponentBuild>>() {
+	private DummyModelDataProvider<BuildableComponent> getModel(final IModel<Environment> model) {
+		return new DummyModelDataProvider<BuildableComponent>(new LoadableDetachableModel<List<BuildableComponent>>() {
 			@Override
-			protected List<ComponentBuild> load() {
+			protected List<BuildableComponent> load() {
 				return buildFacade.getBranchBuilds(model.getObject());
 			}
 		});
 	}
 
-	private List<IColumn<ComponentBuild, String>> getColumns() {
-		final ArrayList<IColumn<ComponentBuild, String>> columns = new ArrayList<IColumn<ComponentBuild, String>>();
+	private List<IColumn<BuildableComponent, String>> getColumns() {
+		final ArrayList<IColumn<BuildableComponent, String>> columns = new ArrayList<IColumn<BuildableComponent, String>>();
 		columns.add(checkBoxColumn());
-		columns.add(new BookmarkableColumn<ComponentBuild, String>(new Model<String>("name"), "name", "name"));
-		columns.add(new DateColumn<ComponentBuild>(new Model<String>("last successful build"), "lastSuccessBuild",
+		columns.add(new BookmarkableColumn<BuildableComponent, String>(new Model<String>("name"), "name", "name"));
+		columns.add(new DateColumn<BuildableComponent>(new Model<String>("last successful build"), "lastSuccessBuild",
 				"lastSuccessBuild"));
-		columns.add(new PropertyColumn<ComponentBuild, String>(new Model<String>("status"), "status", "status"));
+		columns.add(new PropertyColumn<BuildableComponent, String>(new Model<String>("status"), "status", "status"));
 		columns.add(buildColumn());
 		columns.add(goToProcessColumn());
 		columns.add(deleteColumn());
 		return columns;
 	}
 
-	private CheckBoxColumn<ComponentBuild> checkBoxColumn() {
-		return new CheckBoxColumn<ComponentBuild>(new Model<String>("")) {
+	private CheckBoxColumn<BuildableComponent> checkBoxColumn() {
+		return new CheckBoxColumn<BuildableComponent>(new Model<String>("")) {
 
 			@Override
-			public boolean isChecked(IModel<ComponentBuild> model) {
+			public boolean isChecked(IModel<BuildableComponent> model) {
 				return MySession.get().isQueued(getEnvironment(), model.getObject().getName());
 			}
 
 			@Override
 			protected void onUpdate(AjaxRequestTarget target, IModel<Boolean> booleanIModel,
-					IModel<ComponentBuild> model) {
+					IModel<BuildableComponent> model) {
 				MySession mySession = MySession.get();
 				if (booleanIModel.getObject()) {
 					mySession.queueBranchToEnvironmentBuild(getEnvironment(), model.getObject().getName());
@@ -149,11 +149,11 @@ public class ComponentsTablePanel extends BasePanel {
 		return environmentIModel.getObject();
 	}
 
-	private ButtonColumn<ComponentBuild> goToProcessColumn() {
-		return new ButtonColumn<ComponentBuild>(new Model<String>("Go to process")) {
+	private ButtonColumn<BuildableComponent> goToProcessColumn() {
+		return new ButtonColumn<BuildableComponent>(new Model<String>("Go to process")) {
 			@Override
-			public void populateItem(Item<ICellPopulator<ComponentBuild>> components, String s,
-					IModel<ComponentBuild> model) {
+			public void populateItem(Item<ICellPopulator<BuildableComponent>> components, String s,
+					IModel<BuildableComponent> model) {
 				super.populateItem(components, s, model);
 				String componentName = model.getObject().getName();
 				ProcessAdapter refresh = buildFacade.refresh(getDeploymentRequest(componentName));
@@ -161,7 +161,7 @@ public class ComponentsTablePanel extends BasePanel {
 			}
 
 			@Override
-			protected void onSubmit(final IModel<ComponentBuild> model, AjaxRequestTarget target, Form<?> form) {
+			protected void onSubmit(final IModel<BuildableComponent> model, AjaxRequestTarget target, Form<?> form) {
 				setResponsePage(new LogPage(environmentIModel, new LoadableDetachableModel<String>() {
 
 					@Override
@@ -173,10 +173,10 @@ public class ComponentsTablePanel extends BasePanel {
 		};
 	}
 
-	private ButtonColumn<ComponentBuild> buildColumn() {
-		return new ButtonColumn<ComponentBuild>(new Model<String>("Build")) {
+	private ButtonColumn<BuildableComponent> buildColumn() {
+		return new ButtonColumn<BuildableComponent>(new Model<String>("Build")) {
 			@Override
-			protected void onSubmit(IModel<ComponentBuild> model, AjaxRequestTarget target, Form<?> form) {
+			protected void onSubmit(IModel<BuildableComponent> model, AjaxRequestTarget target, Form<?> form) {
 				String componentName = model.getObject().getName();
 				try {
 					buildFacade.build(getDeploymentRequest(componentName));
@@ -189,10 +189,10 @@ public class ComponentsTablePanel extends BasePanel {
 		};
 	}
 
-	private IColumn<ComponentBuild, String> deleteColumn() {
-		return new ButtonColumn<ComponentBuild>(new Model<String>("Delete")) {
+	private IColumn<BuildableComponent, String> deleteColumn() {
+		return new ButtonColumn<BuildableComponent>(new Model<String>("Delete")) {
 			@Override
-			protected void onSubmit(IModel<ComponentBuild> model, AjaxRequestTarget target, Form<?> form) {
+			protected void onSubmit(IModel<BuildableComponent> model, AjaxRequestTarget target, Form<?> form) {
 				buildFacade.deleteComponent(getEnvironment(), model.getObject());
 				target.add(form);
 			}

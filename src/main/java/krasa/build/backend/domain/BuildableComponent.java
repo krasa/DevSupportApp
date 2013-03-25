@@ -14,7 +14,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 @Entity
-public class ComponentBuild extends AbstractEntity implements Serializable {
+public class BuildableComponent extends AbstractEntity implements Serializable {
 	private String name;
 	private Date lastSuccessBuild;
 	private Status status;
@@ -29,10 +29,10 @@ public class ComponentBuild extends AbstractEntity implements Serializable {
 		this.environment = environment;
 	}
 
-	public static ComponentBuild newComponent(String name) {
-		ComponentBuild componentBuild = new ComponentBuild();
-		componentBuild.setName(name);
-		return componentBuild;
+	public static BuildableComponent newComponent(String name) {
+		BuildableComponent buildableComponent = new BuildableComponent();
+		buildableComponent.setName(name);
+		return buildableComponent;
 	}
 
 	public Status getStatus() {
@@ -43,7 +43,7 @@ public class ComponentBuild extends AbstractEntity implements Serializable {
 		this.status = status;
 	}
 
-	public ComponentBuild() {
+	public BuildableComponent() {
 	}
 
 	public Date getLastSuccessBuild() {
@@ -77,9 +77,9 @@ public class ComponentBuild extends AbstractEntity implements Serializable {
 		return HashCodeBuilder.reflectionHashCode(this);
 	}
 
-	public static class ComponentBuildComparator implements Comparator<ComponentBuild> {
+	public static class ComponentBuildComparator implements Comparator<BuildableComponent> {
 		@Override
-		public int compare(ComponentBuild o1, ComponentBuild o2) {
+		public int compare(BuildableComponent o1, BuildableComponent o2) {
 			return o1.getName().compareTo(o2.getName());
 		}
 	}

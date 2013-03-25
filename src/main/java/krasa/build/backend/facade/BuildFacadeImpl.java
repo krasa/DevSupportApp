@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 import krasa.build.backend.dao.CommonBuildDao;
-import krasa.build.backend.domain.ComponentBuild;
+import krasa.build.backend.domain.BuildableComponent;
 import krasa.build.backend.domain.Environment;
 import krasa.build.backend.domain.Status;
 import krasa.build.backend.execution.ProcessStatus;
@@ -36,7 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class BuildFacadeImpl implements BuildFacade {
 	protected final Logger log = LoggerFactory.getLogger(getClass());
 	protected GenericDAO<Environment> environmentDAO;
-	private GenericDAO<ComponentBuild> componentBuildDAO;
+	private GenericDAO<BuildableComponent> componentBuildDAO;
 
 	@Autowired
 	private ProcessAdapterHolder processAdapterHolder;
@@ -48,6 +48,8 @@ public class BuildFacadeImpl implements BuildFacade {
 	private AsyncTaskExecutor taskExecutor;
 	@Autowired
 	private krasa.build.backend.execution.ProcessBuilder processBuilder;
+	@Autowired
+	private TMBuildableComponentResolver buildableComponentResolver;
 
 	@Override
 	public synchronized ProcessAdapter build(BuildRequest request) {
@@ -55,9 +57,9 @@ public class BuildFacadeImpl implements BuildFacade {
 		processAdapterHolder.checkPreviousBuilds(request);
 
 		Environment environment = commonBuildDao.getEnvironmentByName(request.getEnvironmentName());
-		List<ComponentBuild> componentBuilds = updateComponents(environment, request.getComponents());
+		List<BuildableComponent> buildableComponents = updateComponents(environment, request.getComponents());
 		environmentDAO.save(environment);
-		request.setComponentBuild(componentBuilds);
+		request.setBuildableComponent(buildableComponents);
 
 		ProcessAdapter processAdapter = processBuilder.create(request);
 		taskExecutor.submit(processAdapter.getProcess());
@@ -68,18 +70,18 @@ public class BuildFacadeImpl implements BuildFacade {
 		return processAdapter;
 	}
 
-	private List<ComponentBuild> updateComponents(Environment environment, List<String> components) {
-		List<ComponentBuild> componentBuilds = new ArrayList<ComponentBuild>();
+	private List<BuildableComponent> updateComponents(Environment environment, List<String> components) {
+		List<BuildableComponent> buildableComponents = new ArrayList<BuildableComponent>();
 		Set<String> strings = new HashSet<String>(components);
 
-		for (ComponentBuild componentBuild : environment.getComponentBuilds()) {
-			if (strings.contains(componentBuild.getName())) {
-				componentBuild.setStatus(Status.IN_PROGRESS);
-				componentBuildDAO.save(componentBuild);
-				componentBuilds.add(componentBuild);
+		for (BuildableComponent buildableComponent : environment.getBuildableComponetns()) {
+			if (strings.contains(buildableComponent.getName())) {
+				buildableComponent.setStatus(Status.IN_PROGRESS);
+				componentBuildDAO.save(buildableComponent);
+				buildableComponents.add(buildableComponent);
 			}
 		}
-		return componentBuilds;
+		return buildableComponents;
 	}
 
 	@Override
@@ -89,23 +91,25 @@ public class BuildFacadeImpl implements BuildFacade {
 	}
 
 	@Override
-	public void addComponnet(Environment object, String branchName) {
-		object = environmentDAO.refresh(object);
-		addComponent(object, branchName);
-		environmentDAO.save(object);
+	public void addBuildableComponent(Environment environment, String componentName) {
+		environment = environmentDAO.refresh(environment);
+		BuildableComponent component = createComponent(componentName);
+		environment.add(component);
+		environmentDAO.save(environment);
 	}
 
 	@Override
-	public void addAllMatchingComponents(Environment object, String fieldValue) {
-		object = environmentDAO.refresh(object);
+	public void addAllMatchingComponents(Environment environment, String fieldValue) {
+		environment = environmentDAO.refresh(environment);
 		SvnFolder svnFolder = facade.findBranchByInCaseSensitiveName(fieldValue);
 		if (svnFolder != null) {
-			addComponnet(object, svnFolder.getName());
+			addBuildableComponent(environment, svnFolder.getName());
 		} else {
 			List<SvnFolder> branches = facade.findBranchesByNameLike(fieldValue);
 			for (SvnFolder branch : branches) {
 				String name = branch.getName();
-				addComponent(object, name);
+				BuildableComponent component = createComponent(name);
+				environment.add(component);
 			}
 		}
 	}
@@ -117,18 +121,17 @@ public class BuildFacadeImpl implements BuildFacade {
 		return branchesByNameLikeAsDisplayable;
 	}
 
-	private void addComponent(Environment object, String name) {
-		ComponentBuild componentBuild = ComponentBuild.newComponent(name);
-		componentBuild.setEnvironment(object);
-		componentBuildDAO.save(componentBuild);
-		object.getComponentBuilds().add(componentBuild);
+	private BuildableComponent createComponent(String name) {
+		BuildableComponent buildableComponent = buildableComponentResolver.createComponent(name);
+		componentBuildDAO.save(buildableComponent);
+		return buildableComponent;
 	}
 
 	@Override
 	public void onResult(BuildRequest request, ProcessStatus processStatus) {
-		List<ComponentBuild> componentBuild = request.getComponentBuild();
-		for (ComponentBuild build : componentBuild) {
-			ComponentBuild refresh = componentBuildDAO.refresh(build);
+		List<BuildableComponent> buildableComponent = request.getBuildableComponent();
+		for (BuildableComponent build : buildableComponent) {
+			BuildableComponent refresh = componentBuildDAO.refresh(build);
 			Status status = processStatus.getStatus();
 			if (status == Status.SUCCESS) {
 				refresh.setLastSuccessBuild(new Date());
@@ -145,11 +148,11 @@ public class BuildFacadeImpl implements BuildFacade {
 	}
 
 	@Override
-	public void deleteComponent(Environment environment, ComponentBuild object) {
+	public void deleteComponent(Environment environment, BuildableComponent object) {
 		environment = environmentDAO.refresh(environment);
 		object = componentBuildDAO.refresh(object);
 
-		environment.getComponentBuilds().remove(object);
+		environment.getBuildableComponetns().remove(object);
 		environmentDAO.save(environment);
 		componentBuildDAO.delete(object);
 	}
@@ -158,9 +161,9 @@ public class BuildFacadeImpl implements BuildFacade {
 	public void deleteEnvironment(Integer id) {
 		Environment environment = environmentDAO.findById(id);
 
-		List<ComponentBuild> componentBuilds = environment.getComponentBuilds();
-		for (ComponentBuild componentBuild : componentBuilds) {
-			componentBuildDAO.delete(componentBuild);
+		List<BuildableComponent> buildableComponents = environment.getBuildableComponetns();
+		for (BuildableComponent buildableComponent : buildableComponents) {
+			componentBuildDAO.delete(buildableComponent);
 		}
 		// componentBuilds.clear();
 		// environmentDAO.save(environment);
@@ -185,18 +188,18 @@ public class BuildFacadeImpl implements BuildFacade {
 	}
 
 	@Override
-	public List<ComponentBuild> getBranchBuilds(Environment environment) {
+	public List<BuildableComponent> getBranchBuilds(Environment environment) {
 		Environment byId = environmentDAO.findById(environment.getId());
-		List<ComponentBuild> componentBuilds = new ArrayList<ComponentBuild>(byId.getComponentBuilds());
-		Collections.sort(componentBuilds, new ComponentBuild.ComponentBuildComparator());
-		return componentBuilds;
+		List<BuildableComponent> buildableComponents = new ArrayList<BuildableComponent>(byId.getBuildableComponetns());
+		Collections.sort(buildableComponents, new BuildableComponent.ComponentBuildComparator());
+		return buildableComponents;
 	}
 
 	@Autowired
 	public void setGenericDAO(GenericDaoBuilder genericDAO) {
 		this.environmentDAO = genericDAO.build(Environment.class);
 		this.environmentDAO = genericDAO.build(Environment.class);
-		this.componentBuildDAO = genericDAO.build(ComponentBuild.class);
+		this.componentBuildDAO = genericDAO.build(BuildableComponent.class);
 	}
 
 }

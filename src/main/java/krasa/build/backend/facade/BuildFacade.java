@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.validation.constraints.Null;
 
-import krasa.build.backend.domain.ComponentBuild;
+import krasa.build.backend.domain.BuildableComponent;
 import krasa.build.backend.domain.Environment;
 import krasa.build.backend.execution.ProcessStatus;
 import krasa.build.backend.execution.adapter.ProcessAdapter;
@@ -18,16 +18,16 @@ public interface BuildFacade {
 
 	void createEnvironment(String environmentName);
 
-	List<ComponentBuild> getBranchBuilds(Environment environment);
+	List<BuildableComponent> getBranchBuilds(Environment environment);
 
 	@Null
 	ProcessAdapter refresh(BuildRequest buildRequest);
 
-	void addComponnet(Environment object, String branchName);
+	void addBuildableComponent(Environment object, String branchName);
 
 	void onResult(BuildRequest request, ProcessStatus processStatus);
 
-	void deleteComponent(Environment environment, ComponentBuild object);
+	void deleteComponent(Environment environment, BuildableComponent object);
 
 	void deleteEnvironment(Integer id);
 

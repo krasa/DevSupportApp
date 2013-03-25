@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import krasa.build.backend.domain.ComponentBuild;
+import krasa.build.backend.domain.BuildableComponent;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -13,7 +13,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 public class BuildRequest implements Serializable {
 	private String environmentName;
 	private List<String> components;
-	private List<ComponentBuild> componentBuild;
+	private List<BuildableComponent> buildableComponent;
 
 	public BuildRequest(List<String> components, final String environmentName) {
 		this.environmentName = environmentName;
@@ -68,11 +68,11 @@ public class BuildRequest implements Serializable {
 		return new HashSet<String>(getComponents());
 	}
 
-	public void setComponentBuild(List<ComponentBuild> componentBuild) {
-		this.componentBuild = componentBuild;
+	public void setBuildableComponent(List<BuildableComponent> buildableComponent) {
+		this.buildableComponent = buildableComponent;
 	}
 
-	public List<ComponentBuild> getComponentBuild() {
-		return componentBuild;
+	public List<BuildableComponent> getBuildableComponent() {
+		return buildableComponent;
 	}
 }

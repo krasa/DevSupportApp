@@ -23,7 +23,7 @@ public class Environment extends AbstractEntity implements Serializable {
 	@Column(unique = true)
 	protected String name;
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "environment", orphanRemoval = true)
-	private List<ComponentBuild> componentBuilds;
+	private List<BuildableComponent> buildableComponetns;
 
 	public Environment() {
 	}
@@ -40,15 +40,15 @@ public class Environment extends AbstractEntity implements Serializable {
 		this.name = name;
 	}
 
-	public List<ComponentBuild> getComponentBuilds() {
-		if (componentBuilds == null) {
-			componentBuilds = new ArrayList<ComponentBuild>();
+	public List<BuildableComponent> getBuildableComponetns() {
+		if (buildableComponetns == null) {
+			buildableComponetns = new ArrayList<BuildableComponent>();
 		}
-		return componentBuilds;
+		return buildableComponetns;
 	}
 
-	public void setComponentBuilds(List<ComponentBuild> componentBuilds) {
-		this.componentBuilds = componentBuilds;
+	public void setBuildableComponetns(List<BuildableComponent> buildableComponetns) {
+		this.buildableComponetns = buildableComponetns;
 	}
 
 	@Override
@@ -66,29 +66,34 @@ public class Environment extends AbstractEntity implements Serializable {
 		return HashCodeBuilder.reflectionHashCode(this);
 	}
 
-	public void replaceBuilds(ArrayList<ComponentBuild> componentBuilds) {
-		HashMap<String, ComponentBuild> newBuilds = toMap(componentBuilds);
+	public void replaceBuilds(ArrayList<BuildableComponent> buildableComponents) {
+		HashMap<String, BuildableComponent> newBuilds = toMap(buildableComponents);
 
-		List<ComponentBuild> builds = getComponentBuilds();
+		List<BuildableComponent> builds = getBuildableComponetns();
 		for (int i = 0; i < builds.size(); i++) {
-			ComponentBuild oldBuild = builds.get(i);
-			ComponentBuild newBuild = newBuilds.get(oldBuild.getName());
+			BuildableComponent oldBuild = builds.get(i);
+			BuildableComponent newBuild = newBuilds.get(oldBuild.getName());
 			if (newBuild != null) {
 				builds.set(i, newBuild);
 				newBuilds.remove(oldBuild.getName());
 			}
 		}
 
-		for (ComponentBuild componentBuild : newBuilds.values()) {
-			builds.add(componentBuild);
+		for (BuildableComponent buildableComponent : newBuilds.values()) {
+			builds.add(buildableComponent);
 		}
 	}
 
-	private HashMap<String, ComponentBuild> toMap(ArrayList<ComponentBuild> componentBuilds) {
-		HashMap<String, ComponentBuild> hashMap = new HashMap<String, ComponentBuild>();
-		for (ComponentBuild componentBuild : componentBuilds) {
-			hashMap.put(componentBuild.getName(), componentBuild);
+	private HashMap<String, BuildableComponent> toMap(ArrayList<BuildableComponent> buildableComponents) {
+		HashMap<String, BuildableComponent> hashMap = new HashMap<String, BuildableComponent>();
+		for (BuildableComponent buildableComponent : buildableComponents) {
+			hashMap.put(buildableComponent.getName(), buildableComponent);
 		}
 		return hashMap;
+	}
+
+	public void add(BuildableComponent component) {
+		buildableComponetns.add(component);
+		component.setEnvironment(this);
 	}
 }

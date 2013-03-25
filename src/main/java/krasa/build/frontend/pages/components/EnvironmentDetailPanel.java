@@ -67,7 +67,7 @@ public class EnvironmentDetailPanel extends BasePanel {
 
 			@Override
 			protected void addBranch(String fieldValue) {
-				buildFacade.addComponnet(environmentEntityModelWrapper.getObject(), fieldValue);
+				buildFacade.addBuildableComponent(environmentEntityModelWrapper.getObject(), fieldValue);
 			}
 
 			@Override
