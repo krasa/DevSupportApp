@@ -3,8 +3,8 @@ package krasa.build.backend.execution.adapter;
 import java.util.HashSet;
 
 import krasa.build.backend.dto.Result;
+import krasa.build.backend.execution.ProcessLog;
 import krasa.build.backend.execution.ProcessStatus;
-import krasa.build.backend.execution.StringBufferTail;
 import krasa.build.backend.execution.process.Process;
 import krasa.build.backend.execution.process.ProcessResultListener;
 import krasa.build.backend.facade.BuildFacade;
@@ -24,13 +24,13 @@ public class ProcessAdapter implements ProcessResultListener {
 	BuildFacade buildFacade;
 
 	private BuildRequest request;
-	private StringBufferTail bufferTail;
+	private ProcessLog bufferTail;
 	protected Process process;
 
 	public ProcessAdapter() {
 	}
 
-	public ProcessAdapter(Process process, BuildRequest request, StringBufferTail bufferTail) {
+	public ProcessAdapter(Process process, BuildRequest request, ProcessLog bufferTail) {
 		this.process = process;
 		this.request = request;
 		this.bufferTail = bufferTail;
@@ -40,7 +40,7 @@ public class ProcessAdapter implements ProcessResultListener {
 		return request;
 	}
 
-	public StringBufferTail getBufferTail() {
+	public ProcessLog getBufferTail() {
 		return bufferTail;
 	}
 
@@ -62,7 +62,7 @@ public class ProcessAdapter implements ProcessResultListener {
 			result = bufferTail.getNext(position);
 		}
 		if (result.isNotEmpty()) {
-			log.debug("getNextLog:" + Utils.toLogFormat(result.getText()));
+			log.debug("getNextLog:" + position + " " + Utils.toLogFormat(result.getText()));
 		}
 		return result;
 	}

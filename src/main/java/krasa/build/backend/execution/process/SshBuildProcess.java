@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Properties;
 
 import krasa.build.backend.domain.Status;
+import krasa.build.backend.execution.ProcessLog;
 import krasa.build.backend.execution.ProcessStatus;
-import krasa.build.backend.execution.StringBufferTail;
 import krasa.build.backend.execution.ssh.SCPInfo;
 import krasa.build.backend.execution.ssh.SSHManager;
 
@@ -27,12 +27,12 @@ public class SshBuildProcess implements Process {
 	@Value("${ssh.connectionIP}")
 	String connectionIP;
 	protected SSHManager instance;
-	protected StringBufferTail stringBufferTail;
+	protected ProcessLog stringBufferTail;
 	protected List<String> command;
 	ProcessStatus processStatus = new ProcessStatus();
 	List<ProcessResultListener> processResultListeners = new ArrayList<ProcessResultListener>();
 
-	public SshBuildProcess(StringBufferTail stringBufferTail, List<String> command) {
+	public SshBuildProcess(ProcessLog stringBufferTail, List<String> command) {
 		this.stringBufferTail = stringBufferTail;
 		this.command = command;
 	}

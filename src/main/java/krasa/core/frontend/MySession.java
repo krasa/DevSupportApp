@@ -7,6 +7,7 @@ import javax.servlet.http.Cookie;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
 
+import krasa.build.backend.domain.BuildableComponent;
 import krasa.build.backend.domain.Environment;
 import krasa.merge.backend.domain.Profile;
 import krasa.merge.backend.facade.Facade;
@@ -94,26 +95,26 @@ public class MySession extends WebSession {
 		return getCurrent().getId();
 	}
 
-	public void queueBranchToEnvironmentBuild(Environment environment, String branchName) {
-		getScheduledBranchBuild().add(environment.getId(), branchName);
+	public void queueComponentToEnvironmentBuild(Environment environment, BuildableComponent component) {
+		getScheduledComponentBuild().add(environment.getId(), component.getName());
 	}
 
-	private MultiValueMap<Integer, String> getScheduledBranchBuild() {
+	private MultiValueMap<Integer, String> getScheduledComponentBuild() {
 		if (scheduledBranchBuild == null) {
 			scheduledBranchBuild = new LinkedMultiValueMap<Integer, String>();
 		}
 		return scheduledBranchBuild;
 	}
 
-	public void removeBranchFromBuild(Environment environment, String branchName) {
+	public void removeComponentFromBuild(Environment environment, BuildableComponent component) {
 		if (scheduledBranchBuild != null) {
-			scheduledBranchBuild.get(environment.getId()).remove(branchName);
+			scheduledBranchBuild.get(environment.getId()).remove(component.getName());
 		}
 	}
 
-	public List<String> getScheduledBranchesByEnvironmentId(Environment environment) {
+	public List<String> getScheduledComponentsByEnvironmentId(Environment environment) {
 		List<String> stringList;
-		stringList = getScheduledBranchBuild().get(environment.getId());
+		stringList = getScheduledComponentBuild().get(environment.getId());
 		if (stringList == null) {
 			stringList = Collections.emptyList();
 		}
@@ -121,11 +122,11 @@ public class MySession extends WebSession {
 	}
 
 	public void clear(Environment environment) {
-		getScheduledBranchBuild().remove(environment.getId());
+		getScheduledComponentBuild().remove(environment.getId());
 	}
 
 	public boolean isQueued(@NotNull Environment environment, @NotNull String branchName) {
-		List<String> strings = getScheduledBranchBuild().get(environment.getId());
+		List<String> strings = getScheduledComponentBuild().get(environment.getId());
 		if (strings == null) {
 			return false;
 		}

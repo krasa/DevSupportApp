@@ -2,8 +2,8 @@ package krasa.build.backend.execution.process;
 
 import java.io.File;
 
+import krasa.build.backend.execution.ProcessLog;
 import krasa.build.backend.execution.ProcessStatus;
-import krasa.build.backend.execution.StringBufferTail;
 
 import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListener;
@@ -18,7 +18,7 @@ public class FileTailProcess implements Process {
 	boolean alive = false;
 	protected final Tailer tailer;
 
-	public FileTailProcess(final StringBufferTail listener, final String pathname) {
+	public FileTailProcess(final ProcessLog listener, final String pathname) {
 		tailer = new Tailer(new File(pathname), new TailerListener() {
 
 			@Override

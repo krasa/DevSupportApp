@@ -4,24 +4,24 @@ import java.io.IOException;
 import java.util.List;
 
 import krasa.build.backend.domain.Status;
+import krasa.build.backend.execution.ProcessLog;
 import krasa.build.backend.execution.ProcessStatus;
-import krasa.build.backend.execution.StringBufferTail;
 
 public class DummyProcess extends SshBuildProcess {
 
 	protected volatile Status status = Status.IN_PROGRESS;
 
-	public DummyProcess(StringBufferTail stringBufferTail, List<String> command) {
+	public DummyProcess(ProcessLog stringBufferTail, List<String> command) {
 		super(stringBufferTail, command);
 	}
 
 	@Override
 	protected int doWork() throws IOException {
 		int i = 0;
-		while (i < 50) {
-			stringBufferTail.append(++i).newLine();
+		while (i < 5000 && status != Status.KILLED) {
+			stringBufferTail.append(String.valueOf(++i)).newLine();
 			try {
-				Thread.sleep(100);
+				Thread.sleep(10);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

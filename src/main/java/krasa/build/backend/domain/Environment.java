@@ -93,7 +93,7 @@ public class Environment extends AbstractEntity implements Serializable {
 	}
 
 	public void add(BuildableComponent component) {
-		buildableComponetns.add(component);
 		component.setEnvironment(this);
+		buildableComponetns.add(component);
 	}
 }

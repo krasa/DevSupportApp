@@ -95,6 +95,7 @@ public class BuildFacadeImpl implements BuildFacade {
 		environment = environmentDAO.refresh(environment);
 		BuildableComponent component = createComponent(componentName);
 		environment.add(component);
+		componentBuildDAO.save(component);
 		environmentDAO.save(environment);
 	}
 
@@ -110,6 +111,8 @@ public class BuildFacadeImpl implements BuildFacade {
 				String name = branch.getName();
 				BuildableComponent component = createComponent(name);
 				environment.add(component);
+				componentBuildDAO.save(component);
+				environmentDAO.save(environment);
 			}
 		}
 	}
@@ -122,9 +125,7 @@ public class BuildFacadeImpl implements BuildFacade {
 	}
 
 	private BuildableComponent createComponent(String name) {
-		BuildableComponent buildableComponent = buildableComponentResolver.createComponent(name);
-		componentBuildDAO.save(buildableComponent);
-		return buildableComponent;
+		return buildableComponentResolver.createComponent(name);
 	}
 
 	@Override

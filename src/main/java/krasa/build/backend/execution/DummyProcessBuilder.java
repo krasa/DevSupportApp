@@ -20,10 +20,10 @@ public class DummyProcessBuilder extends ProcessBuilder {
 	@Override
 	public ProcessAdapter create(BuildRequest request) {
 
-		StringBufferTail stringBufferTail = new StringBufferTail();
+		ProcessLog log = new ProcessLog();
 
-		DummyProcess process = new DummyProcess(stringBufferTail, Collections.<String> emptyList());
-		ProcessAdapter processAdapter = new ProcessAdapter(process, request, stringBufferTail);
+		DummyProcess process = new DummyProcess(log, Collections.<String> emptyList());
+		ProcessAdapter processAdapter = new ProcessAdapter(process, request, log);
 		process.addListener(processAdapter);
 
 		beanFactory.autowireBean(processAdapter);

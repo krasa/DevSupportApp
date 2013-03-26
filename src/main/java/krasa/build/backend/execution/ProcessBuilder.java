@@ -21,7 +21,7 @@ public class ProcessBuilder {
 	BuildCommandBuilderStrategy buildCommandBuilderStrategy;
 
 	public ProcessAdapter create(BuildRequest request) {
-		StringBufferTail stringBufferTail = new StringBufferTail();
+		ProcessLog stringBufferTail = new ProcessLog();
 		List<String> command = buildCommandBuilderStrategy.toCommand(request);
 
 		SshBuildProcess process = new SshBuildProcess(stringBufferTail, command);

@@ -72,7 +72,7 @@ public class ComponentsTablePanel extends BasePanel {
 			@Override
 			protected void onConfigure() {
 				Environment env = getEnvironment();
-				setEnabled(!MySession.get().getScheduledBranchesByEnvironmentId(env).isEmpty());
+				setEnabled(!MySession.get().getScheduledComponentsByEnvironmentId(env).isEmpty());
 				super.onConfigure();
 			}
 
@@ -81,7 +81,7 @@ public class ComponentsTablePanel extends BasePanel {
 				super.onSubmit(target, form);
 				try {
 					Environment env = getEnvironment();
-					List<String> scheduledBranchesByEnvironmentId = MySession.get().getScheduledBranchesByEnvironmentId(
+					List<String> scheduledBranchesByEnvironmentId = MySession.get().getScheduledComponentsByEnvironmentId(
 							env);
 					ProcessAdapter deploy = buildFacade.build(new BuildRequest(scheduledBranchesByEnvironmentId,
 							env.getName()));
@@ -136,9 +136,9 @@ public class ComponentsTablePanel extends BasePanel {
 					IModel<BuildableComponent> model) {
 				MySession mySession = MySession.get();
 				if (booleanIModel.getObject()) {
-					mySession.queueBranchToEnvironmentBuild(getEnvironment(), model.getObject().getName());
+					mySession.queueComponentToEnvironmentBuild(getEnvironment(), model.getObject());
 				} else {
-					mySession.removeBranchFromBuild(getEnvironment(), model.getObject().getName());
+					mySession.removeComponentFromBuild(getEnvironment(), model.getObject());
 				}
 				target.add(deploySelectedButton);
 			}
@@ -194,6 +194,7 @@ public class ComponentsTablePanel extends BasePanel {
 			@Override
 			protected void onSubmit(IModel<BuildableComponent> model, AjaxRequestTarget target, Form<?> form) {
 				buildFacade.deleteComponent(getEnvironment(), model.getObject());
+				MySession.get().removeComponentFromBuild(getEnvironment(), model.getObject());
 				target.add(form);
 			}
 		};

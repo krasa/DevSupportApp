@@ -10,7 +10,7 @@ import org.apache.wicket.model.Model;
  * @author Vojtech Krasa
  */
 public class DateModel<T> extends Model<String> {
-	public static final String DD_MM_YYYY_HH_MM = "dd.MM.yyyy HH:MM";
+	public static final String DD_MM_YYYY_HH_MM = "dd.MM.yyyy HH:mm:ss";
 	IModel<Date> date;
 	public final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat(DD_MM_YYYY_HH_MM);
 

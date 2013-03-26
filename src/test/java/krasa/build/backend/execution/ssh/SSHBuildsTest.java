@@ -6,7 +6,7 @@ import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.List;
 
-import krasa.build.backend.execution.StringBufferTail;
+import krasa.build.backend.execution.ProcessLog;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -51,7 +51,7 @@ public class SSHBuildsTest {
 
 			InputStream inputStream = channel.getInputStream();
 
-			StringBufferTail stringBufferTail = new StringBufferTail();
+			ProcessLog stringBufferTail = new ProcessLog();
 			stringBufferTail.receivingThread(inputStream).start();
 			stringBufferTail.printingThread(System.out).start();
 
