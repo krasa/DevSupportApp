@@ -35,13 +35,33 @@ public class ProcessLogTest {
 		Assert.assertEquals(COUNT + 5, next.getLength());
 		Assert.assertEquals(random + ",1,2,3,4,5", next.getText());
 
-		for (int j = 0; j < 5000; j++) {
+		for (int j = 0; j < 2000; j++) {
 			processLog.append("," + ++i);
 		}
+
+		next = processLog.getNext(0);
+		Assert.assertEquals(COUNT + 2005, next.getLength());
+		Assert.assertTrue(next.getText().endsWith("2005"));
+
+		for (int j = 0; j < 3000; j++) {
+			processLog.append("," + ++i);
+		}
+
 		next = processLog.getNext(0);
 		Assert.assertEquals(COUNT + 5005, next.getLength());
-		Assert.assertTrue(next.getText().substring(COUNT).startsWith("...2505 lines skipped"));
+		Assert.assertEquals(next.getText().substring(COUNT + 1).substring(0, "...2505 lines skipped".length()),
+				"...2505 lines skipped");
 		Assert.assertTrue(next.getText().endsWith("5005"));
+
+		next = processLog.getNext(COUNT);
+		Assert.assertEquals(COUNT + 5005, next.getLength());
+		Assert.assertEquals(next.getText().substring(1).substring(0, "...2505 lines skipped".length()),
+				"...2505 lines skipped");
+		Assert.assertTrue(next.getText().endsWith("5005"));
+
+		next = processLog.getNext(COUNT + 5000);
+		Assert.assertEquals(COUNT + 5005, next.getLength());
+		Assert.assertEquals(next.getText(), ",5001,5002,5003,5004,5005");
 
 	}
 }

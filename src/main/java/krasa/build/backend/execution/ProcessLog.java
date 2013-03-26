@@ -67,8 +67,8 @@ public class ProcessLog {
 		int dequeStart = Math.max(position - buffer.length(), 0);
 		if (!deque.isEmpty()) {
 			if (dequeueOffset > dequeStart) {
-				sb.append("\n...").append(dequeueOffset - dequeStart - deque.size()).append(" lines skipped\n");
-				resultPosition = resultPosition + dequeueOffset;
+				sb.append("\n...").append(dequeueOffset - Math.max((position - buffer.length()), 0)).append(
+						" lines skipped\n");
 				dequeStart = 0;
 			} else {
 				dequeStart = dequeStart - dequeueOffset;
