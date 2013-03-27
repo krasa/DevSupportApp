@@ -102,18 +102,13 @@ public class BuildFacadeImpl implements BuildFacade {
 	@Override
 	public void addAllMatchingComponents(Environment environment, String fieldValue) {
 		environment = environmentDAO.refresh(environment);
-		SvnFolder svnFolder = facade.findBranchByInCaseSensitiveName(fieldValue);
-		if (svnFolder != null) {
-			addBuildableComponent(environment, svnFolder.getName());
-		} else {
-			List<SvnFolder> branches = facade.findBranchesByNameLike(fieldValue);
-			for (SvnFolder branch : branches) {
-				String name = branch.getName();
-				BuildableComponent component = createComponent(name);
-				environment.add(component);
-				componentBuildDAO.save(component);
-				environmentDAO.save(environment);
-			}
+		List<SvnFolder> branches = facade.findBranchesByNameLike(fieldValue);
+		for (SvnFolder branch : branches) {
+			String name = branch.getName();
+			BuildableComponent component = createComponent(name);
+			environment.add(component);
+			componentBuildDAO.save(component);
+			environmentDAO.save(environment);
 		}
 	}
 
@@ -189,7 +184,7 @@ public class BuildFacadeImpl implements BuildFacade {
 	}
 
 	@Override
-	public List<BuildableComponent> getBranchBuilds(Environment environment) {
+	public List<BuildableComponent> getComponentsByEnvironment(Environment environment) {
 		Environment byId = environmentDAO.findById(environment.getId());
 		List<BuildableComponent> buildableComponents = new ArrayList<BuildableComponent>(byId.getBuildableComponetns());
 		Collections.sort(buildableComponents, new BuildableComponent.ComponentBuildComparator());

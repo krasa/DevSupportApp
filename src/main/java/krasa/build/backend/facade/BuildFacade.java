@@ -18,7 +18,7 @@ public interface BuildFacade {
 
 	void createEnvironment(String environmentName);
 
-	List<BuildableComponent> getBranchBuilds(Environment environment);
+	List<BuildableComponent> getComponentsByEnvironment(Environment environment);
 
 	@Null
 	ProcessAdapter refresh(BuildRequest buildRequest);

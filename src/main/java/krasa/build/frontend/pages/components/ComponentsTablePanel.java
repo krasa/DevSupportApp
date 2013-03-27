@@ -81,10 +81,8 @@ public class ComponentsTablePanel extends BasePanel {
 				super.onSubmit(target, form);
 				try {
 					Environment env = getEnvironment();
-					List<String> scheduledBranchesByEnvironmentId = MySession.get().getScheduledComponentsByEnvironmentId(
-							env);
-					ProcessAdapter deploy = buildFacade.build(new BuildRequest(scheduledBranchesByEnvironmentId,
-							env.getName()));
+					List<String> componentsByEnvironmentId = MySession.get().getScheduledComponentsByEnvironmentId(env);
+					ProcessAdapter deploy = buildFacade.build(new BuildRequest(componentsByEnvironmentId, env.getName()));
 					MySession.get().clear(env);
 					setResponsePage(new LogPage(deploy));
 				} catch (ProcessAlreadyRunning e) {
@@ -105,7 +103,7 @@ public class ComponentsTablePanel extends BasePanel {
 		return new DummyModelDataProvider<BuildableComponent>(new LoadableDetachableModel<List<BuildableComponent>>() {
 			@Override
 			protected List<BuildableComponent> load() {
-				return buildFacade.getBranchBuilds(model.getObject());
+				return buildFacade.getComponentsByEnvironment(model.getObject());
 			}
 		});
 	}
@@ -128,7 +126,7 @@ public class ComponentsTablePanel extends BasePanel {
 
 			@Override
 			public boolean isChecked(IModel<BuildableComponent> model) {
-				return MySession.get().isQueued(getEnvironment(), model.getObject().getName());
+				return MySession.get().isQueued(getEnvironment(), model.getObject());
 			}
 
 			@Override

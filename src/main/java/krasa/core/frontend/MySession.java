@@ -40,7 +40,7 @@ public class MySession extends WebSession {
 
 	private Integer current;
 	@Null
-	private MultiValueMap<Integer, String> scheduledBranchBuild;
+	private MultiValueMap<Integer, String> scheduledBuilds;
 
 	/**
 	 * Constructor. Note that {@link org.apache.wicket.request.cycle.RequestCycle} is not available until this
@@ -100,15 +100,20 @@ public class MySession extends WebSession {
 	}
 
 	private MultiValueMap<Integer, String> getScheduledComponentBuild() {
-		if (scheduledBranchBuild == null) {
-			scheduledBranchBuild = new LinkedMultiValueMap<Integer, String>();
+		if (scheduledBuilds == null) {
+			scheduledBuilds = new LinkedMultiValueMap<Integer, String>();
 		}
-		return scheduledBranchBuild;
+		return scheduledBuilds;
 	}
 
 	public void removeComponentFromBuild(Environment environment, BuildableComponent component) {
-		if (scheduledBranchBuild != null) {
-			scheduledBranchBuild.get(environment.getId()).remove(component.getName());
+		if (scheduledBuilds != null) {
+			Integer id = environment.getId();
+			String name = component.getName();
+			List<String> strings = scheduledBuilds.get(id);
+			if (strings != null) {
+				strings.remove(name);
+			}
 		}
 	}
 
@@ -125,12 +130,12 @@ public class MySession extends WebSession {
 		getScheduledComponentBuild().remove(environment.getId());
 	}
 
-	public boolean isQueued(@NotNull Environment environment, @NotNull String branchName) {
+	public boolean isQueued(@NotNull Environment environment, @NotNull BuildableComponent component) {
 		List<String> strings = getScheduledComponentBuild().get(environment.getId());
 		if (strings == null) {
 			return false;
 		}
-		return strings.contains(branchName);
+		return strings.contains(component.getName());
 
 	}
 }
