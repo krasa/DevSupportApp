@@ -15,7 +15,7 @@ import org.tmatesoft.svn.core.io.SVNRepository;
  */
 public class DisplayRepositoryTree {
 	public static void main(String[] args) throws SVNException {
-		SVNRepository repository = new SVNConnector("http://svn.apache.org/repos/asf/").getBaseRepositoryConnection();
+		SVNRepository repository = new SVNConnector().connect("http://svn.apache.org/repos/asf/");
 
 		listEntries(repository, "");
 

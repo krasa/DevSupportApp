@@ -11,10 +11,6 @@ import javax.persistence.Entity;
 
 import krasa.core.backend.domain.AbstractEntity;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-
 /**
  * @author Vojtech Krasa
  */
@@ -79,21 +75,6 @@ public class Branch extends AbstractEntity implements Serializable, Comparable, 
 	@Override
 	public int compareTo(Object o) {
 		return this.name.compareTo(((Branch) o).getName());
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		return EqualsBuilder.reflectionEquals(this, obj);
-	}
-
-	@Override
-	public String toString() {
-		return ReflectionToStringBuilder.toString(this);
-	}
-
-	@Override
-	public int hashCode() {
-		return HashCodeBuilder.reflectionHashCode(this);
 	}
 
 	@Override

@@ -6,12 +6,13 @@ import java.util.Iterator;
 import java.util.List;
 
 import krasa.merge.backend.SvnException;
+import krasa.merge.backend.domain.Repository;
 import krasa.merge.backend.domain.SvnFolder;
 import krasa.merge.backend.domain.Type;
+import krasa.merge.backend.svn.connection.SVNConnector;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.tmatesoft.svn.core.SVNDirEntry;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNNodeKind;
@@ -22,14 +23,17 @@ import org.tmatesoft.svn.core.io.SVNRepository;
  */
 public class SvnFolderProvider {
 	protected final Logger log = LoggerFactory.getLogger(getClass());
-	@Value("${svn.url.postfix}")
-	protected String urlPostfix;
-	@Value("${indexTrunk}")
-	protected Boolean indexTrunk = false;
+	protected final boolean indexTrunk;
 	private SVNRepository repository;
 
-	public SvnFolderProvider(SVNRepository repository) {
-		this.repository = repository;
+	public SvnFolderProvider(Repository repository) {
+		indexTrunk = repository.isIndexTrunk();
+		this.repository = new SVNConnector().connect(repository);
+	}
+
+	public SvnFolderProvider(Repository repository, final SVNRepository connection) {
+		indexTrunk = repository.isIndexTrunk();
+		this.repository = connection;
 	}
 
 	public List<SvnFolder> getProjectContent(String projectName, Boolean loadTags) {
@@ -50,7 +54,7 @@ public class SvnFolderProvider {
 		log.debug("getProjects start");
 		List<SVNDirEntry> result = new ArrayList<SVNDirEntry>();
 		try {
-			Collection projects = repository.getDir(urlPostfix, -1, null, (Collection) null);
+			Collection projects = repository.getDir("", -1, null, (Collection) null);
 			Iterator iterator = projects.iterator();
 			while (iterator.hasNext()) {
 				SVNDirEntry project = (SVNDirEntry) iterator.next();

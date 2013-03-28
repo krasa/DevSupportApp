@@ -5,6 +5,7 @@ import java.util.List;
 import krasa.core.backend.service.GlobalSettingsProvider;
 import krasa.merge.backend.dao.SvnFolderDAO;
 import krasa.merge.backend.domain.Branch;
+import krasa.merge.backend.domain.Repository;
 import krasa.merge.backend.domain.SvnFolder;
 import krasa.merge.backend.dto.ReportResult;
 import krasa.merge.backend.svn.SvnFolderProvider;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.tmatesoft.svn.core.SVNDirEntry;
 import org.tmatesoft.svn.core.SVNLogEntry;
+import org.tmatesoft.svn.core.io.SVNRepository;
 
 /**
  * @author Vojtech Krasa
@@ -31,15 +33,13 @@ public class ReportService {
 	private SvnFolderDAO svnFolderDAO;
 
 	@Autowired
-	private SVNConnector svnConnection;
-
-	@Autowired
 	private GlobalSettingsProvider globalSettingsProvider;
 
-	public ReportResult getReport() {
+	public ReportResult getReport(Repository repository) {
 		ReportResult reportResult = new ReportResult();
-		SvnReportProvider svnReportProvider = new SvnReportProvider(svnConnection.getBaseRepositoryConnection());
-		SvnFolderProvider svnFolderProvider = new SvnFolderProvider(svnConnection.getBaseRepositoryConnection());
+		SVNRepository connect = new SVNConnector().connect(repository);
+		SvnReportProvider svnReportProvider = new SvnReportProvider(connect);
+		SvnFolderProvider svnFolderProvider = new SvnFolderProvider(repository, connect);
 
 		List<Branch> selectedBranches = profileProvider.getSelectedBranches();
 		List<SvnFolder> branchesByNames = svnFolderDAO.findBranchesByNames(selectedBranches);

@@ -14,6 +14,10 @@ public class EntityModelWrapper<T extends AbstractEntity> implements IModel<T> {
 		id = wrappedModel.getObject().getId();
 	}
 
+	public EntityModelWrapper() {
+
+	}
+
 	@Override
 	public T getObject() {
 		return wrappedModel.getObject();
@@ -22,6 +26,11 @@ public class EntityModelWrapper<T extends AbstractEntity> implements IModel<T> {
 	@Override
 	public void detach() {
 		wrappedModel.detach();
+	}
+
+	public void setWrappedModel(IModel<T> wrappedModel) {
+		this.wrappedModel = wrappedModel;
+		id = wrappedModel.getObject().getId();
 	}
 
 	@Override

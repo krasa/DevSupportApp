@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
+<body>
+<wicket:panel>
+    <h2>Repositories:</h2>
+
+    <div wicket:id="list">
+        <span wicket:id="url"></span>
+        <a wicket:id="edit">edit</a>
+    </div>
+
+
+    <form wicket:id="form">
+        Url:<input wicket:id="url" type="text"/>
+        <input wicket:id="save" type="button" wicket:message="value:save"/>
+        <input wicket:id="delete" type="button" wicket:message="value:delete"/>
+    </form>
+</wicket:panel>
+</body>
+</html>

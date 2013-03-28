@@ -14,9 +14,6 @@ import javax.persistence.OneToMany;
 
 import krasa.core.backend.domain.AbstractEntity;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.tmatesoft.svn.core.SVNDirEntry;
@@ -33,6 +30,7 @@ public class SvnFolder extends AbstractEntity implements Displayable {
 			return o2.getName().compareTo(o1.getName());
 		}
 	};
+
 	@Column
 	private String name;
 	@Column
@@ -46,6 +44,8 @@ public class SvnFolder extends AbstractEntity implements Displayable {
 	private List<SvnFolder> childs;
 	@ManyToOne
 	private SvnFolder parent;
+	@ManyToOne(optional = true)
+	private Repository repository;
 
 	public SvnFolder() {
 	}
@@ -90,6 +90,14 @@ public class SvnFolder extends AbstractEntity implements Displayable {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public Repository getRepository() {
+		return repository;
+	}
+
+	public void setRepository(Repository repository) {
+		this.repository = repository;
 	}
 
 	public String getPath() {
@@ -150,21 +158,6 @@ public class SvnFolder extends AbstractEntity implements Displayable {
 			}
 		}
 		return commonFolders;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		return EqualsBuilder.reflectionEquals(this, obj);
-	}
-
-	@Override
-	public String toString() {
-		return ReflectionToStringBuilder.toString(this);
-	}
-
-	@Override
-	public int hashCode() {
-		return HashCodeBuilder.reflectionHashCode(this);
 	}
 
 	public Set<String> getChildsNamesAsSet() {

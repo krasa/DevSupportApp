@@ -137,15 +137,10 @@ public class SvnFolderDAO extends AbstractDAO<SvnFolder> {
 		return (SvnFolder) query.uniqueResult();
 	}
 
-	public void saveProjects(List<SVNDirEntry> projects) {
-		for (SVNDirEntry project : projects) {
-			saveProject(project);
-		}
-	}
-
-	private void saveProject(SVNDirEntry entry) {
+	public void saveProject(SVNDirEntry entry, krasa.merge.backend.domain.Repository repository) {
 		// path=name
 		SvnFolder project = new SvnFolder(entry, entry.getName(), Type.PROJECT);
+		project.setRepository(repository);
 		project.setType(Type.PROJECT);
 		save(project);
 	}

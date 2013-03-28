@@ -11,7 +11,6 @@ import krasa.merge.backend.dto.MergeInfoResult;
 import krasa.merge.backend.dto.MergeInfoResultItem;
 import krasa.merge.backend.service.conventions.ConventionsStrategyHolder;
 import krasa.merge.backend.svn.SvnMergeInfoProvider;
-import krasa.merge.backend.svn.connection.SVNConnector;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,9 +29,6 @@ public class MergeInfoService {
 	protected final Logger log = LoggerFactory.getLogger(getClass());
 	@Autowired
 	private SvnFolderDAO svnFolderDAO;
-
-	@Autowired
-	private SVNConnector svnConnection;
 
 	@Autowired
 	private GlobalSettingsProvider globalSettingsProvider;
@@ -63,7 +59,7 @@ public class MergeInfoService {
 	}
 
 	private List<MergeInfoResultItem> findMerges(SvnFolder to, List<SvnFolder> fromBranches, Boolean mergeOnSubfolders) {
-		SvnMergeInfoProvider svnMergeInfoProvider = new SvnMergeInfoProvider(svnConnection);
+		SvnMergeInfoProvider svnMergeInfoProvider = SvnMergeInfoProvider.create(to.getRepository());
 		List<MergeInfoResultItem> mergeInfoResultItems = new ArrayList<MergeInfoResultItem>();
 		try {
 			for (SvnFolder from : fromBranches) {

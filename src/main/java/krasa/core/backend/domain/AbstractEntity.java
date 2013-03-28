@@ -5,6 +5,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+
 @MappedSuperclass
 public abstract class AbstractEntity<T> {
 
@@ -47,6 +49,11 @@ public abstract class AbstractEntity<T> {
 	@Override
 	public int hashCode() {
 		return id != null ? id.hashCode() : 0;
+	}
+
+	@Override
+	public String toString() {
+		return ReflectionToStringBuilder.toString(this);
 	}
 
 }

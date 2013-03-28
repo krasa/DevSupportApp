@@ -1,7 +1,7 @@
 package krasa.merge.backend.svn.connection;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
+import krasa.merge.backend.domain.Repository;
+
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNNodeKind;
 import org.tmatesoft.svn.core.SVNURL;
@@ -14,28 +14,10 @@ import org.tmatesoft.svn.core.wc.SVNWCUtil;
 /**
  * @author Vojtech Krasa
  */
-@Service
 public class SVNConnector {
-	@Value("${svn.url}")
-	private String url;
 
-	private String connectedURL;
-	private SVNRepository connect;
-
-	protected SVNConnector() {
-	}
-
-	public SVNConnector(String url) {
-		this.url = url;
-	}
-
-	public SVNRepository getBaseRepositoryConnection() {
-		if (connect == null || !url.equals(connectedURL)) {
-			connect = connect(url);
-			connectedURL = url;
-
-		}
-		return connect;
+	public SVNRepository connect(Repository repository) {
+		return connect(repository.getUrl());
 	}
 
 	public SVNRepository connect(String connectionUrl) {
@@ -56,10 +38,10 @@ public class SVNConnector {
 
 			SVNNodeKind nodeKind = repository.checkPath("", -1);
 			if (nodeKind == SVNNodeKind.NONE) {
-				System.err.println("There is no entry at '" + url + "'.");
+				System.err.println("There is no entry at '" + connectionUrl + "'.");
 				System.exit(1);
 			} else if (nodeKind == SVNNodeKind.FILE) {
-				System.err.println("The entry at '" + url + "' is a file while a directory was expected.");
+				System.err.println("The entry at '" + connectionUrl + "' is a file while a directory was expected.");
 				System.exit(1);
 			}
 			return repository;

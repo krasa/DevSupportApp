@@ -14,9 +14,6 @@ import javax.persistence.ManyToMany;
 
 import krasa.core.backend.domain.AbstractEntity;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.tmatesoft.svn.core.SVNDirEntry;
@@ -122,18 +119,4 @@ public class Profile extends AbstractEntity<Profile> implements Serializable {
 		this.type = type;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		return EqualsBuilder.reflectionEquals(this, obj);
-	}
-
-	@Override
-	public String toString() {
-		return ReflectionToStringBuilder.toString(this);
-	}
-
-	@Override
-	public int hashCode() {
-		return HashCodeBuilder.reflectionHashCode(this);
-	}
 }

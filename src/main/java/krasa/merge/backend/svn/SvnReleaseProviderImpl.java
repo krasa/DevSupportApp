@@ -11,7 +11,6 @@ import java.util.Map;
 import krasa.merge.backend.domain.Profile;
 import krasa.merge.backend.svn.connection.SVNConnector;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.tmatesoft.svn.core.SVNDirEntry;
@@ -31,13 +30,11 @@ public class SvnReleaseProviderImpl implements SvnReleaseProvider {
 	private String url;
 	@Value("${releases.url.suffix}")
 	private String path;
-	@Autowired
-	SVNConnector svnConnector;
 
 	@Override
 	public List<Profile> getReleases() {
 		ArrayList<Profile> releases = new ArrayList<Profile>();
-		SVNRepository repository = svnConnector.connect(url);
+		SVNRepository repository = new SVNConnector().connect(url);
 
 		try {
 			Collection projects = repository.getDir(path, -1, null, (Collection) null);

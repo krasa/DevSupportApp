@@ -5,6 +5,7 @@ import java.util.List;
 import krasa.core.backend.domain.GlobalSettings;
 import krasa.merge.backend.domain.Displayable;
 import krasa.merge.backend.domain.Profile;
+import krasa.merge.backend.domain.Repository;
 import krasa.merge.backend.domain.SvnFolder;
 import krasa.merge.backend.dto.MergeInfoResult;
 import krasa.merge.backend.dto.ReportResult;
@@ -88,4 +89,9 @@ public interface Facade {
 
 	Boolean isLoadTags(String path);
 
+	void saveRepository(Repository modelObject);
+
+	List<? extends Repository> getAllRepositories();
+
+	void deleteRepository(Integer modelObject);
 }

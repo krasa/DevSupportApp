@@ -20,7 +20,6 @@ public class SvnReportProvider {
 	private SVNRepository repository;
 
 	public SvnReportProvider(SVNRepository repository) {
-
 		this.repository = repository;
 	}
 

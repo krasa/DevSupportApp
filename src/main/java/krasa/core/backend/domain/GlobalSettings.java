@@ -6,10 +6,9 @@ import java.util.Set;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ManyToOne;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import krasa.merge.backend.domain.Repository;
 
 /**
  * @author Vojtech Krasa
@@ -21,6 +20,13 @@ public class GlobalSettings extends AbstractEntity {
 
 	@ElementCollection(targetClass = String.class, fetch = FetchType.EAGER)
 	private Set<String> projectsWithLoadTags = new HashSet<String>();
+	@ElementCollection(targetClass = String.class, fetch = FetchType.EAGER)
+	@ManyToOne
+	private Repository defaultRepository;
+
+	public Repository getDefaultRepository() {
+		return defaultRepository;
+	}
 
 	public Boolean isLoadTags(String path) {
 		return projectsWithLoadTags.contains(path.toLowerCase());
@@ -48,21 +54,6 @@ public class GlobalSettings extends AbstractEntity {
 		} else {
 			projectsWithSubfoldersMergeSearching.remove(path.toLowerCase());
 		}
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		return EqualsBuilder.reflectionEquals(this, obj);
-	}
-
-	@Override
-	public String toString() {
-		return ReflectionToStringBuilder.toString(this);
-	}
-
-	@Override
-	public int hashCode() {
-		return HashCodeBuilder.reflectionHashCode(this);
 	}
 
 }

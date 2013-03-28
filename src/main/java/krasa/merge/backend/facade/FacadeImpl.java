@@ -18,6 +18,7 @@ import krasa.merge.backend.dao.SvnFolderDAO;
 import krasa.merge.backend.domain.Branch;
 import krasa.merge.backend.domain.Displayable;
 import krasa.merge.backend.domain.Profile;
+import krasa.merge.backend.domain.Repository;
 import krasa.merge.backend.domain.SvnFolder;
 import krasa.merge.backend.domain.Type;
 import krasa.merge.backend.dto.MergeInfoResult;
@@ -58,6 +59,7 @@ public class FacadeImpl implements Facade {
 	private GenericDAO<Environment> environmentDAO;
 	private GenericDAO<BuildableComponent> branchBuildDAO;
 	private GenericDAO<Branch> branchDAO;
+	private GenericDAO<Repository> repositoryGenericDAO;
 	@Autowired
 	private ReportService reportService;
 	@Autowired
@@ -82,6 +84,7 @@ public class FacadeImpl implements Facade {
 		this.branchBuildDAO = genericDAO.build(BuildableComponent.class);
 		this.branchDAO = genericDAO.build(Branch.class);
 		this.globalSettingsDAO = genericDAO.build(GlobalSettings.class);
+		this.repositoryGenericDAO = genericDAO.build(Repository.class);
 	}
 
 	@Override
@@ -231,6 +234,22 @@ public class FacadeImpl implements Facade {
 	}
 
 	@Override
+	public void saveRepository(Repository modelObject) {
+		repositoryGenericDAO.save(modelObject);
+	}
+
+	@Override
+	public List<? extends Repository> getAllRepositories() {
+		return repositoryGenericDAO.findAll();
+	}
+
+	@Override
+	public void deleteRepository(Integer id) {
+		Repository byId = repositoryGenericDAO.findById(id);
+		repositoryGenericDAO.delete(byId);
+	}
+
+	@Override
 	public void setMergeOnSubFoldersForProject(String path, Boolean modelObject) {
 		GlobalSettings settings = globalSettingsProvider.getGlobalSettings();
 		settings.setProjectsWithSubfoldersMergeSearching(path, modelObject);
@@ -239,7 +258,18 @@ public class FacadeImpl implements Facade {
 
 	@Override
 	public ReportResult getReport() {
-		return reportService.getReport();
+		return reportService.getReport(getDefaultRepository());
+	}
+
+	private Repository getDefaultRepository() {
+		Repository defaultRepository = globalSettingsProvider.getGlobalSettings().getDefaultRepository();
+		if (defaultRepository == null) {
+			defaultRepository = repositoryGenericDAO.findFirst();
+		}
+		if (defaultRepository == null) {
+			throw new IllegalStateException("no default repository exists");
+		}
+		return defaultRepository;
 	}
 
 	@Override

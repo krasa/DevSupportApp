@@ -4,12 +4,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import krasa.core.backend.dao.GenericDAO;
+import krasa.core.backend.dao.GenericDaoBuilder;
 import krasa.core.backend.service.GlobalSettingsProvider;
 import krasa.merge.backend.SvnException;
 import krasa.merge.backend.dao.SvnFolderDAO;
+import krasa.merge.backend.domain.Repository;
 import krasa.merge.backend.domain.SvnFolder;
 import krasa.merge.backend.svn.SvnFolderProvider;
-import krasa.merge.backend.svn.connection.SVNConnector;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -24,25 +26,33 @@ import org.tmatesoft.svn.core.SVNDirEntry;
 public class SvnFolderRefreshService {
 
 	@Autowired
-	private SVNConnector svnConnection;
-
-	@Autowired
 	private SvnFolderDAO svnFolderDAO;
+	private GenericDAO<Repository> repositoryGenericDAO;
 
 	@Autowired
 	private GlobalSettingsProvider globalSettingsProvider;
 
+	public SvnFolderRefreshService() {
+	}
+
+	@Autowired
+	public SvnFolderRefreshService(GenericDaoBuilder genericDaoBuilder) {
+		repositoryGenericDAO = genericDaoBuilder.build(Repository.class);
+	}
+
 	public void reloadProjects() {
-		SvnFolderProvider svnFolderProvider = new SvnFolderProvider(svnConnection.getBaseRepositoryConnection());
-		List<SVNDirEntry> projects = svnFolderProvider.getProjects();
+		List<Repository> all = repositoryGenericDAO.findAll();
 		Set<String> projectSet = new HashSet<String>();
-		for (SVNDirEntry project : projects) {
-			projectSet.add(project.getName());
-			if (svnFolderDAO.findProjectByName(project.getName()) == null) {
-				svnFolderDAO.saveProjects(projects);
+		for (Repository repository : all) {
+			SvnFolderProvider svnFolderProvider = new SvnFolderProvider(repository);
+			List<SVNDirEntry> projects = svnFolderProvider.getProjects();
+			for (SVNDirEntry project : projects) {
+				projectSet.add(project.getName());
+				if (svnFolderDAO.findProjectByName(project.getName()) == null) {
+					svnFolderDAO.saveProject(project, repository);
+				}
 			}
 		}
-
 		deleteProjectsNotInRepo(projectSet);
 	}
 
@@ -67,7 +77,7 @@ public class SvnFolderRefreshService {
 	}
 
 	private void refreshProject(SvnFolder project, boolean deleteProjectIfNotExistsInRepo) {
-		SvnFolderProvider provider = new SvnFolderProvider(svnConnection.getBaseRepositoryConnection());
+		SvnFolderProvider provider = new SvnFolderProvider(project.getRepository());
 		try {
 			Boolean loadTags = globalSettingsProvider.getGlobalSettings().isLoadTags(project.getPath());
 			List<SvnFolder> childs = provider.getProjectContent(project.getName(), loadTags);
