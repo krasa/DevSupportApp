@@ -5,10 +5,12 @@ import java.util.Arrays;
 import krasa.build.backend.domain.Environment;
 import krasa.build.backend.execution.adapter.ProcessAdapter;
 import krasa.build.backend.facade.BuildFacade;
+import krasa.build.frontend.pages.components.BuildLeftPanel;
 import krasa.build.frontend.pages.components.LogPanel;
 import krasa.core.frontend.pages.BasePage;
 import krasa.merge.backend.dto.BuildRequest;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.AbstractReadOnlyModel;
@@ -67,5 +69,10 @@ public class LogPage extends BasePage {
 		form = new Form("form");
 		form.add(new LogPanel("log", model));
 		add(form);
+	}
+
+	@Override
+	protected Component newLeftColumnPanel(String id) {
+		return new BuildLeftPanel(id, null);
 	}
 }
