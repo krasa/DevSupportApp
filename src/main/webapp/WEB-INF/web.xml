@@ -37,7 +37,7 @@
 		</init-param>
 		<init-param>
 			<param-name>org.atmosphere.useWebSocket</param-name>
-			<param-value>true</param-value>
+			<param-value>false</param-value>
 		</init-param>
 		<init-param>
 			<param-name>org.atmosphere.useNative</param-name>
@@ -59,7 +59,7 @@
 			<param-name>org.atmosphere.cpr.broadcastFilterClasses</param-name>
 			<param-value>org.apache.wicket.atmosphere.TrackMessageSizeFilter</param-value>
 		</init-param>
-		<load-on-startup>0</load-on-startup>
+		<load-on-startup>1</load-on-startup>
 		<async-supported>true</async-supported>
 	</servlet>
 	<servlet-mapping>

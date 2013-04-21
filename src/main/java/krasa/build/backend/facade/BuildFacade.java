@@ -6,6 +6,7 @@ import javax.validation.constraints.Null;
 
 import krasa.build.backend.domain.BuildableComponent;
 import krasa.build.backend.domain.Environment;
+import krasa.build.backend.exception.AlreadyExistsException;
 import krasa.build.backend.execution.ProcessStatus;
 import krasa.build.backend.execution.adapter.ProcessAdapter;
 import krasa.merge.backend.domain.Displayable;
@@ -16,7 +17,7 @@ public interface BuildFacade {
 
 	List<Environment> getEnvironments();
 
-	void createEnvironment(String environmentName);
+	Environment createEnvironment(String environmentName) throws AlreadyExistsException;
 
 	List<BuildableComponent> getComponentsByEnvironment(Environment environment);
 
@@ -34,4 +35,6 @@ public interface BuildFacade {
 	void addAllMatchingComponents(Environment object, String fieldValue);
 
 	List<Displayable> getMatchingComponents(String input);
+
+	Environment getEnvironmentByName(String s);
 }

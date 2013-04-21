@@ -9,10 +9,13 @@ import javax.persistence.ManyToOne;
 
 import krasa.core.backend.domain.AbstractEntity;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.springframework.beans.factory.annotation.Configurable;
 
+@Configurable
 @Entity
 public class BuildableComponent extends AbstractEntity implements Serializable {
 	private String name;
@@ -20,6 +23,19 @@ public class BuildableComponent extends AbstractEntity implements Serializable {
 	private Status status;
 	@ManyToOne(optional = false)
 	private Environment environment;
+
+	public BuildableComponent(String componentName) {
+		name = componentName;
+	}
+
+	public BuildableComponent() {
+	}
+
+	public static BuildableComponent newComponent(String name) {
+		BuildableComponent buildableComponent = new BuildableComponent();
+		buildableComponent.setName(name);
+		return buildableComponent;
+	}
 
 	public Environment getEnvironment() {
 		return environment;
@@ -29,21 +45,12 @@ public class BuildableComponent extends AbstractEntity implements Serializable {
 		this.environment = environment;
 	}
 
-	public static BuildableComponent newComponent(String name) {
-		BuildableComponent buildableComponent = new BuildableComponent();
-		buildableComponent.setName(name);
-		return buildableComponent;
-	}
-
 	public Status getStatus() {
 		return status;
 	}
 
 	public void setStatus(Status status) {
 		this.status = status;
-	}
-
-	public BuildableComponent() {
 	}
 
 	public Date getLastSuccessBuild() {
@@ -80,7 +87,7 @@ public class BuildableComponent extends AbstractEntity implements Serializable {
 	public static class ComponentBuildComparator implements Comparator<BuildableComponent> {
 		@Override
 		public int compare(BuildableComponent o1, BuildableComponent o2) {
-			return o1.getName().compareTo(o2.getName());
+			return ObjectUtils.compare(o1.getName(), o2.getName());
 		}
 	}
 }

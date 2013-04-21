@@ -2,6 +2,8 @@ package krasa.build.backend.domain;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
@@ -12,6 +14,7 @@ import javax.persistence.OneToMany;
 
 import krasa.core.backend.domain.AbstractEntity;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
@@ -19,7 +22,6 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 @Entity
 public class Environment extends AbstractEntity implements Serializable {
 	public static Object NAME = "name";
-
 	@Column(unique = true)
 	protected String name;
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "environment", orphanRemoval = true)
@@ -92,8 +94,33 @@ public class Environment extends AbstractEntity implements Serializable {
 		return hashMap;
 	}
 
-	public void add(BuildableComponent component) {
+	private void add(BuildableComponent component) {
 		component.setEnvironment(this);
 		buildableComponetns.add(component);
+	}
+
+	public BuildableComponent addBuildableComponent(String componentName) {
+		for (BuildableComponent buildableComponetn : buildableComponetns) {
+			if (buildableComponetn.getName().equals(componentName)) {
+				return null;
+			}
+		}
+		return createComponent(componentName);
+	}
+
+	private BuildableComponent createComponent(String componentName) {
+		BuildableComponent buildableComponent = new BuildableComponent(componentName);
+		add(buildableComponent);
+		return buildableComponent;
+	}
+
+	public static List<Environment> sortByName(List<Environment> all) {
+		Collections.sort(all, new Comparator<Environment>() {
+			@Override
+			public int compare(Environment o1, Environment o2) {
+				return ObjectUtils.compare(o1.getName(), o2.getName());
+			}
+		});
+		return all;
 	}
 }

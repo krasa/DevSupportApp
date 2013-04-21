@@ -8,11 +8,14 @@ import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
+import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
 public abstract class BasePage extends WebPage {
 
+	public static final String FEEDBACK = "feedback";
+	public static final String LEFT = "left";
 	@SpringBean
 	protected Facade facade;
 	public static final String CURRENT = "current";
@@ -52,18 +55,18 @@ public abstract class BasePage extends WebPage {
 			// subclass-driven components not yet initilized
 			addOrReplace(newTopMenuPanel("top"));
 		}
-		if (get("left") == null) {
+		if (get(LEFT) == null) {
 			// subclass-driven components not yet initilized
-			addOrReplace(newLeftColumnPanel("left"));
+			addOrReplace(newLeftColumnPanel(LEFT));
 		}
 		if (get("current") == null) {
 			// subclass-driven components not yet initilized
 			addOrReplace(newCurrentPanel("current"));
 		}
 
-		if (get("feedback") == null) {
+		if (get(FEEDBACK) == null) {
 			// subclass-driven components not yet initilized
-			FeedbackPanel feedback = new MyFeedbackPanel("feedback");
+			FeedbackPanel feedback = new MyFeedbackPanel(FEEDBACK);
 			addOrReplace(feedback);
 		}
 
@@ -88,6 +91,10 @@ public abstract class BasePage extends WebPage {
 	}
 
 	public FeedbackPanel getFeedbackPanel() {
-		return (FeedbackPanel) get("feedback");
+		return (FeedbackPanel) get(FEEDBACK);
+	}
+
+	public Panel getLeftColumnPanel() {
+		return (Panel) get(LEFT);
 	}
 }

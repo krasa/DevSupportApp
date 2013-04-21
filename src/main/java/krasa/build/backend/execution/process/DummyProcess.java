@@ -18,7 +18,7 @@ public class DummyProcess extends SshBuildProcess {
 	@Override
 	protected int doWork() throws IOException {
 		int i = 0;
-		while (i < 5000 && status != Status.KILLED) {
+		while (i < 50 && status != Status.KILLED) {
 			stringBufferTail.append(String.valueOf(++i)).newLine();
 			try {
 				Thread.sleep(10);

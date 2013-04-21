@@ -24,7 +24,10 @@ public class ProjectLink extends BookmarkablePageLink<String> {
 	@Override
 	public PageParameters getPageParameters() {
 		PageParameters pageParameters = new PageParameters();
-		pageParameters.add(SvnFolderBrowsePage.PATH_PARAMETER, linkParameter.getObject());
+		String object = linkParameter.getObject();
+		if (object != null) {
+			pageParameters.add(SvnFolderBrowsePage.PATH_PARAMETER, object);
+		}
 		return pageParameters;
 	}
 

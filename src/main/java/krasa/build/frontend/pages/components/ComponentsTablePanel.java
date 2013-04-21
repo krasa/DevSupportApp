@@ -178,6 +178,7 @@ public class ComponentsTablePanel extends BasePanel {
 				String componentName = model.getObject().getName();
 				try {
 					buildFacade.build(getDeploymentRequest(componentName));
+					info("Started building");
 					target.add(form);
 				} catch (ProcessAlreadyRunning e) {
 					info("already building");

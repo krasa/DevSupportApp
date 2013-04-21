@@ -11,6 +11,7 @@ import krasa.build.backend.dao.CommonBuildDao;
 import krasa.build.backend.domain.BuildableComponent;
 import krasa.build.backend.domain.Environment;
 import krasa.build.backend.domain.Status;
+import krasa.build.backend.exception.AlreadyExistsException;
 import krasa.build.backend.execution.ProcessStatus;
 import krasa.build.backend.execution.adapter.ProcessAdapter;
 import krasa.build.backend.execution.adapter.ProcessAdapterHolder;
@@ -93,9 +94,7 @@ public class BuildFacadeImpl implements BuildFacade {
 	@Override
 	public void addBuildableComponent(Environment environment, String componentName) {
 		environment = environmentDAO.refresh(environment);
-		BuildableComponent component = createComponent(componentName);
-		environment.add(component);
-		componentBuildDAO.save(component);
+		environment.addBuildableComponent(componentName);
 		environmentDAO.save(environment);
 	}
 
@@ -105,11 +104,9 @@ public class BuildFacadeImpl implements BuildFacade {
 		List<SvnFolder> branches = facade.findBranchesByNameLike(fieldValue);
 		for (SvnFolder branch : branches) {
 			String name = branch.getName();
-			BuildableComponent component = createComponent(name);
-			environment.add(component);
-			componentBuildDAO.save(component);
-			environmentDAO.save(environment);
+			addBuildableComponent(environment, name);
 		}
+		environmentDAO.save(environment);
 	}
 
 	@Override
@@ -119,8 +116,9 @@ public class BuildFacadeImpl implements BuildFacade {
 		return branchesByNameLikeAsDisplayable;
 	}
 
-	private BuildableComponent createComponent(String name) {
-		return buildableComponentResolver.createComponent(name);
+	@Override
+	public Environment getEnvironmentByName(String s) {
+		return environmentDAO.findOneBy("name", s);
 	}
 
 	@Override
@@ -170,16 +168,16 @@ public class BuildFacadeImpl implements BuildFacade {
 
 	@Override
 	public List<Environment> getEnvironments() {
-		return environmentDAO.findAll();
+		return Environment.sortByName(environmentDAO.findAll());
 	}
 
 	@Override
-	public void createEnvironment(String environmentName) {
+	public Environment createEnvironment(String environmentName) throws AlreadyExistsException {
 		List<Environment> by = environmentDAO.findBy(Environment.NAME, environmentName);
 		if (by.isEmpty()) {
-			environmentDAO.save(new Environment(environmentName));
+			return environmentDAO.save(new Environment(environmentName));
 		} else {
-			log.info("environment already created= " + environmentName);
+			throw new AlreadyExistsException(environmentName);
 		}
 	}
 

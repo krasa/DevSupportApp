@@ -13,10 +13,10 @@ import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
-@Service
-public abstract class AbstractDAO<T extends AbstractEntity> implements DAO<T> {
+@Repository
+public class UniversalDao {
 	protected final Logger log = LoggerFactory.getLogger(getClass());
 
 	@Autowired
@@ -26,74 +26,47 @@ public abstract class AbstractDAO<T extends AbstractEntity> implements DAO<T> {
 		return sf.getCurrentSession();
 	}
 
-	protected AbstractDAO() {
-	}
-
-	public AbstractDAO(Class<T> domainClass) {
-	}
-
-	@Override
-	public List<T> findBy(Object... propertyAndValue) {
+	public <T extends AbstractEntity> List<T> findBy(Class clazz, Object... propertyAndValue) {
 		final Session session = getSession();
-		final Criteria crit = session.createCriteria(getEntityClass());
+		final Criteria crit = session.createCriteria(clazz.getSimpleName());
 		for (int i = 0; i < propertyAndValue.length - 1; i = i + 2) {
 			crit.add(Restrictions.eq((String) propertyAndValue[i], propertyAndValue[i + 1]));
 		}
 		return crit.list();
 	}
 
-	@Override
-	public T findOneBy(Object... propertyAndValue) {
-		final Session session = getSession();
-		final Criteria crit = session.createCriteria(getEntityClass());
-		for (int i = 0; i < propertyAndValue.length - 1; i = i + 2) {
-			crit.add(Restrictions.eq((String) propertyAndValue[i], propertyAndValue[i + 1]));
-		}
-		return (T) crit.uniqueResult();
-	}
-
-	@Override
-	public void deleteAll() {
-		Query query = getSession().createQuery("delete from " + getEntityName());
+	public void deleteAll(Class clazz) {
+		Query query = getSession().createQuery("delete from " + clazz.getSimpleName());
 		query.executeUpdate();
 	}
 
-	@Override
-	public T findById(Integer id) {
-		return (T) getSession().get(getEntityClass(), id);
+	public <T extends AbstractEntity> T findById(Class<T> clazz, Integer id) {
+		return (T) getSession().get(clazz.getSimpleName(), id);
 	}
 
-	@Override
-	public List<T> findAll() {
-		return getSession().createQuery("from " + getEntityName()).list();
+	public <T extends AbstractEntity> List<T> findAll(Class clazz) {
+		return getSession().createQuery("from " + clazz.getSimpleName()).list();
 	}
 
-	protected String getEntityName() {
-		return getEntityClass().getCanonicalName();
-	}
-
-	@Override
-	public T findFirst() {
-		Object o = getSession().createQuery("SELECT min(id) from " + getEntityName()).uniqueResult();
+	public <T extends AbstractEntity> T findFirst(Class<T> clazz) {
+		Object o = getSession().createQuery("SELECT min(id) from " + clazz.getSimpleName()).uniqueResult();
 		if (o == null) {
 			return null;
 		}
 		Integer id = Integer.valueOf(o.toString());
-		return findById(id);
+		return findById(clazz, id);
 	}
 
-	@Override
-	public T findLast() {
-		Object o = getSession().createQuery("SELECT max(id) from " + getEntityName()).uniqueResult();
+	public <T extends AbstractEntity> T findLast(Class<T> clazz) {
+		Object o = getSession().createQuery("SELECT max(id) from " + clazz.getSimpleName()).uniqueResult();
 		if (o == null) {
 			return null;
 		}
 		Integer id = Integer.valueOf(o.toString());
-		return findById(id);
+		return findById(clazz, id);
 	}
 
-	@Override
-	public T save(T object) {
+	public <T extends AbstractEntity> T save(T object) {
 		if (object.getId() == null) {
 			getSession().persist(object);
 
@@ -103,18 +76,14 @@ public abstract class AbstractDAO<T extends AbstractEntity> implements DAO<T> {
 		return (T) object;
 	}
 
-	@Override
-	public int count() {
-		return Integer.valueOf(getSession().createQuery("SELECT COUNT(*) FROM " + getEntityName()).uniqueResult().toString());
+	public int count(Class clazz) {
+		return Integer.valueOf(getSession().createQuery("SELECT COUNT(*) FROM " + clazz.getSimpleName()).uniqueResult().toString());
 
 	}
 
-	@Override
-	public void delete(T object) {
+	public <T extends AbstractEntity> void delete(T object) {
 		getSession().delete(object);
 	}
-
-	protected abstract Class<T> getEntityClass();
 
 	protected Query query(String query) {
 		try {
@@ -158,8 +127,8 @@ public abstract class AbstractDAO<T extends AbstractEntity> implements DAO<T> {
 		}
 	}
 
-	public T refresh(T object) {
-		return findById(object.getId());
+	public <T extends AbstractEntity> T refresh(T object) {
+		return findById((Class<T>) object.getClass(), object.getId());
 	}
 
 }

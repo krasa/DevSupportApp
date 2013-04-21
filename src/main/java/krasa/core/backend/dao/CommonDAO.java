@@ -4,9 +4,9 @@ import krasa.core.backend.domain.AbstractEntity;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
-@Service
+@Repository
 public abstract class CommonDAO extends AbstractDAO {
 
 	@SuppressWarnings("unchecked")

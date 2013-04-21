@@ -23,4 +23,6 @@ public interface DAO<T extends AbstractEntity> {
 	int count();
 
 	T findFirst();
+
+	T findOneBy(Object... propertyAndValue);
 }
