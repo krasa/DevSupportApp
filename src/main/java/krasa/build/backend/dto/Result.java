@@ -31,4 +31,9 @@ public class Result implements Serializable {
 	public static Result empty(int position) {
 		return new Result(position, "");
 	}
+
+	@Override
+	public String toString() {
+		return "Result{" + "length=" + length + ", text='" + text + '\'' + '}';
+	}
 }

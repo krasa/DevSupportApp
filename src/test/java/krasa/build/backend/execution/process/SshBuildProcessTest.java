@@ -12,4 +12,12 @@ public class SshBuildProcessTest {
 						+ "[xxxxx@xxxxxxxx ~]$ exit");
 		Assert.assertEquals(1, exitStatusFromLog);
 	}
+
+	@Test
+	public void testGetExitStatusFromLog2() throws Exception {
+		int exitStatusFromLog = SshBuildProcess.getExitStatusFromLog(0,
+				"[I|2013/04/08 14:42:53] Build of component [cccc-xxx] returned code [ 0 ]\n"
+						+ "[xxxxx@ssssss ~]$ exit\n" + "logout");
+		Assert.assertEquals(1, exitStatusFromLog);
+	}
 }

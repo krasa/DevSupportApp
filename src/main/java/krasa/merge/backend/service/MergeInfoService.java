@@ -6,6 +6,7 @@ import java.util.List;
 
 import krasa.core.backend.service.GlobalSettingsProvider;
 import krasa.merge.backend.dao.SvnFolderDAO;
+import krasa.merge.backend.domain.Repository;
 import krasa.merge.backend.domain.SvnFolder;
 import krasa.merge.backend.dto.MergeInfoResult;
 import krasa.merge.backend.dto.MergeInfoResultItem;
@@ -59,7 +60,11 @@ public class MergeInfoService {
 	}
 
 	private List<MergeInfoResultItem> findMerges(SvnFolder to, List<SvnFolder> fromBranches, Boolean mergeOnSubfolders) {
-		SvnMergeInfoProvider svnMergeInfoProvider = SvnMergeInfoProvider.create(to.getRepository());
+		Repository repository = to.getRepository();
+		if (repository == null) {
+			repository = globalSettingsProvider.getGlobalSettings().getDefaultRepository();
+		}
+		SvnMergeInfoProvider svnMergeInfoProvider = SvnMergeInfoProvider.create(repository);
 		List<MergeInfoResultItem> mergeInfoResultItems = new ArrayList<MergeInfoResultItem>();
 		try {
 			for (SvnFolder from : fromBranches) {

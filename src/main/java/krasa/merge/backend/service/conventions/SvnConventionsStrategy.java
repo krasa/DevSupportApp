@@ -3,6 +3,7 @@ package krasa.merge.backend.service.conventions;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import krasa.core.backend.service.GlobalSettingsProvider;
 import krasa.merge.backend.dao.SvnFolderDAO;
@@ -27,11 +28,11 @@ public class SvnConventionsStrategy {
 		String searchFrom = toFolder.getSearchFrom();
 		if (searchFrom != null) {
 			List<SvnFolder> childs = toFolder.getParent().getChilds();
-			if (toFolder.getType() == Type.TRUNK || searchFrom.compareTo(toFolder.getName()) < 0) {
+			if (isTrunk(toFolder) || searchFrom.compareTo(toFolder.getName()) < 0) {
 				for (SvnFolder child : childs) {
 					String name = child.getName();
 					if (name.compareTo(searchFrom) >= 0
-							&& (toFolder.getType() == Type.TRUNK || name.compareTo(toFolder.getName()) < 0)) {
+							&& (isTrunk(toFolder) || name.compareTo(toFolder.getName()) < 0)) {
 						result.add(child);
 					}
 				}
@@ -44,7 +45,7 @@ public class SvnConventionsStrategy {
 				}
 			}
 		} else {
-			if (toFolder.getType() == Type.TRUNK) {
+			if (isTrunk(toFolder)) {
 				result.add(getNewestBranch(toFolder));
 			} else {
 				SvnFolder e = findFirstLowerBranch(toFolder);
@@ -56,6 +57,10 @@ public class SvnConventionsStrategy {
 		}
 		Collections.sort(result, SvnFolder.NAME_COMPARATOR);
 		return result;
+	}
+
+	protected boolean isTrunk(SvnFolder toFolder) {
+		return toFolder.getType() == Type.TRUNK;
 	}
 
 	private SvnFolder findFirstLowerBranch(SvnFolder toFolder) {
@@ -80,4 +85,7 @@ public class SvnConventionsStrategy {
 		return siblings.get(0);
 	}
 
+	public List<SvnFolder> postProcessAllBranches(Map<String, SvnFolder> childs) {
+		return Collections.emptyList();
+	}
 }

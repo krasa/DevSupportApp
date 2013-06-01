@@ -11,6 +11,7 @@ import krasa.merge.backend.SvnException;
 import krasa.merge.backend.dao.SvnFolderDAO;
 import krasa.merge.backend.domain.Repository;
 import krasa.merge.backend.domain.SvnFolder;
+import krasa.merge.backend.service.conventions.ConventionsStrategyHolder;
 import krasa.merge.backend.svn.SvnFolderProvider;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,7 +78,11 @@ public class SvnFolderRefreshService {
 	}
 
 	private void refreshProject(SvnFolder project, boolean deleteProjectIfNotExistsInRepo) {
-		SvnFolderProvider provider = new SvnFolderProvider(project.getRepository());
+		Repository repository = project.getRepository();
+		if (repository == null) {
+			repository = globalSettingsProvider.getGlobalSettings().getDefaultRepository();
+		}
+		SvnFolderProvider provider = new SvnFolderProvider(repository);
 		try {
 			Boolean loadTags = globalSettingsProvider.getGlobalSettings().isLoadTags(project.getPath());
 			List<SvnFolder> childs = provider.getProjectContent(project.getName(), loadTags);
@@ -92,6 +97,7 @@ public class SvnFolderRefreshService {
 				}
 			}
 			deleteNotExisting(project, childSet);
+			postProcessAfterRefresh(project);
 			svnFolderDAO.save(project);
 		} catch (SvnException e) {
 			if ("160013: Filesystem has no item".equals(e.getErrorCode().toString())) {
@@ -103,6 +109,12 @@ public class SvnFolderRefreshService {
 				}
 			}
 		}
+	}
+
+	private void postProcessAfterRefresh(SvnFolder project) {
+		List<SvnFolder> svnFolders = ConventionsStrategyHolder.getStrategy().postProcessAllBranches(
+				project.getChildsAsMapByName());
+		svnFolderDAO.save(project);
 	}
 
 	private void deleteNotExisting(SvnFolder project, Set<String> branchesSet) {

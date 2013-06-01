@@ -20,7 +20,7 @@
 	<aop:aspectj-autoproxy proxy-target-class="true"/>
 
 	<tx:annotation-driven transaction-manager="txManager" proxy-target-class="true"/>
-	<bean id="wicketApplication" class="krasa.core.frontend.WicketApplication"/>
+	<!--<bean id="wicketApplication" class="krasa.core.frontend.WicketApplication"/>-->
 
 
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">

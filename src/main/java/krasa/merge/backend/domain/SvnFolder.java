@@ -2,8 +2,10 @@ package krasa.merge.backend.domain;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -141,9 +143,16 @@ public class SvnFolder extends AbstractEntity implements Displayable {
 
 	public Set<String> getChildNamesAsSet() {
 		Set<String> svnFolders = new HashSet<String>();
-
 		for (SvnFolder child : childs) {
 			svnFolders.add(child.getName());
+		}
+		return svnFolders;
+	}
+
+	public Map<String, SvnFolder> getChildsAsMapByName() {
+		Map<String, SvnFolder> svnFolders = new HashMap<String, SvnFolder>();
+		for (SvnFolder child : childs) {
+			svnFolders.put(child.getName(), child);
 		}
 		return svnFolders;
 	}
@@ -160,17 +169,8 @@ public class SvnFolder extends AbstractEntity implements Displayable {
 		return commonFolders;
 	}
 
-	public Set<String> getChildsNamesAsSet() {
-		HashSet<String> strings = new HashSet<String>();
-		for (SvnFolder child : childs) {
-			strings.add(child.getName());
-		}
-		return strings;
-
-	}
-
 	public boolean childAlreadyExists(SvnFolder branch) {
-		Set<String> branchNamesAsSet = getChildsNamesAsSet();
+		Set<String> branchNamesAsSet = getChildNamesAsSet();
 		return branchNamesAsSet.contains(branch.getName());
 	}
 

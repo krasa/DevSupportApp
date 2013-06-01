@@ -56,4 +56,7 @@ public class GlobalSettings extends AbstractEntity {
 		}
 	}
 
+	public void setDefaultRepository(Repository defaultRepository) {
+		this.defaultRepository = defaultRepository;
+	}
 }

@@ -6,4 +6,5 @@ public enum Status {
 	FAILED,
 	EXCEPTION,
 	KILLED,
+	DISCONNECTED,
 }

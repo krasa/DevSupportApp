@@ -62,7 +62,7 @@ public class ProcessAdapter implements ProcessResultListener {
 			result = bufferTail.getNext(position);
 		}
 		if (result.isNotEmpty()) {
-			log.debug("getNextLog:" + position + " " + Utils.toLogFormat(result.getText()));
+			log.trace("getNextLog:" + position + " " + Utils.toLogFormat(result.getText()));
 		}
 		return result;
 	}

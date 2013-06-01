@@ -14,7 +14,7 @@ public class BuildCommandBuilderStrategy {
 		StringBuilder sb = new StringBuilder();
 		sb.append("echo \"ENV ").append(environment);
 		for (String ss : request.getComponents()) {
-			if (ss.startsWith("BUILD ")) {
+			if (ss.startsWith("BUILD") || ss.startsWith("RUN")) {
 				sb.append("\n").append(ss);
 			} else {
 				String[] split = ss.split("_");

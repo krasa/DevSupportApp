@@ -91,7 +91,7 @@ public class ProcessLog {
 		while (!isStop() && (line = r.readLine()) != null) {
 			append(line).newLine();
 			if (until.equals(line)) {
-				log.debug("until condition received: " + line);
+				log.trace("until condition received: " + line);
 				return;
 			}
 		}
@@ -101,7 +101,7 @@ public class ProcessLog {
 
 	@Override
 	public String toString() {
-		return buffer.toString();
+		return getNext(0).getText();
 	}
 
 	public Thread printingThread(final PrintStream out) {

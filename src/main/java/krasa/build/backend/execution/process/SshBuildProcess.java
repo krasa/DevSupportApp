@@ -103,6 +103,8 @@ public class SshBuildProcess implements Process {
 			String substring1 = substring.substring(start, end);
 			exitStatus = Integer.parseInt(substring1.trim());
 			log.debug("exit status from log: " + exitStatus);
+		} else {
+			log.warn("unknown result:	" + substring);
 		}
 		return exitStatus;
 	}
@@ -122,8 +124,8 @@ public class SshBuildProcess implements Process {
 	@Override
 	public ProcessStatus getStatus() {
 		if (instance != null) {
-			if (processStatus.getStatus() == null || processStatus.getStatus() == Status.IN_PROGRESS) {
-				processStatus.setStatus(instance.isConnected() ? Status.IN_PROGRESS : Status.KILLED);
+			if (!instance.isConnected() && processStatus.getStatus() == Status.IN_PROGRESS) {
+				processStatus.setStatus(Status.DISCONNECTED);
 			}
 		}
 		return processStatus;

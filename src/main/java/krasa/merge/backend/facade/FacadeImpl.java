@@ -236,6 +236,11 @@ public class FacadeImpl implements Facade {
 	@Override
 	public void saveRepository(Repository modelObject) {
 		repositoryGenericDAO.save(modelObject);
+		GlobalSettings globalSettings = getGlobalSettings();
+		if (globalSettings.getDefaultRepository() == null) {
+			globalSettings.setDefaultRepository(modelObject);
+			globalSettingsDAO.save(globalSettings);
+		}
 	}
 
 	@Override

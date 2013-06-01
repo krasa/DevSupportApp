@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 
@@ -18,6 +19,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 @Configurable
 @Entity
 public class BuildableComponent extends AbstractEntity implements Serializable {
+	@Column(length = 1000)
 	private String name;
 	private Date lastSuccessBuild;
 	private Status status;
