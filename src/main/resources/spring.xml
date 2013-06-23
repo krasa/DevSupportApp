@@ -22,14 +22,6 @@
 	<tx:annotation-driven transaction-manager="txManager" proxy-target-class="true"/>
 	<!--<bean id="wicketApplication" class="krasa.core.frontend.WicketApplication"/>-->
 
-
-	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-		<property name="driverClassName" value="org.hsqldb.jdbcDriver"/>
-		<property name="url" value="jdbc:hsqldb:file:db.hsqldb"/>
-		<property name="username" value="sa"/>
-		<property name="password" value=""/>
-	</bean>
-
 	<util:properties id="hibernateProperties">
 		<prop key="hibernate.dialect">org.hibernate.dialect.HSQLDialect</prop>
 	</util:properties>
@@ -69,5 +61,24 @@
 		</property>
 	</bean>
 
+
+	<beans profile="!IN_MEMORY">
+		<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+			<property name="driverClassName" value="org.hsqldb.jdbcDriver"/>
+			<!--<property name="url" value="jdbc:hsqldb:file:db.hsqldb"/>-->
+			<property name="url" value="jdbc:hsqldb:hsql//localhost/svnmergeinfo"/>
+			<property name="username" value="sa"/>
+			<property name="password" value=""/>
+		</bean>
+	</beans>
+
+	<beans profile="IN_MEMORY">
+		<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+			<property name="driverClassName" value="org.hsqldb.jdbcDriver"/>
+			<property name="url" value="jdbc:hsqldb:mem:aname"/>
+			<property name="username" value="sa"/>
+			<property name="password" value=""/>
+		</bean>
+	</beans>
 
 </beans>

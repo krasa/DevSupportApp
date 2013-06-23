@@ -1,25 +1,21 @@
 package krasa.build.backend.execution.process;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
 import krasa.build.backend.domain.Status;
-import krasa.build.backend.execution.ProcessLog;
 import krasa.build.backend.execution.ProcessStatus;
 import krasa.build.backend.execution.ssh.SCPInfo;
 import krasa.build.backend.execution.ssh.SSHManager;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Value;
 
 import com.jcraft.jsch.Channel;
 
-public class SshBuildProcess implements Process {
-	protected final static Logger log = LoggerFactory.getLogger(SshBuildProcess.class);
+public class SshBuildProcess extends AbstractProcess {
 	@Value("${ssh.username}")
 	String userName;
 	@Value("${ssh.password}")
@@ -27,18 +23,14 @@ public class SshBuildProcess implements Process {
 	@Value("${ssh.connectionIP}")
 	String connectionIP;
 	protected SSHManager instance;
-	protected ProcessLog stringBufferTail;
 	protected List<String> command;
-	ProcessStatus processStatus = new ProcessStatus();
-	List<ProcessResultListener> processResultListeners = new ArrayList<ProcessResultListener>();
 
-	public SshBuildProcess(ProcessLog stringBufferTail, List<String> command) {
-		this.stringBufferTail = stringBufferTail;
-		this.command = command;
+	protected SshBuildProcess() {
 	}
 
-	public boolean addListener(ProcessResultListener processResultListener) {
-		return processResultListeners.add(processResultListener);
+	public SshBuildProcess(ProcessLog stringBufferTail, List<String> command) {
+		this.processLog = stringBufferTail;
+		this.command = command;
 	}
 
 	private Properties getProperties() {
@@ -48,33 +40,15 @@ public class SshBuildProcess implements Process {
 	}
 
 	@Override
-	public void run() {
-		processStatus.setStatus(Status.IN_PROGRESS);
+	public void runInternal() throws Exception {
 		try {
-			stringBufferTail.newLine().append("--- PROCESS STARTED ---");
-			int i = doWork();
-
-			if (i == 0) {
-				stringBufferTail.newLine().append("--- PROCESS FINISHED ---");
-				processStatus.setStatus(Status.SUCCESS);
-			} else {
-				processStatus.setStatus(Status.FAILED);
-				stringBufferTail.newLine().append("--- PROCESS FAILED ---");
-			}
-			// close only after all commands are sent
+			processLog.newLine().append("--- PROCESS STARTED ---");
+			doWork();
 		} catch (Exception e) {
-			processStatus.setStatus(Status.EXCEPTION);
-			stringBufferTail.newLine().append("--- PROCESS FAILED ---");
-			log.error(e.getMessage(), e);
-			processStatus.setException(e);
-		} finally {
-			onFinally();
+			processLog.newLine().append("--- PROCESS FAILED ---");
+			processLog.newLine().append(ExceptionUtils.getStackTrace(e));
+			throw e;
 		}
-	}
-
-	protected void onFinally() {
-		instance.close();
-		notifyListeners();
 	}
 
 	protected int doWork() throws IOException {
@@ -83,18 +57,26 @@ public class SshBuildProcess implements Process {
 		// (without prompts) is returned
 		// stringBuilder.printingThread(System.out).start();
 		Channel channel = instance.runCommands(command);
-		stringBufferTail.receiveUntilLineEquals(channel.getInputStream(), "logout");
+		processLog.receiveUntilLineEquals(channel.getInputStream(), "logout");
 
 		channel.disconnect();
 
 		int exitStatus = channel.getExitStatus();
 
-		log.debug("exit status: " + exitStatus);
-		exitStatus = getExitStatusFromLog(exitStatus, stringBufferTail.toString());
+		log.info("exit status: " + exitStatus);
+		exitStatus = getExitStatusFromLog(exitStatus, processLog.getContent());
+
+		if (exitStatus == 0) {
+			processLog.newLine().append("--- PROCESS FINISHED ---");
+			processStatus.setStatus(Status.SUCCESS);
+		} else {
+			processStatus.setStatus(Status.FAILED);
+			processLog.newLine().append("--- PROCESS FAILED ---");
+		}
 		return exitStatus;
 	}
 
-	protected static int getExitStatusFromLog(int exitStatus, String logContent) {
+	protected int getExitStatusFromLog(int exitStatus, String logContent) {
 		int start1 = logContent.length() - 100;
 		String substring = StringUtils.substring(logContent, start1 > 0 ? start1 : 0);
 		if (substring.contains("returned code [")) {
@@ -102,23 +84,17 @@ public class SshBuildProcess implements Process {
 			int end = substring.indexOf("]", start);
 			String substring1 = substring.substring(start, end);
 			exitStatus = Integer.parseInt(substring1.trim());
-			log.debug("exit status from log: " + exitStatus);
+			log.info("exit status from log: " + exitStatus);
 		} else {
 			log.warn("unknown result:	" + substring);
 		}
 		return exitStatus;
 	}
 
-	protected void notifyListeners() {
-		for (ProcessResultListener processResultListener : processResultListeners) {
-			processResultListener.onResult(processStatus);
-		}
-	}
-
 	@Override
-	public void stop() {
-		processStatus.setStatus(Status.KILLED);
-		onFinally();
+	protected void onFinally() {
+		instance.close();
+		super.onFinally();
 	}
 
 	@Override
@@ -130,4 +106,5 @@ public class SshBuildProcess implements Process {
 		}
 		return processStatus;
 	}
+
 }

@@ -1,10 +1,12 @@
 package krasa.build.backend.execution;
 
+import java.util.Arrays;
 import java.util.Collections;
 
-import krasa.build.backend.execution.adapter.ProcessAdapter;
+import krasa.build.backend.domain.BuildJob;
+import krasa.build.backend.domain.BuildRequest;
 import krasa.build.backend.execution.process.DummyProcess;
-import krasa.merge.backend.dto.BuildRequest;
+import krasa.build.backend.execution.process.ProcessLog;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
@@ -18,18 +20,19 @@ public class DummyProcessBuilder extends ProcessBuilder {
 	AutowireCapableBeanFactory beanFactory;
 
 	@Override
-	public ProcessAdapter create(BuildRequest request) {
-
+	public BuildJob create(BuildRequest request) {
 		ProcessLog log = new ProcessLog();
+		request.setCommand(Arrays.toString(request.getBuildableComponents().toArray()));
 
 		DummyProcess process = new DummyProcess(log, Collections.<String> emptyList());
-		ProcessAdapter processAdapter = new ProcessAdapter(process, request, log);
-		process.addListener(processAdapter);
+		BuildJob buildJob = new BuildJob(process, request);
 
-		beanFactory.autowireBean(processAdapter);
+		process.addListener(buildJob);
+
+		beanFactory.autowireBean(buildJob);
 		beanFactory.autowireBean(process);
 
-		return processAdapter;
+		return buildJob;
 	}
 
 }

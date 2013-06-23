@@ -1,4 +1,4 @@
-package krasa.build.backend.execution;
+package krasa.build.backend.execution.process;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,7 +7,6 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 
 import krasa.build.backend.dto.Result;
-import krasa.build.backend.execution.process.SshBuildProcess;
 import krasa.core.backend.common.ArrayListDeque;
 
 import org.slf4j.Logger;
@@ -17,11 +16,18 @@ public class ProcessLog {
 	protected final static Logger log = LoggerFactory.getLogger(SshBuildProcess.class);
 	public static final int NUM_ELEMENTS = 2500;
 	public static final int BUFFER_MAX_LENGTH = 2500;
-
 	protected final StringBuilder buffer = new StringBuilder();
 	protected final ArrayListDeque<String> deque = new ArrayListDeque<String>(NUM_ELEMENTS);
 	boolean stop = false;
 	int dequeueOffset = 0;
+
+	public String getContent() {
+		return getNext(0).getText();
+	}
+
+	public void setContent(String content) {
+		append(content);
+	}
 
 	private synchronized void appendProxy(String str) {
 		if (buffer.length() > BUFFER_MAX_LENGTH) {
@@ -96,12 +102,6 @@ public class ProcessLog {
 			}
 		}
 		log.debug("receiving done");
-
-	}
-
-	@Override
-	public String toString() {
-		return getNext(0).getText();
 	}
 
 	public Thread printingThread(final PrintStream out) {

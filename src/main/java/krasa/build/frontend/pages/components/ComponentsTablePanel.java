@@ -1,26 +1,30 @@
 package krasa.build.frontend.pages.components;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import krasa.build.backend.domain.BuildableComponent;
 import krasa.build.backend.domain.Environment;
+import krasa.build.backend.dto.BuildableComponentDto;
 import krasa.build.backend.exception.ProcessAlreadyRunning;
-import krasa.build.backend.execution.adapter.ProcessAdapter;
+import krasa.build.backend.domain.BuildJob;
 import krasa.build.backend.facade.BuildFacade;
 import krasa.build.frontend.pages.LogPage;
 import krasa.core.frontend.MySession;
+import krasa.core.frontend.commons.EditablePanel;
 import krasa.core.frontend.commons.MyFeedbackPanel;
 import krasa.core.frontend.commons.table.BookmarkableColumn;
 import krasa.core.frontend.commons.table.ButtonColumn;
 import krasa.core.frontend.commons.table.CheckBoxColumn;
 import krasa.core.frontend.commons.table.DateColumn;
 import krasa.core.frontend.commons.table.DummyModelDataProvider;
+import krasa.core.frontend.commons.table.PropertyEditableColumn;
 import krasa.core.frontend.components.BasePanel;
-import krasa.merge.backend.dto.BuildRequest;
+import krasa.build.backend.domain.BuildRequest;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.atmosphere.Subscribe;
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackDefaultDataTable;
@@ -57,8 +61,8 @@ public class ComponentsTablePanel extends BasePanel {
 		add(deploySelectedButton = deployButton());
 	}
 
-	private AjaxFallbackDefaultDataTable<BuildableComponent, String> createTable(IModel<Environment> environmentIModel) {
-		return new AjaxFallbackDefaultDataTable<BuildableComponent, String>("branches", getColumns(),
+	private AjaxFallbackDefaultDataTable<BuildableComponentDto, String> createTable(IModel<Environment> environmentIModel) {
+		return new AjaxFallbackDefaultDataTable<BuildableComponentDto, String>("branches", getColumns(),
 				getModel(environmentIModel), 100);
 	}
 
@@ -81,10 +85,17 @@ public class ComponentsTablePanel extends BasePanel {
 				super.onSubmit(target, form);
 				try {
 					Environment env = getEnvironment();
-					List<String> componentsByEnvironmentId = MySession.get().getScheduledComponentsByEnvironmentId(env);
-					ProcessAdapter deploy = buildFacade.build(new BuildRequest(componentsByEnvironmentId, env.getName()));
+					Set<Integer> components = MySession.get().getScheduledComponentsByEnvironmentId(env);
+					List<BuildableComponent> componentsByEnvironment = buildFacade.getComponentsByEnvironment(env);
+					List<BuildableComponent> componentsToBuild = new ArrayList<BuildableComponent>();
+					for (BuildableComponent buildableComponent : componentsByEnvironment) {
+						if (components.contains(buildableComponent.getId())) {
+							componentsToBuild.add(buildableComponent);
+						}
+					}
+					BuildJob job = buildFacade.build(new BuildRequest(componentsToBuild));
 					MySession.get().clear(env);
-					setResponsePage(new LogPage(deploy));
+					setResponsePage(new LogPage(LogPage.params(job)));
 				} catch (ProcessAlreadyRunning e) {
 					info("already building");
 					target.add(feedback);
@@ -99,39 +110,53 @@ public class ComponentsTablePanel extends BasePanel {
 		};
 	}
 
-	private DummyModelDataProvider<BuildableComponent> getModel(final IModel<Environment> model) {
-		return new DummyModelDataProvider<BuildableComponent>(new LoadableDetachableModel<List<BuildableComponent>>() {
+	private DummyModelDataProvider<BuildableComponentDto> getModel(final IModel<Environment> model) {
+		return new DummyModelDataProvider<>(new LoadableDetachableModel<List<BuildableComponentDto>>() {
 			@Override
-			protected List<BuildableComponent> load() {
-				return buildFacade.getComponentsByEnvironment(model.getObject());
+			protected List<BuildableComponentDto> load() {
+				return BuildableComponentDto.transform(buildFacade.getComponentsByEnvironment(model.getObject()));
 			}
 		});
 	}
 
-	private List<IColumn<BuildableComponent, String>> getColumns() {
-		final ArrayList<IColumn<BuildableComponent, String>> columns = new ArrayList<IColumn<BuildableComponent, String>>();
+	private List<IColumn<BuildableComponentDto, String>> getColumns() {
+		final ArrayList<IColumn<BuildableComponentDto, String>> columns = new ArrayList<IColumn<BuildableComponentDto, String>>();
 		columns.add(checkBoxColumn());
-		columns.add(new BookmarkableColumn<BuildableComponent, String>(new Model<String>("name"), "name", "name"));
-		columns.add(new DateColumn<BuildableComponent>(new Model<String>("last successful build"), "lastSuccessBuild",
-				"lastSuccessBuild"));
-		columns.add(new PropertyColumn<BuildableComponent, String>(new Model<String>("status"), "status", "status"));
+		columns.add(new BookmarkableColumn<BuildableComponentDto, String>(new Model<String>("name"), "name", "name"));
+		columns.add(new PropertyEditableColumn<BuildableComponentDto, String>(new Model<String>("buildMode"), "buildMode",
+				"buildMode", 60) {
+			@Override
+			protected void decoratePanel(final EditablePanel<BuildableComponentDto> panel) {
+				super.decoratePanel(panel);
+				panel.getTextfield().add(new OnChangeAjaxBehavior() {
+					@Override
+					protected void onUpdate(AjaxRequestTarget target) {
+						BuildableComponentDto defaultModelObject = (BuildableComponentDto) panel.getDefaultModelObject();
+						buildFacade.saveBuildMode(defaultModelObject.getId(), defaultModelObject.getBuildMode());
+					}
+				});
+			}
+		});
+		columns.add(new DateColumn<BuildableComponentDto>(new Model<String>("last build"), "lastBuildTime",
+				"lastBuildTime"));
+		columns.add(new PropertyColumn<BuildableComponentDto, String>(new Model<String>("last build status"), "status", "status"));
 		columns.add(buildColumn());
 		columns.add(goToProcessColumn());
 		columns.add(deleteColumn());
 		return columns;
 	}
 
-	private CheckBoxColumn<BuildableComponent> checkBoxColumn() {
-		return new CheckBoxColumn<BuildableComponent>(new Model<String>("")) {
+	private CheckBoxColumn<BuildableComponentDto> checkBoxColumn() {
+		return new CheckBoxColumn<BuildableComponentDto>(new Model<String>("")) {
 
 			@Override
-			public boolean isChecked(IModel<BuildableComponent> model) {
+			public boolean isChecked(IModel<BuildableComponentDto> model) {
 				return MySession.get().isQueued(getEnvironment(), model.getObject());
 			}
 
 			@Override
 			protected void onUpdate(AjaxRequestTarget target, IModel<Boolean> booleanIModel,
-					IModel<BuildableComponent> model) {
+									IModel<BuildableComponentDto> model) {
 				MySession mySession = MySession.get();
 				if (booleanIModel.getObject()) {
 					mySession.queueComponentToEnvironmentBuild(getEnvironment(), model.getObject());
@@ -147,37 +172,30 @@ public class ComponentsTablePanel extends BasePanel {
 		return environmentIModel.getObject();
 	}
 
-	private ButtonColumn<BuildableComponent> goToProcessColumn() {
-		return new ButtonColumn<BuildableComponent>(new Model<String>("Go to process")) {
+	private ButtonColumn<BuildableComponentDto> goToProcessColumn() {
+		return new ButtonColumn<BuildableComponentDto>(new Model<String>("Go to process")) {
 			@Override
-			public void populateItem(Item<ICellPopulator<BuildableComponent>> components, String s,
-					IModel<BuildableComponent> model) {
+			public void populateItem(Item<ICellPopulator<BuildableComponentDto>> components, String s,
+									 IModel<BuildableComponentDto> model) {
 				super.populateItem(components, s, model);
-				String componentName = model.getObject().getName();
-				ProcessAdapter refresh = buildFacade.refresh(getDeploymentRequest(componentName));
-				components.setEnabled(refresh != null);
+				BuildableComponentDto component = model.getObject();
+				components.setEnabled(component.getBuildJobId() != null);
 			}
 
 			@Override
-			protected void onSubmit(final IModel<BuildableComponent> model, AjaxRequestTarget target, Form<?> form) {
-				setResponsePage(new LogPage(environmentIModel, new LoadableDetachableModel<String>() {
-
-					@Override
-					protected String load() {
-						return model.getObject().getName();
-					}
-				}));
+			protected void onSubmit(final IModel<BuildableComponentDto> model, AjaxRequestTarget target, Form<?> form) {
+				BuildableComponentDto component = model.getObject();
+				setResponsePage(LogPage.class, LogPage.params(component));
 			}
 		};
 	}
 
-	private ButtonColumn<BuildableComponent> buildColumn() {
-		return new ButtonColumn<BuildableComponent>(new Model<String>("Build")) {
+	private ButtonColumn<BuildableComponentDto> buildColumn() {
+		return new ButtonColumn<BuildableComponentDto>(new Model<String>("Build")) {
 			@Override
-			protected void onSubmit(IModel<BuildableComponent> model, AjaxRequestTarget target, Form<?> form) {
-				String componentName = model.getObject().getName();
+			protected void onSubmit(IModel<BuildableComponentDto> model, AjaxRequestTarget target, Form<?> form) {
 				try {
-					buildFacade.build(getDeploymentRequest(componentName));
+					buildFacade.buildComponent(model.getObject());
 					info("Started building");
 					target.add(form);
 				} catch (ProcessAlreadyRunning e) {
@@ -188,19 +206,15 @@ public class ComponentsTablePanel extends BasePanel {
 		};
 	}
 
-	private IColumn<BuildableComponent, String> deleteColumn() {
-		return new ButtonColumn<BuildableComponent>(new Model<String>("Delete")) {
+	private IColumn<BuildableComponentDto, String> deleteColumn() {
+		return new ButtonColumn<BuildableComponentDto>(new Model<String>("Delete")) {
 			@Override
-			protected void onSubmit(IModel<BuildableComponent> model, AjaxRequestTarget target, Form<?> form) {
-				buildFacade.deleteComponent(getEnvironment(), model.getObject());
+			protected void onSubmit(IModel<BuildableComponentDto> model, AjaxRequestTarget target, Form<?> form) {
+				buildFacade.deleteComponentById(model.getObject().getId());
 				MySession.get().removeComponentFromBuild(getEnvironment(), model.getObject());
 				target.add(form);
 			}
 		};
-	}
-
-	private BuildRequest getDeploymentRequest(String componentName) {
-		return new BuildRequest(Arrays.asList(componentName), getEnvironment().getName());
 	}
 
 }

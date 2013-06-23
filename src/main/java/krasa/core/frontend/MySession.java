@@ -1,14 +1,16 @@
 package krasa.core.frontend;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.Cookie;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
 
-import krasa.build.backend.domain.BuildableComponent;
 import krasa.build.backend.domain.Environment;
+import krasa.build.backend.dto.BuildableComponentDto;
 import krasa.merge.backend.domain.Profile;
 import krasa.merge.backend.facade.Facade;
 
@@ -40,7 +42,7 @@ public class MySession extends WebSession {
 
 	private Integer current;
 	@Null
-	private MultiValueMap<Integer, String> scheduledBuilds;
+	private MultiValueMap<Integer, Integer> scheduledBuilds;
 
 	/**
 	 * Constructor. Note that {@link org.apache.wicket.request.cycle.RequestCycle} is not available until this
@@ -95,47 +97,47 @@ public class MySession extends WebSession {
 		return getCurrent().getId();
 	}
 
-	public void queueComponentToEnvironmentBuild(Environment environment, BuildableComponent component) {
-		getScheduledComponentBuild().add(environment.getId(), component.getName());
+	public void queueComponentToEnvironmentBuild(Environment environment, BuildableComponentDto component) {
+		getScheduledComponentBuild().add(environment.getId(), component.getId());
 	}
 
-	private MultiValueMap<Integer, String> getScheduledComponentBuild() {
+	private MultiValueMap<Integer, Integer> getScheduledComponentBuild() {
 		if (scheduledBuilds == null) {
-			scheduledBuilds = new LinkedMultiValueMap<Integer, String>();
+			scheduledBuilds = new LinkedMultiValueMap<Integer, Integer>();
 		}
 		return scheduledBuilds;
 	}
 
-	public void removeComponentFromBuild(Environment environment, BuildableComponent component) {
+	public void removeComponentFromBuild(Environment environment, BuildableComponentDto component) {
 		if (scheduledBuilds != null) {
 			Integer id = environment.getId();
 			String name = component.getName();
-			List<String> strings = scheduledBuilds.get(id);
-			if (strings != null) {
-				strings.remove(name);
+			List<Integer> componentIds = scheduledBuilds.get(id);
+			if (componentIds != null) {
+				componentIds.remove(name);
 			}
 		}
 	}
 
-	public List<String> getScheduledComponentsByEnvironmentId(Environment environment) {
-		List<String> stringList;
-		stringList = getScheduledComponentBuild().get(environment.getId());
-		if (stringList == null) {
-			stringList = Collections.emptyList();
+	public Set<Integer> getScheduledComponentsByEnvironmentId(Environment environment) {
+		List<Integer> componentIds;
+		componentIds = getScheduledComponentBuild().get(environment.getId());
+		if (componentIds == null) {
+			componentIds = Collections.emptyList();
 		}
-		return stringList;
+		return new HashSet<Integer>(componentIds);
 	}
 
 	public void clear(Environment environment) {
 		getScheduledComponentBuild().remove(environment.getId());
 	}
 
-	public boolean isQueued(@NotNull Environment environment, @NotNull BuildableComponent component) {
-		List<String> strings = getScheduledComponentBuild().get(environment.getId());
-		if (strings == null) {
+	public boolean isQueued(@NotNull Environment environment, @NotNull BuildableComponentDto component) {
+		List<Integer> componentIds = getScheduledComponentBuild().get(environment.getId());
+		if (componentIds == null) {
 			return false;
 		}
-		return strings.contains(component.getName());
+		return componentIds.contains(component.getId());
 
 	}
 }

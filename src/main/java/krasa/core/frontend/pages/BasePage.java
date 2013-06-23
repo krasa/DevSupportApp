@@ -9,6 +9,7 @@ import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
@@ -86,8 +87,12 @@ public abstract class BasePage extends WebPage {
 
 	}
 
-	public BasePage(final PageParameters parameters) {
-		this();
+	protected BasePage(IModel<?> model) {
+		super(model);
+	}
+
+	protected BasePage(PageParameters parameters) {
+		super(parameters);
 	}
 
 	public FeedbackPanel getFeedbackPanel() {

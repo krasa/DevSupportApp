@@ -5,14 +5,14 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import com.google.common.base.Objects;
 
 @MappedSuperclass
 public abstract class AbstractEntity<T> {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Integer id;
+	protected Integer id;
 
 	public AbstractEntity() {
 	}
@@ -53,7 +53,6 @@ public abstract class AbstractEntity<T> {
 
 	@Override
 	public String toString() {
-		return ReflectionToStringBuilder.toString(this);
+		return Objects.toStringHelper(this).add("id", id).toString();
 	}
-
 }

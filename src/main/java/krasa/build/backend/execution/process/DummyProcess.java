@@ -4,12 +4,11 @@ import java.io.IOException;
 import java.util.List;
 
 import krasa.build.backend.domain.Status;
-import krasa.build.backend.execution.ProcessLog;
 import krasa.build.backend.execution.ProcessStatus;
 
-public class DummyProcess extends SshBuildProcess {
+import com.google.common.base.Objects;
 
-	protected volatile Status status = Status.IN_PROGRESS;
+public class DummyProcess extends SshBuildProcess {
 
 	public DummyProcess(ProcessLog stringBufferTail, List<String> command) {
 		super(stringBufferTail, command);
@@ -18,32 +17,33 @@ public class DummyProcess extends SshBuildProcess {
 	@Override
 	protected int doWork() throws IOException {
 		int i = 0;
-		while (i < 50 && status != Status.KILLED) {
-			stringBufferTail.append(String.valueOf(++i)).newLine();
+		while (i < 50 && processStatus.getStatus() != Status.KILLED) {
+			processLog.append(String.valueOf(++i)).newLine();
 			try {
-				Thread.sleep(10);
+				Thread.sleep(100);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
-		status = Status.SUCCESS;
+		if (processStatus.getStatus() == Status.IN_PROGRESS) {
+			processStatus.setStatus(Status.SUCCESS);
+		}
 		return 0;
 	}
 
 	@Override
 	protected void onFinally() {
+		log.info("process complete. " + this.toString());
 		notifyListeners();
 	}
 
 	@Override
-	public void stop() {
-		status = Status.KILLED;
-		super.stop();
+	public ProcessStatus getStatus() {
+		return processStatus;
 	}
 
 	@Override
-	public ProcessStatus getStatus() {
-		processStatus.setStatus(status);
-		return processStatus;
+	public String toString() {
+		return Objects.toStringHelper(this).add("status", processStatus).toString();
 	}
 }

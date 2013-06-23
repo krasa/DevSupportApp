@@ -4,11 +4,9 @@ import krasa.build.frontend.pages.BuildPage;
 import krasa.merge.frontend.pages.mergeinfo.MergeInfoPage;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.Page;
 import org.apache.wicket.Session;
 import org.apache.wicket.application.IComponentInstantiationListener;
 import org.apache.wicket.atmosphere.EventBus;
-import org.apache.wicket.atmosphere.ResourceRegistrationListener;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.protocol.http.WebApplication;
@@ -46,27 +44,9 @@ public class WicketApplication extends WebApplication {
 		super.init();
 		getComponentInstantiationListeners().add(new SpringComponentInjector(this));
 		mountPage("build", BuildPage.class);
-		// IResourceSettings settings = getResourceSettings();
-		// settings.setResourcePollFrequency(Duration.ONE_SECOND);
-		// // settings.getResourceFinders().add(new Path("C:\\Users\\Meo\\Desktop\\SVNMergeInfo\\src\\main\\java"));
-		// getResourceSettings().setUseDefaultOnMissingResource(true);
-
-		// settings.addResourceFolder("/opt/SVNMergeInfo/src/main/java/");
 
 		// add your configuration here
 		eventBus = new EventBus(this);
-		eventBus.addRegistrationListener(new ResourceRegistrationListener() {
-
-			@Override
-			public void resourceUnregistered(String uuid) {
-				System.out.println("Unregistered " + uuid);
-			}
-
-			@Override
-			public void resourceRegistered(String uuid, Page page) {
-				System.out.println("Registered " + uuid);
-			}
-		});
 		getComponentInstantiationListeners().add(new IComponentInstantiationListener() {
 			public void onInstantiation(Component component) {
 				if (component instanceof Form)

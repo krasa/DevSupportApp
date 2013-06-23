@@ -2,10 +2,11 @@ package krasa.build.backend.execution;
 
 import java.util.List;
 
-import krasa.build.backend.execution.adapter.ProcessAdapter;
+import krasa.build.backend.domain.BuildJob;
+import krasa.build.backend.domain.BuildRequest;
+import krasa.build.backend.execution.process.ProcessLog;
 import krasa.build.backend.execution.process.SshBuildProcess;
 import krasa.build.backend.execution.strategy.BuildCommandBuilderStrategy;
-import krasa.merge.backend.dto.BuildRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
@@ -20,18 +21,18 @@ public class ProcessBuilder {
 	@Autowired
 	BuildCommandBuilderStrategy buildCommandBuilderStrategy;
 
-	public ProcessAdapter create(BuildRequest request) {
+	public BuildJob create(BuildRequest request) {
 		ProcessLog stringBufferTail = new ProcessLog();
-		List<String> command = buildCommandBuilderStrategy.toCommand(request);
+		List<String> command = request.buildCommand(buildCommandBuilderStrategy);
 
 		SshBuildProcess process = new SshBuildProcess(stringBufferTail, command);
-		ProcessAdapter processAdapter = new ProcessAdapter(process, request, stringBufferTail);
-		process.addListener(processAdapter);
+		BuildJob buildJob = new BuildJob(process, request);
 
-		beanFactory.autowireBean(processAdapter);
+		process.addListener(buildJob);
+
 		beanFactory.autowireBean(process);
 
-		return processAdapter;
+		return buildJob;
 	}
 
 }

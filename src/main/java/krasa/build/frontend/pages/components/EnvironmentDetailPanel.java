@@ -67,12 +67,13 @@ public class EnvironmentDetailPanel extends BasePanel {
 
 			@Override
 			protected void addBranch(String fieldValue) {
-				buildFacade.addBuildableComponent(environmentEntityModelWrapper.getObject(), fieldValue);
+				buildFacade.createBuildableComponent(environmentEntityModelWrapper.getObject(), fieldValue);
 			}
 
 			@Override
 			protected void addAllMatchingBranches(String fieldValue) {
-				buildFacade.addAllMatchingComponents(environmentEntityModelWrapper.getObject(), fieldValue);
+				buildFacade.createBuildableComponentForAllMatchingComponents(environmentEntityModelWrapper.getObject(),
+						fieldValue);
 			}
 		};
 		return autocomplete;

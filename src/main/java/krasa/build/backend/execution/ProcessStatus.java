@@ -2,6 +2,8 @@ package krasa.build.backend.execution;
 
 import krasa.build.backend.domain.Status;
 
+import com.google.common.base.Objects;
+
 public class ProcessStatus {
 	private Status status;
 	private Exception exception;
@@ -26,9 +28,8 @@ public class ProcessStatus {
 		this.exception = exception;
 	}
 
-	public static ProcessStatus alive(boolean alive) {
-		ProcessStatus processStatus = new ProcessStatus();
-		processStatus.setStatus(alive ? Status.IN_PROGRESS : Status.SUCCESS);
-		return processStatus;
+	@Override
+	public String toString() {
+		return Objects.toStringHelper(this).add("status", status).add("exception", exception).toString();
 	}
 }

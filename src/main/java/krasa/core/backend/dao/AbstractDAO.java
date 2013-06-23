@@ -22,6 +22,11 @@ public abstract class AbstractDAO<T extends AbstractEntity> implements DAO<T> {
 	@Autowired
 	protected SessionFactory sf;
 
+	public void flush() {
+		sf.getCurrentSession().flush();
+		sf.getCurrentSession().clear();
+	}
+
 	public Session getSession() {
 		return sf.getCurrentSession();
 	}
@@ -103,6 +108,10 @@ public abstract class AbstractDAO<T extends AbstractEntity> implements DAO<T> {
 		return (T) object;
 	}
 
+	public T merge(T buildJob) {
+		return (T) getSession().merge(buildJob);
+	}
+
 	@Override
 	public int count() {
 		return Integer.valueOf(getSession().createQuery("SELECT COUNT(*) FROM " + getEntityName()).uniqueResult().toString());
@@ -159,7 +168,7 @@ public abstract class AbstractDAO<T extends AbstractEntity> implements DAO<T> {
 	}
 
 	public T refresh(T object) {
-		return findById(object.getId());
+		return (T) getSession().get(object.getClass(), object.getId());
 	}
 
 }

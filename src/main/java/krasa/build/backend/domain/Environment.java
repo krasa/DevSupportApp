@@ -1,6 +1,5 @@
 package krasa.build.backend.domain;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -15,17 +14,16 @@ import javax.persistence.OneToMany;
 import krasa.core.backend.domain.AbstractEntity;
 
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+
+import com.google.common.base.Objects;
 
 @Entity
-public class Environment extends AbstractEntity implements Serializable {
+public class Environment extends AbstractEntity {
 	public static Object NAME = "name";
 	@Column(unique = true)
 	protected String name;
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "environment", orphanRemoval = true)
-	private List<BuildableComponent> buildableComponetns;
+	private List<BuildableComponent> buildableComponents;
 
 	public Environment() {
 	}
@@ -42,36 +40,21 @@ public class Environment extends AbstractEntity implements Serializable {
 		this.name = name;
 	}
 
-	public List<BuildableComponent> getBuildableComponetns() {
-		if (buildableComponetns == null) {
-			buildableComponetns = new ArrayList<BuildableComponent>();
+	public List<BuildableComponent> getBuildableComponents() {
+		if (buildableComponents == null) {
+			buildableComponents = new ArrayList<BuildableComponent>();
 		}
-		return buildableComponetns;
+		return buildableComponents;
 	}
 
-	public void setBuildableComponetns(List<BuildableComponent> buildableComponetns) {
-		this.buildableComponetns = buildableComponetns;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		return EqualsBuilder.reflectionEquals(this, obj);
-	}
-
-	@Override
-	public String toString() {
-		return ReflectionToStringBuilder.toString(this);
-	}
-
-	@Override
-	public int hashCode() {
-		return HashCodeBuilder.reflectionHashCode(this);
+	public void setBuildableComponents(List<BuildableComponent> buildableComponents) {
+		this.buildableComponents = buildableComponents;
 	}
 
 	public void replaceBuilds(ArrayList<BuildableComponent> buildableComponents) {
 		HashMap<String, BuildableComponent> newBuilds = toMap(buildableComponents);
 
-		List<BuildableComponent> builds = getBuildableComponetns();
+		List<BuildableComponent> builds = getBuildableComponents();
 		for (int i = 0; i < builds.size(); i++) {
 			BuildableComponent oldBuild = builds.get(i);
 			BuildableComponent newBuild = newBuilds.get(oldBuild.getName());
@@ -96,11 +79,11 @@ public class Environment extends AbstractEntity implements Serializable {
 
 	private void add(BuildableComponent component) {
 		component.setEnvironment(this);
-		buildableComponetns.add(component);
+		buildableComponents.add(component);
 	}
 
 	public BuildableComponent addBuildableComponent(String componentName) {
-		for (BuildableComponent buildableComponetn : buildableComponetns) {
+		for (BuildableComponent buildableComponetn : getBuildableComponents()) {
 			if (buildableComponetn.getName().equals(componentName)) {
 				return null;
 			}
@@ -122,5 +105,10 @@ public class Environment extends AbstractEntity implements Serializable {
 			}
 		});
 		return all;
+	}
+
+	@Override
+	public String toString() {
+		return Objects.toStringHelper(this).add("id", id).add("name", name).toString();
 	}
 }

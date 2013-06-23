@@ -1,7 +1,7 @@
 package krasa.build.frontend.pages.components;
 
+import krasa.build.backend.domain.BuildJob;
 import krasa.build.backend.dto.Result;
-import krasa.build.backend.execution.adapter.ProcessAdapter;
 import krasa.build.frontend.components.PocessKillButton;
 import krasa.core.frontend.commons.SpanMultiLineLabel;
 
@@ -15,11 +15,12 @@ import org.apache.wicket.util.time.Duration;
 
 public class LogPanel extends Panel {
 
-	private final IModel<ProcessAdapter> model;
+	private final IModel<BuildJob> model;
 	protected final PocessKillButton kill;
+	protected final PocessKillButton kill2;
 	protected Result last;
 
-	public LogPanel(String id, IModel<ProcessAdapter> model) {
+	public LogPanel(String id, IModel<BuildJob> model) {
 		super(id);
 		this.model = model;
 
@@ -31,10 +32,12 @@ public class LogPanel extends Panel {
 			add(new EmptyPanel("nextLog"));
 		}
 		kill = new PocessKillButton("kill", model);
+		kill2 = new PocessKillButton("kill2", model);
 		add(kill);
+		add(kill2);
 	}
 
-	private ProcessAdapter getProgress() {
+	private BuildJob getProgress() {
 		return model.getObject();
 	}
 
@@ -42,8 +45,7 @@ public class LogPanel extends Panel {
 		return new SpanMultiLineLabel("logData", new LoadableDetachableModel<String>() {
 			@Override
 			protected String load() {
-				last = new Result();
-				last = getProgress().getNextLog(last.getLength());
+				last = getProgress().getLog();
 				return last.getText();
 			}
 		});
@@ -70,6 +72,7 @@ public class LogPanel extends Panel {
 		};
 		SpanMultiLineLabel nextLog = spanMultiLineLabel;
 		nextLog.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(1)) {
+
 			@Override
 			protected void onPostProcessTarget(AjaxRequestTarget target) {
 
@@ -77,12 +80,20 @@ public class LogPanel extends Panel {
 				 * We are doing the following here: - append the content of "nextLog" to "logData" - remove "nextLog" -
 				 * insert "nextLog" after "logData".
 				 */
-				if (!(getProgress().isAlive())) {
+				if (!getProgress().isAlive()) {
 					stop(target);
 					target.add(kill);
-				}
+					target.add(kill2);
+				} else
+					// @formatter:off
+					target.prependJavaScript("window.shouldScroll = $(window).scrollTop() + $(window).height()  >= $(document).height();");
 				target.appendJavaScript("$('#logData').append('<span>' + $('#nextLog').text()   + '</span>');"
-						+ "$('#nextLog').remove();" + "$(\"<span id='nextLog'>\").insertAfter($('#logData'));");
+						+ "$('#nextLog').remove();" + "$(\"<span id='nextLog'>\").insertAfter($('#logData'));" +
+
+						"if(window.shouldScroll) {window.scroll(0,document.body.scrollHeight);}"
+				// @formatter:on
+
+				);
 			}
 		});
 		nextLog.setOutputMarkupId(true);

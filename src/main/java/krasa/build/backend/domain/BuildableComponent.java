@@ -1,28 +1,30 @@
 package krasa.build.backend.domain;
 
-import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Comparator;
-import java.util.Date;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 import krasa.core.backend.domain.AbstractEntity;
 
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import org.springframework.beans.factory.annotation.Configurable;
 
-@Configurable
 @Entity
-public class BuildableComponent extends AbstractEntity implements Serializable {
+public class BuildableComponent extends AbstractEntity {
+
 	@Column(length = 1000)
 	private String name;
-	private Date lastSuccessBuild;
-	private Status status;
+	@ManyToOne(cascade = CascadeType.REMOVE)
+	private BuildRequestToBuildableComponent lastBuildRequestToBuildableComponent;
+	@OneToMany(mappedBy = "buildableComponent", cascade = CascadeType.REMOVE, orphanRemoval = true)
+	private List<BuildRequestToBuildableComponent> allBuildRequestToBuildableComponents;
+	@Column
+	private String buildMode;
 	@ManyToOne(optional = false)
 	private Environment environment;
 
@@ -47,20 +49,22 @@ public class BuildableComponent extends AbstractEntity implements Serializable {
 		this.environment = environment;
 	}
 
-	public Status getStatus() {
-		return status;
+	public List<BuildRequestToBuildableComponent> getAllBuildRequestToBuildableComponents() {
+		return allBuildRequestToBuildableComponents;
 	}
 
-	public void setStatus(Status status) {
-		this.status = status;
+	public void setAllBuildRequestToBuildableComponents(
+			List<BuildRequestToBuildableComponent> allBuildRequestToBuildableComponents) {
+		this.allBuildRequestToBuildableComponents = allBuildRequestToBuildableComponents;
 	}
 
-	public Date getLastSuccessBuild() {
-		return lastSuccessBuild;
+	public BuildRequestToBuildableComponent getLastBuildRequestToBuildableComponent() {
+		return lastBuildRequestToBuildableComponent;
 	}
 
-	public void setLastSuccessBuild(Date lastSuccessBuild) {
-		this.lastSuccessBuild = lastSuccessBuild;
+	public void setLastBuildRequestToBuildableComponent(
+			BuildRequestToBuildableComponent lastBuildRequestToBuildableComponent) {
+		this.lastBuildRequestToBuildableComponent = lastBuildRequestToBuildableComponent;
 	}
 
 	public String getName() {
@@ -71,19 +75,30 @@ public class BuildableComponent extends AbstractEntity implements Serializable {
 		this.name = name;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		return EqualsBuilder.reflectionEquals(this, obj);
+	public String getBuildMode() {
+		return buildMode;
 	}
 
-	@Override
-	public String toString() {
-		return ReflectionToStringBuilder.toString(this);
+	public void setBuildMode(String buildMode) {
+		this.buildMode = buildMode;
 	}
 
-	@Override
-	public int hashCode() {
-		return HashCodeBuilder.reflectionHashCode(this);
+	public BuildRequest createDeploymentRequest() {
+		return new BuildRequest(Arrays.asList(this));
+	}
+
+	public BuildRequest getLastBuildRequest() {
+		if (lastBuildRequestToBuildableComponent != null) {
+			return lastBuildRequestToBuildableComponent.getBuildRequest();
+		}
+		return null;
+	}
+
+	public BuildJob getLastBuildJob() {
+		if (lastBuildRequestToBuildableComponent != null) {
+			return lastBuildRequestToBuildableComponent.getBuildRequest().getBuildJob();
+		}
+		return null;
 	}
 
 	public static class ComponentBuildComparator implements Comparator<BuildableComponent> {

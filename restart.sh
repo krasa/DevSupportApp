@@ -1,3 +1,2 @@
-mvn jetty:stop
-nohup mvn jetty:run &
+nohup mvn jetty:stop clean jetty:run &
 

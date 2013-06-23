@@ -1,14 +1,12 @@
 package krasa.build.frontend.pages;
 
-import java.util.Arrays;
-
-import krasa.build.backend.domain.Environment;
-import krasa.build.backend.execution.adapter.ProcessAdapter;
+import krasa.build.backend.domain.BuildJob;
+import krasa.build.backend.domain.BuildRequest;
+import krasa.build.backend.dto.BuildableComponentDto;
 import krasa.build.backend.facade.BuildFacade;
 import krasa.build.frontend.pages.components.BuildLeftPanel;
 import krasa.build.frontend.pages.components.LogPanel;
 import krasa.core.frontend.pages.BasePage;
-import krasa.merge.backend.dto.BuildRequest;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.basic.Label;
@@ -16,41 +14,47 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.apache.wicket.util.string.StringValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class LogPage extends BasePage {
+
+	public static final String COMPONENT_ID = "componentId";
+	public static final String ID = "buildJobId";
 	protected final Logger log = LoggerFactory.getLogger(getClass());
 
 	protected Form form;
-	private IModel<ProcessAdapter> model;
+	private IModel<BuildJob> model;
 	@SpringBean
 	protected BuildFacade facade;
-	protected BuildRequest request;
 	protected BuildRequest buildRequest;
+	private Integer buildJobId;
 
-	public LogPage(ProcessAdapter model) {
-		buildRequest = model.getRequest();
-		this.model = new LoadableDetachableModel<ProcessAdapter>() {
+	public LogPage(PageParameters parameters) {
+		super(parameters);
+		initializeJobId();
+
+		this.model = new LoadableDetachableModel<BuildJob>() {
 			@Override
-			protected ProcessAdapter load() {
-				return facade.refresh(buildRequest);
+			protected BuildJob load() {
+				return facade.getBuildJobById(buildJobId);
 			}
 		};
 		init();
-
 	}
 
-	public LogPage(final IModel<Environment> environmentIModel, final IModel<String> componentName) {
-		this.model = new LoadableDetachableModel<ProcessAdapter>() {
-			@Override
-			protected ProcessAdapter load() {
-				return facade.refresh(new BuildRequest(Arrays.asList(componentName.getObject()),
-						environmentIModel.getObject().getName()));
-			}
-		};
-		init();
+	private void initializeJobId() {
+		StringValue stringValue = getPageParameters().get(ID);
+		if (!stringValue.isEmpty()) {
+			buildJobId = stringValue.toInt();
+		} else {
+			stringValue = getPageParameters().get(COMPONENT_ID);
+			Integer componentId = stringValue.toInteger();
+			buildJobId = facade.getBuildJobByComponentId(componentId).getId();
+		}
 	}
 
 	private void init() {
@@ -60,10 +64,8 @@ public class LogPage extends BasePage {
 		add(new Label("info", new AbstractReadOnlyModel<Object>() {
 			@Override
 			public Object getObject() {
-				ProcessAdapter object = model.getObject();
-				BuildRequest request1 = object.getRequest();
-
-				return request1.toString();
+				BuildJob object = model.getObject();
+				return object.toString();
 			}
 		}));
 		form = new Form("form");
@@ -74,5 +76,17 @@ public class LogPage extends BasePage {
 	@Override
 	protected Component newLeftColumnPanel(String id) {
 		return new BuildLeftPanel(id, null);
+	}
+
+	public static PageParameters params(BuildableComponentDto component) {
+		PageParameters pageParameters = new PageParameters();
+		pageParameters.add(COMPONENT_ID, component.getId());
+		return pageParameters;
+	}
+
+	public static PageParameters params(BuildJob buildJob) {
+		PageParameters pageParameters = new PageParameters();
+		pageParameters.add(ID, buildJob.getId());
+		return pageParameters;
 	}
 }

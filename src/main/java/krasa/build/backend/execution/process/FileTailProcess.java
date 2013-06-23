@@ -2,9 +2,6 @@ package krasa.build.backend.execution.process;
 
 import java.io.File;
 
-import krasa.build.backend.execution.ProcessLog;
-import krasa.build.backend.execution.ProcessStatus;
-
 import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListener;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -13,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 @Component("FileTailProcess")
-public class FileTailProcess implements Process {
+public class FileTailProcess extends AbstractProcess {
 
 	boolean alive = false;
 	protected final Tailer tailer;
@@ -52,13 +49,9 @@ public class FileTailProcess implements Process {
 	}
 
 	@Override
-	public void run() {
+	protected void runInternal() {
 		alive = true;
 		tailer.run();
 	}
 
-	@Override
-	public ProcessStatus getStatus() {
-		return ProcessStatus.alive(alive);
-	}
 }

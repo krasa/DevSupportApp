@@ -6,7 +6,7 @@ import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.List;
 
-import krasa.build.backend.execution.ProcessLog;
+import krasa.build.backend.execution.process.ProcessLog;
 
 import org.junit.Ignore;
 import org.junit.Test;

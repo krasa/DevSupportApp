@@ -1,6 +1,6 @@
 package krasa.build.frontend.components;
 
-import krasa.build.backend.execution.adapter.ProcessAdapter;
+import krasa.build.backend.domain.BuildJob;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
@@ -9,16 +9,16 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 
 public class PocessKillButton extends AjaxButton {
-	private IModel<ProcessAdapter> model;
+	private IModel<BuildJob> model;
 
-	public PocessKillButton(String id, IModel<ProcessAdapter> model) {
+	public PocessKillButton(String id, IModel<BuildJob> model) {
 		super(id, new Model<String>("Kill"));
 		this.model = model;
 	}
 
 	@Override
 	protected void onConfigure() {
-		ProcessAdapter object = model.getObject();
+		BuildJob object = model.getObject();
 		if (object != null) {
 			this.setEnabled(object.isAlive());
 		}
