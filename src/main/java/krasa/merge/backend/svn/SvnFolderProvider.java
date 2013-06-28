@@ -38,7 +38,7 @@ public class SvnFolderProvider {
 
 	public List<SvnFolder> getProjectContent(String projectName, Boolean loadTags) {
 		log.debug("getBranches start");
-		List<SvnFolder> result = new ArrayList<SvnFolder>();
+		List<SvnFolder> result = new ArrayList<>();
 		result.addAll(getFolders(projectName, Type.BRANCH, "branch", "branches"));
 		if (indexTrunk) {
 			result.add(getTrunk(projectName));
@@ -52,7 +52,7 @@ public class SvnFolderProvider {
 
 	public List<SVNDirEntry> getProjects() {
 		log.debug("getProjects start");
-		List<SVNDirEntry> result = new ArrayList<SVNDirEntry>();
+		List<SVNDirEntry> result = new ArrayList<>();
 		try {
 			Collection projects = repository.getDir("", -1, null, (Collection) null);
 			Iterator iterator = projects.iterator();
@@ -71,7 +71,7 @@ public class SvnFolderProvider {
 	}
 
 	private List<SvnFolder> getFolders(String projectName, final Type type, final String... folderNames) {
-		List<SvnFolder> result = new ArrayList<SvnFolder>();
+		List<SvnFolder> result = new ArrayList<>();
 		try {
 			Collection projectDirs = repository.getDir(projectName, -1, null, (Collection) null);
 			Iterator projectDirsIterator = projectDirs.iterator();
@@ -89,7 +89,7 @@ public class SvnFolderProvider {
 	}
 
 	public List<SVNDirEntry> getTags(SvnFolder branchesByName) {
-		ArrayList<SVNDirEntry> svnDirEntries = new ArrayList<SVNDirEntry>();
+		ArrayList<SVNDirEntry> svnDirEntries = new ArrayList<>();
 		SvnFolder parent = branchesByName.getParent();
 		String name = parent.getName();
 		Collection tags = null;
@@ -146,7 +146,7 @@ public class SvnFolderProvider {
 	}
 
 	private List<SvnFolder> iterateFolder(final String pathToParentDir, final Type type) throws SVNException {
-		List<SvnFolder> result = new ArrayList<SvnFolder>();
+		List<SvnFolder> result = new ArrayList<>();
 		Collection branches = repository.getDir(pathToParentDir, -1, null, (Collection) null);
 		Iterator iterator = branches.iterator();
 		while (iterator.hasNext()) {
@@ -178,7 +178,7 @@ public class SvnFolderProvider {
 	public List<SvnFolder> getSubFolders(SvnFolder branch) {
 		try {
 			log.info("getSubFolders start");
-			ArrayList<SvnFolder> result = new ArrayList<SvnFolder>();
+			ArrayList<SvnFolder> result = new ArrayList<>();
 			Collection branchSubDir = repository.getDir(branch.getPath(), -1, null, (Collection) null);
 			Iterator iterator = branchSubDir.iterator();
 			while (iterator.hasNext()) {
@@ -194,5 +194,4 @@ public class SvnFolderProvider {
 			throw new SvnException(e);
 		}
 	}
-
 }

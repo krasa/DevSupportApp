@@ -8,12 +8,12 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 
-public class BookmarkableColumn<T, U> extends AbstractColumn<T, U> {
+public class ProjectLinkColumn<T, U> extends AbstractColumn<T, U> {
 
 	private String name;
 	private String pathExpression;
 
-	public BookmarkableColumn(IModel<String> displayModel, U propertyExpression, String pathExpression) {
+	public ProjectLinkColumn(IModel<String> displayModel, U propertyExpression, String pathExpression) {
 		super(displayModel, propertyExpression);
 		name = "name";
 		this.pathExpression = pathExpression;

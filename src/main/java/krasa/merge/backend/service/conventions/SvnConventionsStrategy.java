@@ -24,7 +24,7 @@ public class SvnConventionsStrategy {
 	protected GlobalSettingsProvider globalSettingsProvider;
 
 	public List<SvnFolder> resolveFromBranches(SvnFolder toFolder) {
-		List<SvnFolder> result = new ArrayList<SvnFolder>();
+		List<SvnFolder> result = new ArrayList<>();
 		String searchFrom = toFolder.getSearchFrom();
 		if (searchFrom != null) {
 			List<SvnFolder> childs = toFolder.getParent().getChilds();

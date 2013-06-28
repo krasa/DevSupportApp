@@ -31,7 +31,7 @@ public class Profile extends AbstractEntity<Profile> implements Serializable {
 	private Integer revisionFrom;
 	@ManyToMany(fetch = FetchType.EAGER)
 	@Cascade({ CascadeType.DELETE, CascadeType.SAVE_UPDATE, CascadeType.MERGE })
-	private List<Branch> branches = new ArrayList<Branch>();
+	private List<Branch> branches = new ArrayList<>();
 	@Enumerated
 	private Type type = Type.USER;
 
@@ -46,7 +46,7 @@ public class Profile extends AbstractEntity<Profile> implements Serializable {
 	}
 
 	public List<String> getBranchesNames() {
-		ArrayList<String> strings = new ArrayList<String>();
+		ArrayList<String> strings = new ArrayList<>();
 		for (Branch branch : branches) {
 			strings.add(branch.getName());
 		}
@@ -70,7 +70,7 @@ public class Profile extends AbstractEntity<Profile> implements Serializable {
 	public Profile(SVNDirEntry dirEntry, String content) {
 		type = Type.FROM_SVN;
 		name = dirEntry.getName();
-		branches = new ArrayList<Branch>();
+		branches = new ArrayList<>();
 		for (String o : content.split("\n")) {
 			String[] split = o.split(" ");
 			Branch e = new Branch(split);

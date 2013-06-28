@@ -2,15 +2,11 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
 <body>
 <wicket:panel>
-    <h2 wicket:id="environmentName"></h2>
-
-    <span wicket:id="addComponent"></span>
-
-    <form wicket:id="form">
-        <button type="button" wicket:id="delete">Delete</button>
-        <div wicket:id="builds"></div>
+    <form wicket:id="createEnvironmentForm">
+        <input type="text" wicket:id="name"> </input>
+        <input wicket:id="addEnvironment" type="submit" wicket:message="value:addEnvironment">
+        </input>
     </form>
-
 </wicket:panel>
 </body>
 </html>

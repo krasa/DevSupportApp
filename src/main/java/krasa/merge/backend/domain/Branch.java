@@ -31,7 +31,7 @@ public class Branch extends AbstractEntity implements Serializable, Comparable, 
 	public Branch(String[] s) {
 		name = s[0].trim();
 		if (s.length > 1) {
-			includedFolders = new ArrayList<String>();
+			includedFolders = new ArrayList<>();
 		} else {
 			includedFolders = Collections.emptyList();
 		}

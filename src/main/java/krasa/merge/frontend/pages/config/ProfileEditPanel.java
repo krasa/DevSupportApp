@@ -22,7 +22,7 @@ public final class ProfileEditPanel extends Panel {
 	private final static Logger logger = Logger.getLogger(ProfileEditPanel.class.getName());
 
 	private void initComponents(IModel<Profile> model) {
-		Form<Profile> form = new Form<Profile>("form", new CompoundPropertyModel<Profile>(model)) {
+		Form<Profile> form = new Form<Profile>("form", new CompoundPropertyModel<>(model)) {
 			@Override
 			protected void onSubmit() {
 				facade.updateProfile(getModelObject());

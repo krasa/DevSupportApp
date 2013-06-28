@@ -10,7 +10,6 @@ import krasa.build.backend.domain.Status;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
-import com.sun.istack.internal.Nullable;
 
 public class BuildableComponentDto implements Serializable {
 	private Integer id;
@@ -20,7 +19,8 @@ public class BuildableComponentDto implements Serializable {
 
 	private String buildMode;
 	private Integer buildJobId;
-	private Date lastBuildTime;
+	private Date buildEndTime;
+	private Date buildStartTime;
 	private Status status;
 
 	public BuildableComponentDto(BuildableComponent component) {
@@ -31,7 +31,8 @@ public class BuildableComponentDto implements Serializable {
 		BuildJob lastBuildJob = component.getLastBuildJob();
 		if (lastBuildJob != null) {
 			buildJobId = lastBuildJob.getId();
-			lastBuildTime = lastBuildJob.getEndTime();
+			buildEndTime = lastBuildJob.getEndTime();
+			buildStartTime = lastBuildJob.getStartTime();
 			status = lastBuildJob.getStatus();
 		}
 	}
@@ -39,7 +40,7 @@ public class BuildableComponentDto implements Serializable {
 	public static List<BuildableComponentDto> transform(List<BuildableComponent> components) {
 		return Lists.transform(components, new Function<BuildableComponent, BuildableComponentDto>() {
 			@Override
-			public BuildableComponentDto apply(@Nullable BuildableComponent component) {
+			public BuildableComponentDto apply(BuildableComponent component) {
 				return new BuildableComponentDto(component);
 			}
 		});
@@ -61,6 +62,22 @@ public class BuildableComponentDto implements Serializable {
 		this.name = name;
 	}
 
+	public Integer getEnvironmentId() {
+		return environmentId;
+	}
+
+	public void setEnvironmentId(Integer environmentId) {
+		this.environmentId = environmentId;
+	}
+
+	public Date getBuildStartTime() {
+		return buildStartTime;
+	}
+
+	public void setBuildStartTime(Date buildStartTime) {
+		this.buildStartTime = buildStartTime;
+	}
+
 	public String getBuildMode() {
 		return buildMode;
 	}
@@ -77,12 +94,12 @@ public class BuildableComponentDto implements Serializable {
 		this.buildJobId = buildJobId;
 	}
 
-	public Date getLastBuildTime() {
-		return lastBuildTime;
+	public Date getBuildEndTime() {
+		return buildEndTime;
 	}
 
-	public void setLastBuildTime(Date lastBuildTime) {
-		this.lastBuildTime = lastBuildTime;
+	public void setBuildEndTime(Date buildEndTime) {
+		this.buildEndTime = buildEndTime;
 	}
 
 	public Status getStatus() {

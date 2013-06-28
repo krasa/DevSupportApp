@@ -12,7 +12,7 @@ public class ReportItem implements Serializable {
 
 	public ReportItem(String message, Collection<SVNLogEntry> commits) {
 		this.message = message;
-		this.commits = new ArrayList<SVNLogEntry>(commits);
+		this.commits = new ArrayList<>(commits);
 		commits.addAll(commits);
 	}
 }

@@ -26,7 +26,7 @@ public class SvnReportProvider {
 	public List<SVNLogEntry> getSVNLogEntries(SvnFolder branchesByName) {
 		long startRevision = 0;
 		long endRevision = -1; // HEAD (the latest) revision
-		List<SVNLogEntry> svnLogEntries = new ArrayList<SVNLogEntry>();
+		List<SVNLogEntry> svnLogEntries = new ArrayList<>();
 		try {
 			Collection logEntries = repository.log(new String[] { branchesByName.getPath() }, null, startRevision,
 					endRevision, false, true);
@@ -62,5 +62,4 @@ public class SvnReportProvider {
 		}
 		return svnLogEntries;
 	}
-
 }

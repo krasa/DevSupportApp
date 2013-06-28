@@ -28,12 +28,12 @@ public class RepositoryConfigurationPanel extends BasePanel {
 	Facade facade;
 
 	protected final Form<Repository> form;
-	protected final EntityModelWrapper<Repository> repositoryEntityModelWrapper = new EntityModelWrapper<Repository>();
+	protected final EntityModelWrapper<Repository> repositoryEntityModelWrapper = new EntityModelWrapper<>();
 
 	public RepositoryConfigurationPanel(String id) {
 		super(id);
 		add(createList());
-		form = new Form<Repository>("form", createNewModel());
+		form = new Form<>("form", createNewModel());
 		form.add(new AjaxButton("delete") {
 			@Override
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
@@ -62,7 +62,7 @@ public class RepositoryConfigurationPanel extends BasePanel {
 
 	private CompoundPropertyModel<Repository> createNewModel() {
 		repositoryEntityModelWrapper.setWrappedModel(newRepository());
-		return new CompoundPropertyModel<Repository>(repositoryEntityModelWrapper);
+		return new CompoundPropertyModel<>(repositoryEntityModelWrapper);
 	}
 
 	private PropertyListView<Repository> createList() {
@@ -91,6 +91,6 @@ public class RepositoryConfigurationPanel extends BasePanel {
 	}
 
 	private Model<Repository> newRepository() {
-		return new Model<Repository>(new Repository());
+		return new Model<>(new Repository());
 	}
 }

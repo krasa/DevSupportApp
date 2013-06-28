@@ -1,14 +1,16 @@
 package krasa.build.frontend.pages;
 
 import krasa.build.backend.domain.BuildJob;
-import krasa.build.backend.domain.BuildRequest;
 import krasa.build.backend.dto.BuildableComponentDto;
 import krasa.build.backend.facade.BuildFacade;
-import krasa.build.frontend.pages.components.BuildLeftPanel;
-import krasa.build.frontend.pages.components.LogPanel;
+import krasa.build.frontend.components.BuildLeftPanel;
+import krasa.build.frontend.components.LogPanel;
 import krasa.core.frontend.pages.BasePage;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.behavior.Behavior;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.JavaScriptContentHeaderItem;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.AbstractReadOnlyModel;
@@ -30,7 +32,6 @@ public class LogPage extends BasePage {
 	private IModel<BuildJob> model;
 	@SpringBean
 	protected BuildFacade facade;
-	protected BuildRequest buildRequest;
 	private Integer buildJobId;
 
 	public LogPage(PageParameters parameters) {
@@ -44,6 +45,16 @@ public class LogPage extends BasePage {
 			}
 		};
 		init();
+
+		add(new Behavior() {
+			@Override
+			public void renderHead(Component component, IHeaderResponse response) {
+				super.renderHead(component, response);
+				response.render(new JavaScriptContentHeaderItem("  setTimeout(function(){\n"
+						+ "window.scroll(0,document.body.scrollHeight);\n" + "    }, 100);", null, null));
+
+			}
+		});
 	}
 
 	private void initializeJobId() {

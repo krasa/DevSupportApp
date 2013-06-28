@@ -38,7 +38,7 @@ public class SvnMergeInfoProvider {
 	public List<SVNLogEntry> getMerges(SvnFolder from, SvnFolder to) throws SVNException {
 		log.debug("finding merges from {} to {}", from.getName(), to.getName());
 
-		final List<SVNLogEntry> svnLogEntries = new ArrayList<SVNLogEntry>();
+		final List<SVNLogEntry> svnLogEntries = new ArrayList<>();
 		SVNDiffClient svnDiffClient = new SVNDiffClient(repository.getAuthenticationManager(), new DefaultSVNOptions());
 		svnDiffClient.doGetLogEligibleMergeInfo(getUrl(to), SVNRevision.HEAD, getUrl(from), SVNRevision.HEAD, true,
 				null, new SVNLogEntryHandler(svnLogEntries));
@@ -49,7 +49,7 @@ public class SvnMergeInfoProvider {
 
 		log.debug("finding merges from {} to {} for folder " + commonFolder, from.getName(), to.getName());
 
-		final List<SVNLogEntry> svnLogEntries = new ArrayList<SVNLogEntry>();
+		final List<SVNLogEntry> svnLogEntries = new ArrayList<>();
 		SVNDiffClient svnDiffClient = new SVNDiffClient(repository.getAuthenticationManager(), new DefaultSVNOptions());
 		svnDiffClient.doGetLogEligibleMergeInfo(getUrl(to, commonFolder), SVNRevision.HEAD, getUrl(from, commonFolder),
 				SVNRevision.HEAD, false, null, new SVNLogEntryHandler(svnLogEntries));

@@ -60,7 +60,7 @@ public class SvnFolderDAO extends AbstractDAO<SvnFolder> {
 	}
 
 	private Object[] toNames(List<Branch> selectedBranches) {
-		List<String> names = new ArrayList<String>();
+		List<String> names = new ArrayList<>();
 		for (Branch selectedBranch : selectedBranches) {
 			names.add(selectedBranch.getName());
 		}

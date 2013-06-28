@@ -20,14 +20,14 @@ public class MergeInfoResult implements Serializable {
 
 	public void add(MergeInfoResultItem mergeInfoResultItem) {
 		if (mergeInfoResultItems == null) {
-			mergeInfoResultItems = new ArrayList<MergeInfoResultItem>();
+			mergeInfoResultItems = new ArrayList<>();
 		}
 		mergeInfoResultItems.add(mergeInfoResultItem);
 	}
 
 	public void addAll(List<MergeInfoResultItem> merges) {
 		if (mergeInfoResultItems == null) {
-			mergeInfoResultItems = new ArrayList<MergeInfoResultItem>();
+			mergeInfoResultItems = new ArrayList<>();
 		}
 		mergeInfoResultItems.addAll(merges);
 	}

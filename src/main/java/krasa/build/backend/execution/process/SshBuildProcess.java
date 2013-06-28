@@ -93,7 +93,9 @@ public class SshBuildProcess extends AbstractProcess {
 
 	@Override
 	protected void onFinally() {
-		instance.close();
+		if (instance != null) {
+			instance.close();
+		}
 		super.onFinally();
 	}
 

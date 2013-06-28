@@ -37,7 +37,7 @@ public class ReportResultPanel extends Panel {
 		this.model = model;
 		final ReportResult object = model.getObject();
 		final Map<String, List<SVNLogEntry>> svnFolderListMap = object.getSvnFolderListMap();
-		List<String> branches = new ArrayList<String>(svnFolderListMap.keySet());
+		List<String> branches = new ArrayList<>(svnFolderListMap.keySet());
 		Collections.sort(branches);
 
 		ListView<String> components = new ListView<String>("resultItem", branches) {

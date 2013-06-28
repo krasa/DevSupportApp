@@ -1,15 +1,16 @@
 package krasa.build.backend.domain;
 
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+import krasa.build.backend.execution.strategy.BuildCommandBuilderStrategy;
 import krasa.core.backend.domain.AbstractEntity;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -19,13 +20,13 @@ public class BuildableComponent extends AbstractEntity {
 
 	@Column(length = 1000)
 	private String name;
-	@ManyToOne(cascade = CascadeType.REMOVE)
-	private BuildRequestToBuildableComponent lastBuildRequestToBuildableComponent;
+	@ManyToOne(cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
+	private BuildJob lastBuildJob;
 	@OneToMany(mappedBy = "buildableComponent", cascade = CascadeType.REMOVE, orphanRemoval = true)
-	private List<BuildRequestToBuildableComponent> allBuildRequestToBuildableComponents;
+	private List<BuildJob> allBuildJobs;
 	@Column
 	private String buildMode;
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = false, fetch = FetchType.EAGER)
 	private Environment environment;
 
 	public BuildableComponent(String componentName) {
@@ -49,22 +50,20 @@ public class BuildableComponent extends AbstractEntity {
 		this.environment = environment;
 	}
 
-	public List<BuildRequestToBuildableComponent> getAllBuildRequestToBuildableComponents() {
-		return allBuildRequestToBuildableComponents;
+	public List<BuildJob> getAllBuildJobs() {
+		return allBuildJobs;
 	}
 
-	public void setAllBuildRequestToBuildableComponents(
-			List<BuildRequestToBuildableComponent> allBuildRequestToBuildableComponents) {
-		this.allBuildRequestToBuildableComponents = allBuildRequestToBuildableComponents;
+	public void setAllBuildJobs(List<BuildJob> allBuildJobs) {
+		this.allBuildJobs = allBuildJobs;
 	}
 
-	public BuildRequestToBuildableComponent getLastBuildRequestToBuildableComponent() {
-		return lastBuildRequestToBuildableComponent;
+	public BuildJob getLastBuildJob() {
+		return lastBuildJob;
 	}
 
-	public void setLastBuildRequestToBuildableComponent(
-			BuildRequestToBuildableComponent lastBuildRequestToBuildableComponent) {
-		this.lastBuildRequestToBuildableComponent = lastBuildRequestToBuildableComponent;
+	public void setLastBuildJob(BuildJob lastBuildJob) {
+		this.lastBuildJob = lastBuildJob;
 	}
 
 	public String getName() {
@@ -83,22 +82,8 @@ public class BuildableComponent extends AbstractEntity {
 		this.buildMode = buildMode;
 	}
 
-	public BuildRequest createDeploymentRequest() {
-		return new BuildRequest(Arrays.asList(this));
-	}
-
-	public BuildRequest getLastBuildRequest() {
-		if (lastBuildRequestToBuildableComponent != null) {
-			return lastBuildRequestToBuildableComponent.getBuildRequest();
-		}
-		return null;
-	}
-
-	public BuildJob getLastBuildJob() {
-		if (lastBuildRequestToBuildableComponent != null) {
-			return lastBuildRequestToBuildableComponent.getBuildRequest().getBuildJob();
-		}
-		return null;
+	public List<String> buildCommand(BuildCommandBuilderStrategy buildCommandBuilderStrategy) {
+		return buildCommandBuilderStrategy.toCommand(this);
 	}
 
 	public static class ComponentBuildComparator implements Comparator<BuildableComponent> {

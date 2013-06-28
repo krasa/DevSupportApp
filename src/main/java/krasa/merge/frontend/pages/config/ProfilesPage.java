@@ -33,7 +33,7 @@ public class ProfilesPage extends BasePage {
 
 	private void init() {
 		initActualProfileModel();
-		final Form<Profile> form = new Form<Profile>("form");
+		final Form<Profile> form = new Form<>("form");
 		add(form);
 		form.add(new Button("newProfile") {
 			@Override

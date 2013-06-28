@@ -1,4 +1,4 @@
-package krasa.build.frontend.pages.components;
+package krasa.build.frontend.components;
 
 import java.util.List;
 
@@ -29,6 +29,8 @@ public class EnvironmentsListPanel extends Panel {
 
 			@Override
 			protected void populateItem(final ListItem<Environment> item) {
+				item.setOutputMarkupId(true); // write id attribute of element to html
+				item.setMarkupId("envId" + item.getModelObject().getId());
 				item.add(new EnvironmentDetailPanel("detail", item.getModel()));
 			}
 

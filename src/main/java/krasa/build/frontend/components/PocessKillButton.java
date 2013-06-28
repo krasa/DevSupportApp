@@ -12,7 +12,7 @@ public class PocessKillButton extends AjaxButton {
 	private IModel<BuildJob> model;
 
 	public PocessKillButton(String id, IModel<BuildJob> model) {
-		super(id, new Model<String>("Kill"));
+		super(id, new Model<>("Kill"));
 		this.model = model;
 	}
 

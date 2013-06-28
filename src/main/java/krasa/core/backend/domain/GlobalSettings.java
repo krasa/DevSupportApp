@@ -16,10 +16,10 @@ import krasa.merge.backend.domain.Repository;
 @Entity
 public class GlobalSettings extends AbstractEntity {
 	@ElementCollection(targetClass = String.class, fetch = FetchType.EAGER)
-	private Set<String> projectsWithSubfoldersMergeSearching = new HashSet<String>();
+	private Set<String> projectsWithSubfoldersMergeSearching = new HashSet<>();
 
 	@ElementCollection(targetClass = String.class, fetch = FetchType.EAGER)
-	private Set<String> projectsWithLoadTags = new HashSet<String>();
+	private Set<String> projectsWithLoadTags = new HashSet<>();
 	@ElementCollection(targetClass = String.class, fetch = FetchType.EAGER)
 	@ManyToOne
 	private Repository defaultRepository;

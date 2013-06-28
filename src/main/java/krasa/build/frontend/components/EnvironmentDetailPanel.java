@@ -1,7 +1,9 @@
-package krasa.build.frontend.pages.components;
+package krasa.build.frontend.components;
 
 import krasa.build.backend.domain.Environment;
+import krasa.build.backend.exception.AlreadyExistsException;
 import krasa.build.backend.facade.BuildFacade;
+import krasa.core.frontend.Ajax;
 import krasa.core.frontend.commons.EntityModelWrapper;
 import krasa.core.frontend.components.BasePanel;
 
@@ -19,12 +21,13 @@ public class EnvironmentDetailPanel extends BasePanel {
 	@SpringBean
 	private BuildFacade buildFacade;
 	private EntityModelWrapper<Environment> environmentEntityModelWrapper;
-	protected ComponentsTablePanel builds;
+	protected BuildComponentsTablePanel builds;
 
 	public EnvironmentDetailPanel(String id, IModel<Environment> model) {
 		super(id, model);
 		this.environmentEntityModelWrapper = new EntityModelWrapper(model);
-		add(createForm());
+		add(createDeleteEnvironmentForm());
+		add(createComponentsTableForm());
 		add(createEnvironmentLabel());
 		add(createAddBranchFormPanel());
 	}
@@ -33,9 +36,14 @@ public class EnvironmentDetailPanel extends BasePanel {
 		return new Label("environmentName", new PropertyModel<String>(environmentEntityModelWrapper, "name"));
 	}
 
-	private Form createForm() {
-		Form form = new Form("form");
+	private Form createDeleteEnvironmentForm() {
+		Form form = new Form("deleteEnvironmentForm");
 		form.add(createDeleteEnvironmentButton());
+		return form;
+	}
+
+	private Form createComponentsTableForm() {
+		Form form = new Form("componentsTableForm");
 		form.add(builds = createComponentsTablePanel());
 		return form;
 	}
@@ -53,8 +61,8 @@ public class EnvironmentDetailPanel extends BasePanel {
 		};
 	}
 
-	private ComponentsTablePanel createComponentsTablePanel() {
-		return new ComponentsTablePanel("builds", environmentEntityModelWrapper);
+	private BuildComponentsTablePanel createComponentsTablePanel() {
+		return new BuildComponentsTablePanel("builds", environmentEntityModelWrapper);
 	}
 
 	private AddComponentFormPanel createAddBranchFormPanel() {
@@ -67,7 +75,12 @@ public class EnvironmentDetailPanel extends BasePanel {
 
 			@Override
 			protected void addBranch(String fieldValue) {
-				buildFacade.createBuildableComponent(environmentEntityModelWrapper.getObject(), fieldValue);
+				try {
+					buildFacade.createBuildableComponent(environmentEntityModelWrapper.getObject(), fieldValue);
+				} catch (AlreadyExistsException e) {
+					error(e.toString());
+					Ajax.getAjaxRequestTarget().add(feedback);
+				}
 			}
 
 			@Override

@@ -12,7 +12,7 @@ public abstract class CheckBoxPanel<T> extends Panel {
 
 	public CheckBoxPanel(String id, final IModel<T> model) {
 		super(id, model);
-		final CheckBox checkBox = new AjaxCheckBox("checkBox", new Model<Boolean>(CheckBoxPanel.this.isChecked(model))) {
+		final CheckBox checkBox = new AjaxCheckBox("checkBox", new Model<>(CheckBoxPanel.this.isChecked(model))) {
 			@Override
 			protected void onUpdate(AjaxRequestTarget target) {
 				CheckBoxPanel.this.onUpdate(target, getModel(), (IModel<T>) CheckBoxPanel.this.getDefaultModel());

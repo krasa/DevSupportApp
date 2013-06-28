@@ -72,7 +72,7 @@ public class SvnFolder extends AbstractEntity implements Displayable {
 
 	public void add(SvnFolder branch) {
 		if (childs == null) {
-			childs = new ArrayList<SvnFolder>();
+			childs = new ArrayList<>();
 		}
 		childs.add(branch);
 		branch.setParent(this);
@@ -112,7 +112,7 @@ public class SvnFolder extends AbstractEntity implements Displayable {
 
 	public List<SvnFolder> getChilds() {
 		if (childs == null) {
-			childs = new ArrayList<SvnFolder>();
+			childs = new ArrayList<>();
 		}
 		return childs;
 	}
@@ -142,7 +142,7 @@ public class SvnFolder extends AbstractEntity implements Displayable {
 	}
 
 	public Set<String> getChildNamesAsSet() {
-		Set<String> svnFolders = new HashSet<String>();
+		Set<String> svnFolders = new HashSet<>();
 		for (SvnFolder child : childs) {
 			svnFolders.add(child.getName());
 		}
@@ -150,7 +150,7 @@ public class SvnFolder extends AbstractEntity implements Displayable {
 	}
 
 	public Map<String, SvnFolder> getChildsAsMapByName() {
-		Map<String, SvnFolder> svnFolders = new HashMap<String, SvnFolder>();
+		Map<String, SvnFolder> svnFolders = new HashMap<>();
 		for (SvnFolder child : childs) {
 			svnFolders.put(child.getName(), child);
 		}
@@ -160,7 +160,7 @@ public class SvnFolder extends AbstractEntity implements Displayable {
 	public Set<String> getCommonSubFolders(SvnFolder from) {
 		Set<String> subFoldersTo = getChildNamesAsSet();
 		Set<String> subFolders = from.getChildNamesAsSet();
-		Set<String> commonFolders = new HashSet<String>();
+		Set<String> commonFolders = new HashSet<>();
 		for (String s : subFoldersTo) {
 			if (subFolders.contains(s)) {
 				commonFolders.add(s);

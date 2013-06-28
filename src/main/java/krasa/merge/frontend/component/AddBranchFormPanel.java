@@ -1,10 +1,12 @@
 package krasa.merge.frontend.component;
 
+import krasa.core.frontend.Ajax;
 import krasa.core.frontend.commons.MyFeedbackPanel;
 import krasa.core.frontend.components.BasePanel;
 import krasa.merge.backend.facade.Facade;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
@@ -36,13 +38,10 @@ public abstract class AddBranchFormPanel extends BasePanel {
 	}
 
 	private Form createAddBranchForm(ResourceModel labelModel) {
-		Form form = new Form("addBranchForm");
-		form.add(createLabel(labelModel));
-		form.add(autocomplete = createAutoCompletePanel());
-		form.add(feedback = new MyFeedbackPanel("feedback"));
-		form.add(new AjaxButton("add") {
+		Form form = new Form("addBranchForm") {
 			@Override
-			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+			protected void onSubmit() {
+				AjaxRequestTarget target = Ajax.getAjaxRequestTarget();
 				String fieldValue = autocomplete.getFieldValue();
 				AddBranchFormPanel.this.addBranch(fieldValue);
 				onUpdate(target);
@@ -50,11 +49,17 @@ public abstract class AddBranchFormPanel extends BasePanel {
 			}
 
 			@Override
-			protected void onError(AjaxRequestTarget target, Form<?> form) {
-				super.onError(target, form);
+			protected void onError() {
+				AjaxRequestTarget target = Ajax.getAjaxRequestTarget();
+				super.onError();
 				target.add(feedback);
 			}
+		};
+		form.add(new AjaxFormSubmitBehavior(form, "onsubmit") {
 		});
+		form.add(createLabel(labelModel));
+		form.add(autocomplete = createAutoCompletePanel());
+		form.add(feedback = new MyFeedbackPanel("feedback"));
 		form.add(new AjaxButton("addAll") {
 			@Override
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {

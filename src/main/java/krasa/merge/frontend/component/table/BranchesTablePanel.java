@@ -5,8 +5,8 @@ import java.util.Collections;
 import java.util.List;
 
 import krasa.core.frontend.commons.CheckBoxPanel;
-import krasa.core.frontend.commons.table.BookmarkableColumn;
 import krasa.core.frontend.commons.table.DropDownChoiceColumn;
+import krasa.core.frontend.commons.table.ProjectLinkColumn;
 import krasa.core.frontend.components.BasePanel;
 import krasa.merge.backend.domain.SvnFolder;
 import krasa.merge.backend.facade.Facade;
@@ -55,11 +55,11 @@ public class BranchesTablePanel extends BasePanel {
 
 	private AjaxFallbackDefaultDataTable<SvnFolder, String> createTable(ISortableDataProvider dataProvider) {
 		List<IColumn<SvnFolder, String>> columns = createColumns();
-		return new AjaxFallbackDefaultDataTable<SvnFolder, String>("table", columns, dataProvider, 80);
+		return new AjaxFallbackDefaultDataTable<>("table", columns, dataProvider, 80);
 	}
 
 	protected List<IColumn<SvnFolder, String>> createColumns() {
-		List<IColumn<SvnFolder, String>> columns = new ArrayList<IColumn<SvnFolder, String>>();
+		List<IColumn<SvnFolder, String>> columns = new ArrayList<>();
 		columns.add(createCheckBoxColumn());
 		columns.add(createNameColumn());
 		columns.add(createSearchFromColumn());
@@ -67,11 +67,11 @@ public class BranchesTablePanel extends BasePanel {
 	}
 
 	protected AbstractColumn<SvnFolder, String> createNameColumn() {
-		return new BookmarkableColumn(new Model<String>("name"), "name", "path");
+		return new ProjectLinkColumn(new Model<>("name"), "name", "path");
 	}
 
 	protected DropDownChoiceColumn<SvnFolder, String> createSearchFromColumn() {
-		return new DropDownChoiceColumn<SvnFolder, String>(new Model<String>("searchFrom"), "searchFrom") {
+		return new DropDownChoiceColumn<SvnFolder, String>(new Model<>("searchFrom"), "searchFrom") {
 
 			@Override
 			protected IModel<List<String>> getDisplayModel(final IModel<SvnFolder> rowModel) {
@@ -80,7 +80,7 @@ public class BranchesTablePanel extends BasePanel {
 					public List<String> getObject() {
 						String name = rowModel.getObject().getParent().getName();
 						List<SvnFolder> allBranchesByProjectNme = facade.getAllBranchesByProjectName(name);
-						List<String> strings = new ArrayList<String>();
+						List<String> strings = new ArrayList<>();
 						for (SvnFolder folder : allBranchesByProjectNme) {
 							strings.add(folder.getName());
 						}
@@ -100,7 +100,7 @@ public class BranchesTablePanel extends BasePanel {
 	}
 
 	private AbstractColumn<SvnFolder, String> createCheckBoxColumn() {
-		return new AbstractColumn<SvnFolder, String>(new Model<String>("")) {
+		return new AbstractColumn<SvnFolder, String>(new Model<>("")) {
 			@Override
 			public void populateItem(Item<ICellPopulator<SvnFolder>> cellItem, String componentId,
 					IModel<SvnFolder> model) {
@@ -120,5 +120,4 @@ public class BranchesTablePanel extends BasePanel {
 			}
 		};
 	}
-
 }

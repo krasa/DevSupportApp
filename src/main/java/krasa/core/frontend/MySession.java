@@ -1,16 +1,7 @@
 package krasa.core.frontend;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import javax.servlet.http.Cookie;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Null;
 
-import krasa.build.backend.domain.Environment;
-import krasa.build.backend.dto.BuildableComponentDto;
 import krasa.merge.backend.domain.Profile;
 import krasa.merge.backend.facade.Facade;
 
@@ -26,8 +17,6 @@ import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
 /**
  * @author Vojtech Krasa
@@ -41,8 +30,6 @@ public class MySession extends WebSession {
 	private Facade facade;
 
 	private Integer current;
-	@Null
-	private MultiValueMap<Integer, Integer> scheduledBuilds;
 
 	/**
 	 * Constructor. Note that {@link org.apache.wicket.request.cycle.RequestCycle} is not available until this
@@ -97,47 +84,4 @@ public class MySession extends WebSession {
 		return getCurrent().getId();
 	}
 
-	public void queueComponentToEnvironmentBuild(Environment environment, BuildableComponentDto component) {
-		getScheduledComponentBuild().add(environment.getId(), component.getId());
-	}
-
-	private MultiValueMap<Integer, Integer> getScheduledComponentBuild() {
-		if (scheduledBuilds == null) {
-			scheduledBuilds = new LinkedMultiValueMap<Integer, Integer>();
-		}
-		return scheduledBuilds;
-	}
-
-	public void removeComponentFromBuild(Environment environment, BuildableComponentDto component) {
-		if (scheduledBuilds != null) {
-			Integer id = environment.getId();
-			String name = component.getName();
-			List<Integer> componentIds = scheduledBuilds.get(id);
-			if (componentIds != null) {
-				componentIds.remove(name);
-			}
-		}
-	}
-
-	public Set<Integer> getScheduledComponentsByEnvironmentId(Environment environment) {
-		List<Integer> componentIds;
-		componentIds = getScheduledComponentBuild().get(environment.getId());
-		if (componentIds == null) {
-			componentIds = Collections.emptyList();
-		}
-		return new HashSet<Integer>(componentIds);
-	}
-
-	public void clear(Environment environment) {
-		getScheduledComponentBuild().remove(environment.getId());
-	}
-
-	public boolean isQueued(@NotNull Environment environment, @NotNull BuildableComponentDto component) {
-		List<Integer> componentIds = getScheduledComponentBuild().get(environment.getId());
-		if (componentIds == null) {
-			return false;
-		}
-		return componentIds.contains(component.getId());
-
-	}
 }

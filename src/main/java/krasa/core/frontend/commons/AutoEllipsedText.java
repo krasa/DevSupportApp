@@ -57,7 +57,7 @@ public class AutoEllipsedText extends Panel {
 
 		};
 		showMore.setOutputMarkupId(true);
-		showMore.add(new AttributeModifier("onclick", true, new Model<String>("document.getElementById('"
+		showMore.add(new AttributeModifier("onclick", true, new Model<>("document.getElementById('"
 				+ initialText.getMarkupId() + "').style.display = 'none'; document.getElementById('"
 				+ fullText.getMarkupId() + "').style.display = 'block'; document.getElementById('"
 				+ showMore.getMarkupId() + "').style.display = 'none'")));

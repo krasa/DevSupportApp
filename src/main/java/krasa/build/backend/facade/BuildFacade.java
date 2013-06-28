@@ -3,7 +3,6 @@ package krasa.build.backend.facade;
 import java.util.List;
 
 import krasa.build.backend.domain.BuildJob;
-import krasa.build.backend.domain.BuildRequest;
 import krasa.build.backend.domain.BuildableComponent;
 import krasa.build.backend.domain.Environment;
 import krasa.build.backend.dto.BuildableComponentDto;
@@ -12,15 +11,16 @@ import krasa.build.backend.execution.ProcessStatus;
 import krasa.merge.backend.domain.Displayable;
 
 public interface BuildFacade {
-	BuildJob build(BuildRequest request);
+	BuildJob build(BuildableComponent request);
 
 	List<Environment> getEnvironments();
 
 	Environment createEnvironment(String environmentName) throws AlreadyExistsException;
 
-	List<BuildableComponent> getComponentsByEnvironment(Environment environment);
+	List<BuildableComponent> getComponentsByEnvironment(Integer environmentId);
 
-	BuildableComponent createBuildableComponent(Environment environment, String componentName);
+	BuildableComponent createBuildableComponent(Environment environment, String componentName)
+			throws AlreadyExistsException;
 
 	void onStatusChanged(BuildJob buildJob, ProcessStatus processStatus);
 
@@ -41,4 +41,6 @@ public interface BuildFacade {
 	void buildComponent(BuildableComponentDto object);
 
 	BuildJob getBuildJobByComponentId(Integer componentId);
+
+	void editBuildableComponent(BuildableComponentDto object);
 }

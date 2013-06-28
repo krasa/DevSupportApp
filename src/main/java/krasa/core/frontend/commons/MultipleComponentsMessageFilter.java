@@ -16,9 +16,9 @@ public class MultipleComponentsMessageFilter implements IFeedbackMessageFilter {
 	/**
 	 * The component to accept feedback messages for
 	 */
-	private final Set<Component> components = new HashSet<Component>();
+	private final Set<Component> components = new HashSet<>();
 	// protection for duplicite messages
-	private final Set<Serializable> messages = new HashSet<Serializable>();
+	private final Set<Serializable> messages = new HashSet<>();
 
 	/**
 	 * Constructor

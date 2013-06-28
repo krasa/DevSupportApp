@@ -17,7 +17,7 @@ public class ProcessLog {
 	public static final int NUM_ELEMENTS = 2500;
 	public static final int BUFFER_MAX_LENGTH = 2500;
 	protected final StringBuilder buffer = new StringBuilder();
-	protected final ArrayListDeque<String> deque = new ArrayListDeque<String>(NUM_ELEMENTS);
+	protected final ArrayListDeque<String> deque = new ArrayListDeque<>(NUM_ELEMENTS);
 	boolean stop = false;
 	int dequeueOffset = 0;
 

@@ -19,7 +19,7 @@ public class DateColumn<T> extends PropertyColumn<T, String> {
 
 	@Override
 	public IModel<Object> getDataModel(IModel<T> rowModel) {
-		PropertyModel<Date> propertyModel = new PropertyModel<Date>(rowModel, getPropertyExpression());
+		PropertyModel<Date> propertyModel = new PropertyModel<>(rowModel, getPropertyExpression());
 		return new DateModel(propertyModel);
 	}
 }

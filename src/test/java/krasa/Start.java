@@ -11,6 +11,7 @@ public class Start {
 
 	public static void main(String[] args) throws Exception {
 		System.setProperty("spring.profiles.active", "DUMMY");
+		// System.setProperty("spring.profiles.active", "LIVE");
 
 		server = new Server();
 		SelectChannelConnector connector = new SelectChannelConnector();

@@ -8,6 +8,13 @@ public class ProcessStatus {
 	private Status status;
 	private Exception exception;
 
+	public ProcessStatus() {
+	}
+
+	public ProcessStatus(Status status) {
+		this.status = status;
+	}
+
 	public Status getStatus() {
 		return status;
 	}
@@ -17,7 +24,7 @@ public class ProcessStatus {
 	}
 
 	public boolean isAlive() {
-		return status == Status.IN_PROGRESS;
+		return status == Status.IN_PROGRESS || status == Status.PENDING;
 	}
 
 	public void setStatus(Status status1) {

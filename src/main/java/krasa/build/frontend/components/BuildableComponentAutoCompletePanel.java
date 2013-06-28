@@ -1,4 +1,4 @@
-package krasa.build.frontend.pages.components;
+package krasa.build.frontend.components;
 
 import java.util.List;
 

@@ -19,7 +19,7 @@ public abstract class ListEditor<T> extends RepeatingView implements IFormModelU
 
 	public void addItem(T value) {
 		items.add(value);
-		ListItem<T> item = new ListItem<T>(newChildId(), items.size() - 1);
+		ListItem<T> item = new ListItem<>(newChildId(), items.size() - 1);
 		add(item);
 		onPopulateItem(item);
 	}
@@ -27,9 +27,9 @@ public abstract class ListEditor<T> extends RepeatingView implements IFormModelU
 	@Override
 	protected void onBeforeRender() {
 		if (!hasBeenRendered()) {
-			items = new ArrayList<T>(getModelObject());
+			items = new ArrayList<>(getModelObject());
 			for (int i = 0; i < items.size(); i++) {
-				ListItem<T> li = new ListItem<T>(newChildId(), i);
+				ListItem<T> li = new ListItem<>(newChildId(), i);
 				add(li);
 				onPopulateItem(li);
 			}

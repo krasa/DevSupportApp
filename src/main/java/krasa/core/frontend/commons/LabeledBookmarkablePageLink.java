@@ -6,26 +6,26 @@ import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 
-public class LabelBookmarkablePageLink extends BookmarkablePageLink {
+public class LabeledBookmarkablePageLink extends BookmarkablePageLink {
 
 	private String label;
 
-	public LabelBookmarkablePageLink(String id, Class pageClass, PageParameters parameters, IModel<String> labelModel) {
+	public LabeledBookmarkablePageLink(String id, Class pageClass, PageParameters parameters, IModel<String> labelModel) {
 		super(id, pageClass, parameters);
 		this.label = labelModel.getObject();
 	}
 
-	public LabelBookmarkablePageLink(String id, Class pageClass, IModel<String> labelModel) {
+	public LabeledBookmarkablePageLink(String id, Class pageClass, IModel<String> labelModel) {
 		super(id, pageClass);
 		this.label = labelModel.getObject();
 	}
 
-	public LabelBookmarkablePageLink(String id, Class pageClass, String label) {
+	public LabeledBookmarkablePageLink(String id, Class pageClass, String label) {
 		super(id, pageClass);
 		this.label = label;
 	}
 
-	public LabelBookmarkablePageLink(String id, Class pageClass, PageParameters parameters, String label) {
+	public LabeledBookmarkablePageLink(String id, Class pageClass, PageParameters parameters, String label) {
 		super(id, pageClass);
 		this.label = label;
 	}

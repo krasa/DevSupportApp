@@ -9,8 +9,10 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 
+import krasa.build.backend.exception.AlreadyExistsException;
 import krasa.core.backend.domain.AbstractEntity;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -22,7 +24,7 @@ public class Environment extends AbstractEntity {
 	public static Object NAME = "name";
 	@Column(unique = true)
 	protected String name;
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "environment", orphanRemoval = true)
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "environment", orphanRemoval = true, fetch = FetchType.EAGER)
 	private List<BuildableComponent> buildableComponents;
 
 	public Environment() {
@@ -42,7 +44,7 @@ public class Environment extends AbstractEntity {
 
 	public List<BuildableComponent> getBuildableComponents() {
 		if (buildableComponents == null) {
-			buildableComponents = new ArrayList<BuildableComponent>();
+			buildableComponents = new ArrayList<>();
 		}
 		return buildableComponents;
 	}
@@ -70,7 +72,7 @@ public class Environment extends AbstractEntity {
 	}
 
 	private HashMap<String, BuildableComponent> toMap(ArrayList<BuildableComponent> buildableComponents) {
-		HashMap<String, BuildableComponent> hashMap = new HashMap<String, BuildableComponent>();
+		HashMap<String, BuildableComponent> hashMap = new HashMap<>();
 		for (BuildableComponent buildableComponent : buildableComponents) {
 			hashMap.put(buildableComponent.getName(), buildableComponent);
 		}
@@ -82,10 +84,10 @@ public class Environment extends AbstractEntity {
 		buildableComponents.add(component);
 	}
 
-	public BuildableComponent addBuildableComponent(String componentName) {
+	public BuildableComponent addBuildableComponent(String componentName) throws AlreadyExistsException {
 		for (BuildableComponent buildableComponetn : getBuildableComponents()) {
 			if (buildableComponetn.getName().equals(componentName)) {
-				return null;
+				throw new AlreadyExistsException(componentName);
 			}
 		}
 		return createComponent(componentName);

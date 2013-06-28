@@ -1,20 +1,19 @@
-package krasa.build.frontend.pages.components;
+package krasa.build.frontend.components;
 
 import java.util.List;
 
 import krasa.build.backend.domain.Environment;
 import krasa.build.backend.facade.BuildFacade;
 import krasa.build.frontend.pages.BuildPage;
-import krasa.core.frontend.commons.links.LabeledAjaxLink;
+import krasa.core.frontend.commons.LabeledBookmarkablePageLink;
 import krasa.core.frontend.components.BasePanel;
 
-import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
 public class BuildLeftPanel extends BasePanel {
@@ -40,30 +39,11 @@ public class BuildLeftPanel extends BasePanel {
 		projectsList = new ListView<Environment>("item", model) {
 			@Override
 			protected void populateItem(ListItem<Environment> listItem) {
-				listItem.add(new LabeledAjaxLink<Environment>("name", listItem.getModel(), new PropertyModel<String>(
-						listItem.getModel(), "name")) {
-					@Override
-					protected void onComponentTag(ComponentTag tag) {
-						if (actualEnvironment != null) {
-							Environment object = actualEnvironment.getObject();
-							if (object != null) {
-								if (getModel().getObject().getId().equals(object.getId())) {
-									tag.getAttributes().put("class", "bold");
-								}
-							}
-						}
-						super.onComponentTag(tag);
-					}
-
-					@Override
-					public void onClick(AjaxRequestTarget target) {
-						setResponsePage(BuildPage.class, BuildPage.createPageParameters(getModelObject()));
-					}
-				});
-
+				PageParameters pageParameters = BuildPage.createPageParameters(listItem.getModelObject());
+				PropertyModel<String> labelModel = new PropertyModel<>(listItem.getModel(), "name");
+				listItem.add(new LabeledBookmarkablePageLink("name", BuildPage.class, pageParameters, labelModel));
 			}
 		};
 		add(projectsList);
 	}
-
 }

@@ -33,7 +33,7 @@ public class SvnReleaseProviderImpl implements SvnReleaseProvider {
 
 	@Override
 	public List<Profile> getReleases() {
-		ArrayList<Profile> releases = new ArrayList<Profile>();
+		ArrayList<Profile> releases = new ArrayList<>();
 		SVNRepository repository = new SVNConnector().connect(url);
 
 		try {
@@ -63,5 +63,4 @@ public class SvnReleaseProviderImpl implements SvnReleaseProvider {
 		}
 		return releases;
 	}
-
 }

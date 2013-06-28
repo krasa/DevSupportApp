@@ -39,7 +39,7 @@ public class ReportPage extends BasePage {
 	}
 
 	private Component createResultLabel() {
-		resultLabel = new MultiLineLabel("resultLabel", new Model<Serializable>());
+		resultLabel = new MultiLineLabel("resultLabel", new Model<>());
 		return resultLabel.setOutputMarkupPlaceholderTag(true);
 	}
 
@@ -55,7 +55,7 @@ public class ReportPage extends BasePage {
 			@Override
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
 				ReportResult report = facade.getReport();
-				ReportResultPanel result = new ReportResultPanel(RESULT, new Model<ReportResult>(report));
+				ReportResultPanel result = new ReportResultPanel(RESULT, new Model<>(report));
 				ReportPage.this.replace(result);
 				target.add(result);
 			}
@@ -68,7 +68,7 @@ public class ReportPage extends BasePage {
 			@Override
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
 				ReportResult report = facade.getReport();
-				NotTaggedCommitsPanel result = new NotTaggedCommitsPanel(RESULT, new Model<ReportResult>(report));
+				NotTaggedCommitsPanel result = new NotTaggedCommitsPanel(RESULT, new Model<>(report));
 				ReportPage.this.replace(result);
 				target.add(result);
 			}

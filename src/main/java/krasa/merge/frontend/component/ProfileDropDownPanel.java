@@ -36,11 +36,11 @@ public class ProfileDropDownPanel extends Panel {
 
 	private DropDownChoice getPhoneVendorDDC(final Form form) {
 		List<Profile> profiles = facade.getProfiles();
-		Model<ProfileDropDownChoiceItem> selected = new Model<ProfileDropDownChoiceItem>();
+		Model<ProfileDropDownChoiceItem> selected = new Model<>();
 		List<ProfileDropDownChoiceItem> choiceItems = convert(profiles, selected, getMySession().getCurrentProfileId());
 
-		final DropDownChoice<ProfileDropDownChoiceItem> profilesDDC = new DropDownChoice<ProfileDropDownChoiceItem>(
-				"profiles", selected, choiceItems, new ChoiceRenderer<ProfileDropDownChoiceItem>("name", "id"));
+		final DropDownChoice<ProfileDropDownChoiceItem> profilesDDC = new DropDownChoice<>("profiles", selected,
+				choiceItems, new ChoiceRenderer<ProfileDropDownChoiceItem>("name", "id"));
 		// Add Ajax Behaviour...
 		profilesDDC.add(new AjaxFormComponentUpdatingBehavior("onchange") {
 			@Override
@@ -60,7 +60,7 @@ public class ProfileDropDownPanel extends Panel {
 
 	private List<ProfileDropDownChoiceItem> convert(List<Profile> profiles, Model<ProfileDropDownChoiceItem> selected,
 			Integer current) {
-		ArrayList<ProfileDropDownChoiceItem> profileDropDownChoiceItems = new ArrayList<ProfileDropDownChoiceItem>();
+		ArrayList<ProfileDropDownChoiceItem> profileDropDownChoiceItems = new ArrayList<>();
 		for (Profile profile : profiles) {
 			ProfileDropDownChoiceItem e = new ProfileDropDownChoiceItem(profile);
 			profileDropDownChoiceItems.add(e);

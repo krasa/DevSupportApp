@@ -1,5 +1,6 @@
 package krasa.core.frontend.commons.table;
 
+import krasa.core.frontend.StaticImage;
 import krasa.core.frontend.commons.ButtonPanel;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -11,25 +12,33 @@ import org.apache.wicket.model.IModel;
 
 public abstract class ButtonColumn<T> extends AbstractColumn<T, String> {
 
+	private IModel<String> label;
+	private StaticImage image;
 	protected String delete;
-
-	public ButtonColumn(IModel<String> displayModel, String sortProperty) {
-		super(displayModel, sortProperty);
-	}
 
 	public ButtonColumn(IModel<String> displayModel) {
 		super(displayModel);
+		label = displayModel;
+	}
+
+	public ButtonColumn(IModel<String> displayModel, IModel<String> label, StaticImage image) {
+		super(displayModel);
+		this.label = label;
+		this.image = image;
 	}
 
 	@Override
 	public void populateItem(Item<ICellPopulator<T>> components, String s, final IModel<T> model) {
-		components.add(new ButtonPanel(s, ButtonColumn.this.getDisplayModel().getObject()) {
+		components.add(createButtonPanel(s, model, label == null ? null : label.getObject()));
+	}
+
+	protected ButtonPanel createButtonPanel(final String id, final IModel<T> model, final String displayModel) {
+		return new ButtonPanel(id, displayModel, image) {
 			@Override
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
 				ButtonColumn.this.onSubmit(model, target, form);
 			}
-		});
-
+		};
 	}
 
 	abstract protected void onSubmit(IModel<T> model, AjaxRequestTarget target, Form<?> form);

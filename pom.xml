@@ -22,6 +22,8 @@
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
+
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jrebel-maven-plugin.version>1.1.3</jrebel-maven-plugin.version>
@@ -46,7 +48,8 @@
 		<sshj.version>0.8.1</sshj.version>
 		<jsch.version>0.1.49</jsch.version>
 		<javax.servlet-api.version>3.0.1</javax.servlet-api.version>
-		<slf4j-log4j12.version>1.6.4</slf4j-log4j12.version>
+		<logback.version>1.0.13</logback.version>
+		<slf4j.version>1.7.5</slf4j.version>
 		<log4j.version>1.2.16</log4j.version>
 		<junit.version>4.11</junit.version>
 		<commons-dbcp.version>1.4</commons-dbcp.version>
@@ -54,6 +57,11 @@
 		<commons-io.version>2.4</commons-io.version>
 	</properties>
 	<dependencies>
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>1.3.172</version>
+		</dependency>
 
 		<!--<dependency>-->
 		<!--<groupId>com.google.code.gson</groupId>-->
@@ -219,18 +227,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.wicketstuff</groupId>
-			<artifactId>inmethod-grid</artifactId>
-			<version>1.4.14</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>slf4j-api</artifactId>
-					<groupId>org.slf4j</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-
-		<dependency>
 			<groupId>org.apache.wicket</groupId>
 			<artifactId>wicket-atmosphere</artifactId>
 			<version>${wicket.atmosphere.version}</version>
@@ -257,17 +253,35 @@
 		<!--</dependency>-->
 
 
-		<!-- LOGGING DEPENDENCIES - LOG4J -->
+		<!-- Logging - start -->
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>${logback.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<version>${slf4j-log4j12.version}</version>
+			<artifactId>jcl-over-slf4j</artifactId>
+			<version>${slf4j.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>${log4j.version}</version>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j.version}</version>
 		</dependency>
+		<!-- Logging - end -->
 
 		<!--  JUNIT DEPENDENCY FOR TESTING -->
 		<dependency>

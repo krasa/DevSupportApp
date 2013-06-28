@@ -20,7 +20,7 @@ public class ArrayListDeque<E> extends AbstractList<E> implements RandomAccess {
 
 	public ArrayListDeque(int capacity) {
 		bufferLength = capacity + 1;
-		buf = new ArrayList<E>(Collections.nCopies(bufferLength, (E) null));
+		buf = new ArrayList<>(Collections.nCopies(bufferLength, (E) null));
 	}
 
 	public int capacity() {

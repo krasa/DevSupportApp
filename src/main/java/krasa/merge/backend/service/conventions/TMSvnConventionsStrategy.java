@@ -56,7 +56,7 @@ public class TMSvnConventionsStrategy extends SvnConventionsStrategy {
 
 	@Override
 	public List<SvnFolder> resolveFromBranches(SvnFolder toFolder) {
-		List<SvnFolder> result = new ArrayList<SvnFolder>();
+		List<SvnFolder> result = new ArrayList<>();
 		String searchFrom = toFolder.getSearchFrom();
 		String branchName = toFolder.getName();
 		List<SvnFolder> childs = toFolder.getParent().getChilds();
@@ -116,15 +116,15 @@ public class TMSvnConventionsStrategy extends SvnConventionsStrategy {
 
 	@Override
 	public List<SvnFolder> postProcessAllBranches(Map<String, SvnFolder> childs) {
-		Set<Integer> versionsSet = new HashSet<Integer>();
+		Set<Integer> versionsSet = new HashSet<>();
 		Set<String> strings = childs.keySet();
 		for (String string : strings) {
 			versionsSet.add(getVersion(string));
 		}
-		List<Integer> versions = new ArrayList<Integer>(versionsSet);
+		List<Integer> versions = new ArrayList<>(versionsSet);
 		Collections.sort(versions);
 
-		ArrayList<SvnFolder> svnFolders = new ArrayList<SvnFolder>();
+		ArrayList<SvnFolder> svnFolders = new ArrayList<>();
 		for (SvnFolder child : childs.values()) {
 			if (child.getSearchFrom() == null) {
 				int searchFromVersion = getSearchFromVersion(child);

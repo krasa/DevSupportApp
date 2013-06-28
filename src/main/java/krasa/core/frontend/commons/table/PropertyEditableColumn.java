@@ -41,7 +41,7 @@ public class PropertyEditableColumn<T, S> extends AbstractColumn<T, S> {
 
 	@Override
 	public void populateItem(Item<ICellPopulator<T>> item, String componentId, IModel<T> rowModel) {
-		EditablePanel<T> panel = new EditablePanel<T>(componentId, rowModel, new PropertyModel<S>(rowModel,
+		EditablePanel<T> panel = new EditablePanel<>(componentId, rowModel, new PropertyModel<S>(rowModel,
 				propertyExpression));
 		decoratePanel(panel);
 		item.add(panel);

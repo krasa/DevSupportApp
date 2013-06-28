@@ -1,9 +1,11 @@
 package krasa.build.backend.execution;
 
+import java.util.Arrays;
 import java.util.List;
 
 import krasa.build.backend.domain.BuildJob;
-import krasa.build.backend.domain.BuildRequest;
+import krasa.build.backend.domain.BuildableComponent;
+import krasa.build.backend.execution.process.AbstractProcess;
 import krasa.build.backend.execution.process.ProcessLog;
 import krasa.build.backend.execution.process.SshBuildProcess;
 import krasa.build.backend.execution.strategy.BuildCommandBuilderStrategy;
@@ -21,18 +23,23 @@ public class ProcessBuilder {
 	@Autowired
 	BuildCommandBuilderStrategy buildCommandBuilderStrategy;
 
-	public BuildJob create(BuildRequest request) {
+	public BuildJob create(BuildableComponent buildableComponent) {
 		ProcessLog stringBufferTail = new ProcessLog();
-		List<String> command = request.buildCommand(buildCommandBuilderStrategy);
+		List<String> command = buildableComponent.buildCommand(buildCommandBuilderStrategy);
 
-		SshBuildProcess process = new SshBuildProcess(stringBufferTail, command);
-		BuildJob buildJob = new BuildJob(process, request);
+		AbstractProcess process = getBuildProcess(stringBufferTail, command);
+		BuildJob buildJob = new BuildJob(process, buildableComponent);
+		buildJob.setCommand(Arrays.toString(command.toArray()));
 
 		process.addListener(buildJob);
 
 		beanFactory.autowireBean(process);
 
 		return buildJob;
+	}
+
+	protected AbstractProcess getBuildProcess(ProcessLog stringBufferTail, List<String> command) {
+		return new SshBuildProcess(stringBufferTail, command);
 	}
 
 }

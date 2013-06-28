@@ -37,7 +37,7 @@ public class DummyDataProvider<T extends Serializable> implements ISortableDataP
 
 	@Override
 	public IModel<T> model(T object) {
-		return new Model<T>(object);
+		return new Model<>(object);
 	}
 
 	@Override

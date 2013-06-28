@@ -29,13 +29,13 @@ public class ReportResultTablePanel extends Panel {
 	public ReportResultTablePanel(String id, final IModel<List<SVNLogEntry>> model) {
 		super(id, model);
 		final ArrayList<IColumn<ReportItem, String>> columns = getColumns();
-		AjaxFallbackDefaultDataTable<ReportItem, String> table = new AjaxFallbackDefaultDataTable<ReportItem, String>(
-				"merges", columns, new ReportDataProvider(model), 100);
+		AjaxFallbackDefaultDataTable<ReportItem, String> table = new AjaxFallbackDefaultDataTable<>("merges", columns,
+				new ReportDataProvider(model), 100);
 		add(table);
 	}
 
 	private ArrayList<IColumn<ReportItem, String>> getColumns() {
-		final ArrayList<IColumn<ReportItem, String>> columns = new ArrayList<IColumn<ReportItem, String>>();
+		final ArrayList<IColumn<ReportItem, String>> columns = new ArrayList<>();
 		columns.add(revidionsColumn());
 		columns.add(messageColumn());
 		// columns.add(new PropertyColumn<ReportItem, String>(new Model<String>("author"), "author", "author"));
@@ -50,7 +50,7 @@ public class ReportResultTablePanel extends Panel {
 	}
 
 	private AbstractColumn<ReportItem, String> messageColumn() {
-		return new AbstractColumn<ReportItem, String>(new Model<String>("message"), "message") {
+		return new AbstractColumn<ReportItem, String>(new Model<>("message"), "message") {
 			@Override
 			public void populateItem(Item<ICellPopulator<ReportItem>> cellItem, String componentId,
 					IModel<ReportItem> rowModel) {
@@ -60,7 +60,7 @@ public class ReportResultTablePanel extends Panel {
 	}
 
 	private AbstractColumn<ReportItem, String> revidionsColumn() {
-		return new AbstractColumn<ReportItem, String>(new Model<String>("revision"), "revision") {
+		return new AbstractColumn<ReportItem, String>(new Model<>("revision"), "revision") {
 			@Override
 			public void populateItem(Item<ICellPopulator<ReportItem>> cellItem, String componentId,
 					IModel<ReportItem> rowModel) {
@@ -69,7 +69,7 @@ public class ReportResultTablePanel extends Panel {
 				for (SVNLogEntry commit : object.commits) {
 					Fragment link = new Fragment(links.newChildId(), "linkFragment", ReportResultTablePanel.this);
 					link.add(new FishEyeLink("link", new FishEyeLinkModel(commit.getRevision()),
-							Model.of(commit.getRevision() + " " + getSubTaskAndMessage(commit)), new Model<String>(
+							Model.of(commit.getRevision() + " " + getSubTaskAndMessage(commit)), new Model<>(
 									commit.toString())));
 					links.add(link);
 				}

@@ -21,7 +21,7 @@ class ReportDataProvider implements ISortableDataProvider<ReportItem, String> {
 	List<ReportItem> uniqueCPRs;
 
 	public ReportDataProvider(IModel<List<SVNLogEntry>> merges) {
-		uniqueCPRs = new ArrayList<ReportItem>();
+		uniqueCPRs = new ArrayList<>();
 		Multimap<String, SVNLogEntry> stringSVNLogEntryMultimap = filterAndSort(merges.getObject());
 		for (String entry : stringSVNLogEntryMultimap.keySet()) {
 			uniqueCPRs.add(new ReportItem(entry, stringSVNLogEntryMultimap.get(entry)));
@@ -70,7 +70,7 @@ class ReportDataProvider implements ISortableDataProvider<ReportItem, String> {
 
 	@Override
 	public IModel<ReportItem> model(ReportItem object) {
-		return new Model<ReportItem>(object);
+		return new Model<>(object);
 	}
 
 	@Override

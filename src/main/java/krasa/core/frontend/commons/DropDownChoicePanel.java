@@ -14,7 +14,7 @@ public abstract class DropDownChoicePanel extends Panel {
 	public DropDownChoicePanel(String componentId, final PropertyModel<String> model,
 			final IModel<List<String>> displayModel) {
 		super(componentId, model);
-		final DropDownChoice<String> models = new DropDownChoice<String>("drop", model, displayModel);
+		final DropDownChoice<String> models = new DropDownChoice<>("drop", model, displayModel);
 		models.setNullValid(true);
 		models.setOutputMarkupId(true);
 		models.add(new AjaxFormComponentUpdatingBehavior("onchange") {

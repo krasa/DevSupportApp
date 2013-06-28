@@ -43,7 +43,7 @@ public class SvnFolderRefreshService {
 
 	public void reloadProjects() {
 		List<Repository> all = repositoryGenericDAO.findAll();
-		Set<String> projectSet = new HashSet<String>();
+		Set<String> projectSet = new HashSet<>();
 		for (Repository repository : all) {
 			SvnFolderProvider svnFolderProvider = new SvnFolderProvider(repository);
 			List<SVNDirEntry> projects = svnFolderProvider.getProjects();
@@ -86,7 +86,7 @@ public class SvnFolderRefreshService {
 		try {
 			Boolean loadTags = globalSettingsProvider.getGlobalSettings().isLoadTags(project.getPath());
 			List<SvnFolder> childs = provider.getProjectContent(project.getName(), loadTags);
-			Set<String> childSet = new HashSet<String>();
+			Set<String> childSet = new HashSet<>();
 			for (SvnFolder child : childs) {
 				childSet.add(child.getName());
 				if (!project.childAlreadyExists(child)) {

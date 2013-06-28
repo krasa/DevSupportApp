@@ -31,8 +31,8 @@ table.dataview tr th {
     color: black;
     padding-top: 3px;
     padding-bottom: 3px;
-    padding-left: 8px;
-    padding-right: 30px;
+    padding-left: 10px;
+    padding-right: 10px;
     background-color: #c1e4ff;
     border-bottom: 1px solid #0079d6;
     border-top: 1px solid #0079d6;
@@ -48,16 +48,16 @@ table.dataview tr th {
 
 table.dataview tr th.wicket_orderDown {
     background-color: #87cbff;
-    background-image: url(displaytag/img/arrow_down.png);
+    /*background-image: url(displaytag/img/arrow_down.png);*/
 }
 
 table.dataview tr th.wicket_orderUp {
     background-color: #87cbff;
-    background-image: url(displaytag/img/arrow_up.png);
+    /*background-image: url(displaytag/img/arrow_up.png);*/
 }
 
 table.dataview tr th.wicket_orderNone {
-    background-image: url(displaytag/img/arrow_off.png);
+    /*background-image: url(displaytag/img/arrow_off.png);*/
 }
 
 table.dataview tr th a {
@@ -782,4 +782,14 @@ div.table .select select {
 
 .buttons input {
     margin: 0 0 6px 0;
+}
+
+#FAILED, #EXCEPTION, #KILLED, #DISCONNECTED {
+    color: RED;
+    font-weight: bold;
+}
+
+#SUCCESS {
+    color: green;
+    font-weight: bold;
 }

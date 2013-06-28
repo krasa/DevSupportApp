@@ -26,7 +26,7 @@ public class SelectedBranchesTablePanel extends BranchesTablePanel {
 	}
 
 	protected List<IColumn<SvnFolder, String>> createColumns() {
-		List<IColumn<SvnFolder, String>> columns = new ArrayList<IColumn<SvnFolder, String>>();
+		List<IColumn<SvnFolder, String>> columns = new ArrayList<>();
 		columns.add(createNameColumn());
 		columns.add(createSearchFromColumn());
 		columns.add(createDeleteColumn());
@@ -34,7 +34,7 @@ public class SelectedBranchesTablePanel extends BranchesTablePanel {
 	}
 
 	private ButtonColumn<SvnFolder> createDeleteColumn() {
-		return new ButtonColumn<SvnFolder>(new Model<String>("Delete")) {
+		return new ButtonColumn<SvnFolder>(new Model<>("Delete")) {
 			@Override
 			protected void onSubmit(IModel<SvnFolder> model, AjaxRequestTarget target, Form<?> form) {
 				facade.updateSelectionOfSvnFolder(model.getObject(), false);

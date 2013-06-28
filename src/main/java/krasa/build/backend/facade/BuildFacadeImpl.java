@@ -5,10 +5,9 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import krasa.build.backend.config.ExecutorConfig;
 import krasa.build.backend.dao.CommonBuildDao;
 import krasa.build.backend.domain.BuildJob;
-import krasa.build.backend.domain.BuildRequest;
-import krasa.build.backend.domain.BuildRequestToBuildableComponent;
 import krasa.build.backend.domain.BuildableComponent;
 import krasa.build.backend.domain.Environment;
 import krasa.build.backend.domain.Status;
@@ -18,22 +17,20 @@ import krasa.build.backend.execution.ProcessStatus;
 import krasa.build.backend.execution.adapter.BuildJobsHolder;
 import krasa.core.backend.dao.GenericDAO;
 import krasa.core.backend.dao.GenericDaoBuilder;
-import krasa.core.frontend.WicketApplication;
 import krasa.merge.backend.domain.Displayable;
 import krasa.merge.backend.domain.SvnFolder;
 import krasa.merge.backend.facade.Facade;
 
-import org.apache.wicket.Application;
-import org.apache.wicket.atmosphere.EventBus;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.task.AsyncTaskExecutor;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
 public class BuildFacadeImpl implements BuildFacade {
 	protected final Logger log = LoggerFactory.getLogger(getClass());
 	protected GenericDAO<Environment> environmentDAO;
@@ -47,53 +44,48 @@ public class BuildFacadeImpl implements BuildFacade {
 	@Autowired
 	private Facade facade;
 	@Autowired
-	private AsyncTaskExecutor taskExecutor;
+	@Qualifier(ExecutorConfig.BUILD_EXECUTOR)
+	private ThreadPoolTaskExecutor taskExecutor;
 	@Autowired
 	private krasa.build.backend.execution.ProcessBuilder processBuilder;
+	@Autowired
+	AsyncService asyncService;
 
+	@Transactional
 	@Override
-	public synchronized BuildJob build(BuildRequest request) {
-		request.validate();
-		checkPreviousBuilds(request);
-
-		BuildJob buildJob = createAndSaveBuildJob(request);
+	public BuildJob build(BuildableComponent buildableComponent) {
+		checkPreviousBuilds(buildableComponent);
+		BuildJob buildJob = createAndSaveBuildJob(buildableComponent);
 		commonBuildDao.flush();
 
 		runningBuildJobsHolder.put(buildJob);
 		taskExecutor.submit(buildJob.getProcess());
-		log.info("process started " + request.toString());
-
+		log.info("process scheduled " + buildableComponent.toString());
+		if (taskExecutor.getThreadPoolExecutor().getActiveCount() >= ExecutorConfig.MAX_CONCURRENT_BUILDS) {
+			asyncService.sendRefresh(buildJob);
+		}
 		return buildJob;
 	}
 
-	protected BuildJob createAndSaveBuildJob(BuildRequest request) {
-		refreshComponents(request);
-		BuildJob buildJob = processBuilder.create(request);
+	protected BuildJob createAndSaveBuildJob(BuildableComponent buildableComponent) {
+		buildableComponent = refresh(buildableComponent);
+		BuildJob buildJob = processBuilder.create(buildableComponent);
+		buildableComponent.setLastBuildJob(buildJob);
 		buildJobDAO.save(buildJob);
 		return buildJob;
 	}
 
-	private void refreshComponents(BuildRequest request) {
-		List<BuildableComponent> buildableComponents = new ArrayList<BuildableComponent>();
-		for (BuildableComponent buildableComponent : request.getBuildableComponents()) {
-			buildableComponents.add(refresh(buildableComponent));
-		}
-		request.setBuildableComponents(buildableComponents);
-	}
-
-	private void checkPreviousBuilds(BuildRequest request) {
+	private void checkPreviousBuilds(BuildableComponent request) {
 		runningBuildJobsHolder.checkPreviousBuilds(request);
 	}
 
-	private void updateComponents(BuildJob buildJob) {
-		List<BuildableComponent> buildRequestToBuildableComponents = buildJob.getRequest().getBuildableComponents();
-		for (BuildableComponent buildableComponent : buildRequestToBuildableComponents) {
-			buildableComponentDAO.save(buildableComponent);
-		}
-	}
-
 	@Override
-	public BuildableComponent createBuildableComponent(Environment environment, String componentName) {
+	@Transactional
+	public BuildableComponent createBuildableComponent(Environment environment, String componentName)
+			throws AlreadyExistsException {
+		if (StringUtils.isBlank(componentName)) {
+			return null;
+		}
 		environment = environmentDAO.refresh(environment);
 		BuildableComponent buildableComponent = environment.addBuildableComponent(componentName);
 		buildableComponentDAO.save(buildableComponent);
@@ -101,17 +93,23 @@ public class BuildFacadeImpl implements BuildFacade {
 	}
 
 	@Override
+	@Transactional
 	public void createBuildableComponentForAllMatchingComponents(Environment environment, String fieldValue) {
 		environment = environmentDAO.refresh(environment);
 		List<SvnFolder> branches = facade.findBranchesByNameLike(fieldValue);
 		for (SvnFolder branch : branches) {
 			String name = branch.getName();
-			createBuildableComponent(environment, name);
+			try {
+				createBuildableComponent(environment, name);
+			} catch (AlreadyExistsException e) {
+				// ok
+			}
 		}
 		environmentDAO.save(environment);
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public List<Displayable> getMatchingComponents(String input) {
 		List<Displayable> branchesByNameLikeAsDisplayable = facade.findBranchesByNameLikeAsDisplayable(input);
 		branchesByNameLikeAsDisplayable.addAll(facade.findTagsByNameLikeAsDisplayable(input));
@@ -119,6 +117,7 @@ public class BuildFacadeImpl implements BuildFacade {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public Environment getEnvironmentByName(String s) {
 		return environmentDAO.findOneBy("name", s);
 	}
@@ -128,6 +127,7 @@ public class BuildFacadeImpl implements BuildFacade {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public BuildJob getBuildJobById(Integer id) {
 		BuildJob buildJob = runningBuildJobsHolder.get(id);
 		if (buildJob == null) {
@@ -137,51 +137,59 @@ public class BuildFacadeImpl implements BuildFacade {
 	}
 
 	@Override
+	@Transactional
 	public void saveBuildMode(Integer id, String buildMode) {
 		commonBuildDao.updateBuildMode(id, buildMode);
 	}
 
 	@Override
+	@Transactional
 	public void buildComponent(BuildableComponentDto object) {
-		BuildableComponent byId = buildableComponentDAO.findById(object.getId());
-		build(byId.createDeploymentRequest());
+		BuildableComponent buildableComponent = buildableComponentDAO.findById(object.getId());
+		build(buildableComponent);
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public BuildJob getBuildJobByComponentId(Integer componentId) {
 		BuildableComponent byId = buildableComponentDAO.findById(componentId);
 		return byId.getLastBuildJob();
 	}
 
 	@Override
+	@Transactional
+	public void editBuildableComponent(BuildableComponentDto object) {
+		BuildableComponent byId = buildableComponentDAO.findById(object.getId());
+		byId.setName(object.getName());
+		byId.setBuildMode(object.getBuildMode());
+		buildableComponentDAO.save(byId);
+	}
+
+	@Transactional
+	@Override
 	public void onStatusChanged(BuildJob buildJob, ProcessStatus processStatus) {
 		buildJob.setStatus(processStatus.getStatus());
-		if (!processStatus.isAlive()) {
+		if (processStatus.isAlive()) {
+			buildJob.setStartTime(new Date());
+		} else {
 			buildJob.setEndTime(new Date());
 			runningBuildJobsHolder.remove(buildJob);
 		}
 		buildJob.onBeforeSave();
-		buildJobDAO.merge(buildJob);
-		log.debug("sending event REFRESH");
-		try {
-			EventBus.get(Application.get(WicketApplication.class.getName())).post("REFRESH");
-		} catch (Exception e) {
-			log.error(e.getMessage(), e);
-		}
+		buildJobDAO.save(buildJob);
+		asyncService.sendRefresh(buildJob);
 	}
 
+	@Transactional
 	@Override
 	public void deleteComponentById(final Integer id) {
 		final BuildableComponent byId = buildableComponentDAO.findById(id);
-		final List<BuildRequestToBuildableComponent> allBuildRequestToBuildableComponents = byId.getAllBuildRequestToBuildableComponents();
-		for (BuildRequestToBuildableComponent allBuildRequestToBuildableComponent : allBuildRequestToBuildableComponents) {
-			if (allBuildRequestToBuildableComponent.getBuildRequest().getBuildableComponents().size() == 1) {
-				commonBuildDao.delete(allBuildRequestToBuildableComponent.getBuildJob());
-			}
-		}
+		byId.getEnvironment().getBuildableComponents().remove(byId);
 		buildableComponentDAO.delete(byId);
+		buildableComponentDAO.flush();
 	}
 
+	@Transactional
 	@Override
 	public void deleteEnvironment(Integer id) {
 		Environment environment = environmentDAO.findById(id);
@@ -190,18 +198,17 @@ public class BuildFacadeImpl implements BuildFacade {
 		for (BuildableComponent buildableComponent : buildableComponents) {
 			buildableComponentDAO.delete(buildableComponent);
 		}
-		// componentBuilds.clear();
-		// environmentDAO.save(environment);
-		// environment= environmentDAO.refresh(environment);
 		environmentDAO.delete(environment);
 
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public List<Environment> getEnvironments() {
 		return Environment.sortByName(environmentDAO.findAll());
 	}
 
+	@Transactional(readOnly = true)
 	@Override
 	public Environment createEnvironment(String environmentName) throws AlreadyExistsException {
 		List<Environment> by = environmentDAO.findBy(Environment.NAME, environmentName);
@@ -213,10 +220,11 @@ public class BuildFacadeImpl implements BuildFacade {
 	}
 
 	@Override
-	public List<BuildableComponent> getComponentsByEnvironment(Environment environment) {
-		environment = environmentDAO.findById(environment.getId());
-		List<BuildableComponent> buildableComponents = new ArrayList<BuildableComponent>(
-				environment.getBuildableComponents());
+	@Transactional(readOnly = true)
+	public List<BuildableComponent> getComponentsByEnvironment(Integer environmentId) {
+		Environment environment = environmentDAO.findById(environmentId);
+		List<BuildableComponent> buildableComponents1 = environment.getBuildableComponents();
+		List<BuildableComponent> buildableComponents = new ArrayList<>(buildableComponents1);
 		checkInProgressStatus(buildableComponents);
 		Collections.sort(buildableComponents, new BuildableComponent.ComponentBuildComparator());
 		return buildableComponents;
@@ -224,10 +232,9 @@ public class BuildFacadeImpl implements BuildFacade {
 
 	private void checkInProgressStatus(List<BuildableComponent> buildableComponents) {
 		for (BuildableComponent buildableComponent : buildableComponents) {
-			BuildRequest latestBuildRequest = buildableComponent.getLastBuildRequest();
-			if (latestBuildRequest != null) {
-				BuildJob lastBuildJob = latestBuildRequest.getBuildJob();
-				if (lastBuildJob != null && lastBuildJob.getStatus() == Status.IN_PROGRESS
+			if (buildableComponent != null) {
+				BuildJob lastBuildJob = buildableComponent.getLastBuildJob();
+				if (lastBuildJob != null && lastBuildJob.isNotFinished()
 						&& runningBuildJobsHolder.get(lastBuildJob) == null) {
 					lastBuildJob.setStatus(Status.KILLED);
 					buildJobDAO.save(lastBuildJob);

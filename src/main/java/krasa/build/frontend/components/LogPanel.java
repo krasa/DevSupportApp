@@ -1,8 +1,8 @@
-package krasa.build.frontend.pages.components;
+package krasa.build.frontend.components;
 
 import krasa.build.backend.domain.BuildJob;
+import krasa.build.backend.domain.Status;
 import krasa.build.backend.dto.Result;
-import krasa.build.frontend.components.PocessKillButton;
 import krasa.core.frontend.commons.SpanMultiLineLabel;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -80,20 +80,23 @@ public class LogPanel extends Panel {
 				 * We are doing the following here: - append the content of "nextLog" to "logData" - remove "nextLog" -
 				 * insert "nextLog" after "logData".
 				 */
-				if (!getProgress().isAlive()) {
+
+				if (getProgress().getStatus() == Status.PENDING) {
+				} else if (!getProgress().isAlive()) {
 					stop(target);
 					target.add(kill);
 					target.add(kill2);
-				} else
+				} else {
 					// @formatter:off
 					target.prependJavaScript("window.shouldScroll = $(window).scrollTop() + $(window).height()  >= $(document).height();");
-				target.appendJavaScript("$('#logData').append('<span>' + $('#nextLog').text()   + '</span>');"
-						+ "$('#nextLog').remove();" + "$(\"<span id='nextLog'>\").insertAfter($('#logData'));" +
+					target.appendJavaScript("$('#logData').append('<span>' + $('#nextLog').text()   + '</span>');"
+							+ "$('#nextLog').remove();" + "$(\"<span id='nextLog'>\").insertAfter($('#logData'));"
 
-						"if(window.shouldScroll) {window.scroll(0,document.body.scrollHeight);}"
-				// @formatter:on
+							+ "if(window.shouldScroll) {window.scroll(0,document.body.scrollHeight);}"
+					// @formatter:on
 
-				);
+					);
+				}
 			}
 		});
 		nextLog.setOutputMarkupId(true);

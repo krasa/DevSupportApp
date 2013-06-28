@@ -39,7 +39,7 @@ public class ConfigurationPage extends BasePage {
 
 	private MarkupContainer initComponents() {
 		add(new RepositoryConfigurationPanel("repositories"));
-		final Form<Profile> form = new Form<Profile>("form");
+		final Form<Profile> form = new Form<>("form");
 
 		form.add(new IndicatingAjaxButton("refreshProjectsAndBranches") {
 			@Override

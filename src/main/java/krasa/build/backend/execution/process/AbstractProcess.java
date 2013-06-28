@@ -9,12 +9,14 @@ import krasa.build.backend.execution.ProcessStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Objects;
+
 public abstract class AbstractProcess implements Process {
 
 	protected final Logger log = LoggerFactory.getLogger(getClass());
 
-	protected ProcessStatus processStatus = new ProcessStatus();
-	protected List<ProcessStatusListener> processStatusListeners = new ArrayList<ProcessStatusListener>();
+	protected ProcessStatus processStatus = new ProcessStatus(Status.PENDING);
+	protected List<ProcessStatusListener> processStatusListeners = new ArrayList<>();
 	protected ProcessLog processLog;
 
 	@Override
@@ -28,7 +30,6 @@ public abstract class AbstractProcess implements Process {
 
 	protected void onFinally() {
 		log.info("process complete. " + this.toString());
-		notifyListeners();
 	}
 
 	@Override
@@ -48,6 +49,7 @@ public abstract class AbstractProcess implements Process {
 				processStatus.setException(e);
 				processStatus.setStatus(Status.EXCEPTION);
 			}
+			notifyListeners();
 		}
 	}
 
@@ -73,5 +75,10 @@ public abstract class AbstractProcess implements Process {
 	@Override
 	public ProcessStatus getStatus() {
 		return processStatus;
+	}
+
+	@Override
+	public String toString() {
+		return Objects.toStringHelper(this).add("status", processStatus).toString();
 	}
 }

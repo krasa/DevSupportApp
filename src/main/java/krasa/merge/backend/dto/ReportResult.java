@@ -15,8 +15,8 @@ import org.tmatesoft.svn.core.SVNLogEntry;
  * @author Vojtech Krasa
  */
 public class ReportResult implements Serializable {
-	Map<String, List<SVNLogEntry>> svnFolderListMap = new HashMap<String, List<SVNLogEntry>>();
-	Map<String, List<SVNDirEntry>> tags = new HashMap<String, List<SVNDirEntry>>();
+	Map<String, List<SVNLogEntry>> svnFolderListMap = new HashMap<>();
+	Map<String, List<SVNDirEntry>> tags = new HashMap<>();
 
 	public void add(SvnFolder branchesByName, List<SVNLogEntry> svnLogEntries) {
 		svnFolderListMap.put(branchesByName.getName(), svnLogEntries);
@@ -39,7 +39,7 @@ public class ReportResult implements Serializable {
 	}
 
 	public List<SVNLogEntry> getDifferenceBetweenTags(SVNDirEntry tag, SVNDirEntry tag2, String branchName) {
-		ArrayList<SVNLogEntry> result = new ArrayList<SVNLogEntry>();
+		ArrayList<SVNLogEntry> result = new ArrayList<>();
 		List<SVNLogEntry> revisionsByBranchName = getRevisionsByBranchName(branchName);
 		long revision = tag.getRevision();
 		long revision2 = tag2.getRevision();
@@ -53,7 +53,7 @@ public class ReportResult implements Serializable {
 	}
 
 	public List<SVNLogEntry> getDifferenceBetweenTagAndBranch(SVNDirEntry tag, String branchName) {
-		ArrayList<SVNLogEntry> result = new ArrayList<SVNLogEntry>();
+		ArrayList<SVNLogEntry> result = new ArrayList<>();
 
 		List<SVNLogEntry> revisionsByBranchName = getRevisionsByBranchName(branchName);
 		long revision = tag.getRevision();
@@ -83,7 +83,7 @@ public class ReportResult implements Serializable {
 	}
 
 	public List<SVNLogEntry> getIssuesByTag(String branch, SVNDirEntry tag) {
-		ArrayList<SVNLogEntry> result = new ArrayList<SVNLogEntry>();
+		ArrayList<SVNLogEntry> result = new ArrayList<>();
 
 		List<SVNLogEntry> revisionsByBranchName = getRevisionsByBranchName(branch);
 		long revision = tag.getRevision();

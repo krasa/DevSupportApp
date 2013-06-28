@@ -31,14 +31,14 @@ public class SVNLogEntryTablePanel extends Panel {
 	public SVNLogEntryTablePanel(String id, final IModel<List<SVNLogEntry>> model) {
 		super(id, model);
 		final ArrayList<IColumn<SVNLogEntry, String>> columns = getColumns();
-		AjaxFallbackDefaultDataTable<SVNLogEntry, String> table = new AjaxFallbackDefaultDataTable<SVNLogEntry, String>(
-				"merges", columns, new DataProvider(model), 100);
+		AjaxFallbackDefaultDataTable<SVNLogEntry, String> table = new AjaxFallbackDefaultDataTable<>("merges", columns,
+				new DataProvider(model), 100);
 		add(table);
 	}
 
 	private ArrayList<IColumn<SVNLogEntry, String>> getColumns() {
-		final ArrayList<IColumn<SVNLogEntry, String>> columns = new ArrayList<IColumn<SVNLogEntry, String>>();
-		columns.add(new AbstractColumn<SVNLogEntry, String>(new Model<String>("revision"), "revision") {
+		final ArrayList<IColumn<SVNLogEntry, String>> columns = new ArrayList<>();
+		columns.add(new AbstractColumn<SVNLogEntry, String>(new Model<>("revision"), "revision") {
 			@Override
 			public void populateItem(Item<ICellPopulator<SVNLogEntry>> cellItem, String componentId,
 					IModel<SVNLogEntry> rowModel) {
@@ -48,19 +48,19 @@ public class SVNLogEntryTablePanel extends Panel {
 				cellItem.add(link);
 			}
 		});
-		columns.add(new AbstractColumn<SVNLogEntry, String>(new Model<String>("message"), "message") {
+		columns.add(new AbstractColumn<SVNLogEntry, String>(new Model<>("message"), "message") {
 			@Override
 			public void populateItem(Item<ICellPopulator<SVNLogEntry>> cellItem, String componentId,
 					IModel<SVNLogEntry> rowModel) {
 				cellItem.add(new MultiLineLabel(componentId, new PropertyModel<String>(rowModel, "message")));
 			}
 		});
-		columns.add(new PropertyColumn<SVNLogEntry, String>(new Model<String>("author"), "author", "author"));
-		columns.add(new AbstractColumn<SVNLogEntry, String>(new Model<String>("date"), "date") {
+		columns.add(new PropertyColumn<SVNLogEntry, String>(new Model<>("author"), "author", "author"));
+		columns.add(new AbstractColumn<SVNLogEntry, String>(new Model<>("date"), "date") {
 			@Override
 			public void populateItem(Item<ICellPopulator<SVNLogEntry>> cellItem, String componentId,
 					IModel<SVNLogEntry> rowModel) {
-				PropertyModel<Date> date = new PropertyModel<Date>(rowModel, "date");
+				PropertyModel<Date> date = new PropertyModel<>(rowModel, "date");
 				cellItem.add(new Label(componentId, new DateModel(date)));
 			}
 		});
@@ -90,7 +90,7 @@ public class SVNLogEntryTablePanel extends Panel {
 
 		@Override
 		public IModel<SVNLogEntry> model(SVNLogEntry object) {
-			return new Model<SVNLogEntry>(object);
+			return new Model<>(object);
 		}
 
 		@Override

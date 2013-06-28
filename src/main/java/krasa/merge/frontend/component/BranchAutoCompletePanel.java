@@ -37,7 +37,7 @@ public class BranchAutoCompletePanel extends Panel {
 	}
 
 	private AutoCompleteTextField<String> createAutoCompleteTextField() {
-		AutoCompleteTextField<String> components = new AutoCompleteTextField<String>("field", new Model<String>(""),
+		AutoCompleteTextField<String> components = new AutoCompleteTextField<String>("field", new Model<>(""),
 				createSettings()) {
 			@Override
 			protected Iterator<String> getChoices(String input) {
@@ -45,7 +45,7 @@ public class BranchAutoCompletePanel extends Panel {
 					List<String> emptyList = Collections.emptyList();
 					return emptyList.iterator();
 				}
-				List<String> choices = new ArrayList<String>();
+				List<String> choices = new ArrayList<>();
 				for (Displayable product : getMatching(input)) {
 					String choice = product.getDisplayableText();
 

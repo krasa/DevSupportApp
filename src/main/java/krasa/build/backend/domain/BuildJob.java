@@ -7,6 +7,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 
@@ -26,15 +28,17 @@ import com.google.common.base.Objects;
 @Entity
 public class BuildJob extends AbstractEntity implements ProcessStatusListener {
 	protected static final Logger log = LoggerFactory.getLogger(BuildJob.class);
-	@OneToOne(cascade = CascadeType.ALL, optional = false, mappedBy = "buildJob")
-	private BuildRequest request;
+	@ManyToOne(optional = false, cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
+	private BuildableComponent buildableComponent;
 	@Column
 	@Enumerated(EnumType.STRING)
-	public Status status = Status.PENDING;
+	public volatile Status status = Status.PENDING;
 	@Column
 	public Date startTime;
 	@Column
 	public Date endTime;
+	@Column
+	public String command;
 	@OneToOne(cascade = CascadeType.ALL, mappedBy = "buildJob")
 	private BuildLog buildLog;
 
@@ -44,14 +48,21 @@ public class BuildJob extends AbstractEntity implements ProcessStatusListener {
 	public BuildJob() {
 	}
 
-	public BuildJob(Process process, BuildRequest request) {
+	public BuildJob(Process process, BuildableComponent buildableComponent) {
 		this.process = process;
-		this.request = request;
-		request.setBuildJob(this);
+		this.buildableComponent = buildableComponent;
 	}
 
 	public BuildLog getBuildLog() {
 		return buildLog;
+	}
+
+	public String getCommand() {
+		return command;
+	}
+
+	public void setCommand(String command) {
+		this.command = command;
 	}
 
 	public void setBuildLog(BuildLog buildLog) {
@@ -78,12 +89,12 @@ public class BuildJob extends AbstractEntity implements ProcessStatusListener {
 		this.endTime = endTime;
 	}
 
-	public BuildRequest getRequest() {
-		return request;
+	public BuildableComponent getBuildableComponent() {
+		return buildableComponent;
 	}
 
-	public void setRequest(BuildRequest request) {
-		this.request = request;
+	public void setBuildableComponent(BuildableComponent buildableComponent) {
+		this.buildableComponent = buildableComponent;
 	}
 
 	public Date getStartTime() {
@@ -108,7 +119,6 @@ public class BuildJob extends AbstractEntity implements ProcessStatusListener {
 	public void kill() {
 		log.info("Killing");
 		process.stop();
-		SpringApplicationContext.getBean(BuildFacade.class).onStatusChanged(this, process.getStatus());
 		log.info("Process stopped");
 	}
 
@@ -116,12 +126,6 @@ public class BuildJob extends AbstractEntity implements ProcessStatusListener {
 	@Override
 	public void onStatusChanged(ProcessStatus processStatus) {
 		SpringApplicationContext.getBean(BuildFacade.class).onStatusChanged(this, processStatus);
-	}
-
-	@Override
-	public String toString() {
-		return Objects.toStringHelper(this).add("id", id).add("request", request).add("process", process).add("status",
-				status).add("startTime", startTime).add("endTime", endTime).toString();
 	}
 
 	public Result getLog() {
@@ -142,6 +146,10 @@ public class BuildJob extends AbstractEntity implements ProcessStatusListener {
 	}
 
 	public void onBeforeSave() {
+		fillBuildLogFromProcessLog();
+	}
+
+	private void fillBuildLogFromProcessLog() {
 		if (getProcess() != null) {
 			BuildLog buildLog = this.buildLog;
 			if (buildLog == null) {
@@ -151,5 +159,16 @@ public class BuildJob extends AbstractEntity implements ProcessStatusListener {
 			}
 			buildLog.setLogContent(getProcess().getProcessLog().getContent());
 		}
+	}
+
+	@Override
+	public String toString() {
+		return Objects.toStringHelper(this).add("id", id).add("command", command).add("buildableComponent",
+				buildableComponent).add("process", process).add("status", status).add("startTime", startTime).add(
+				"endTime", endTime).toString();
+	}
+
+	public boolean isNotFinished() {
+		return status == Status.IN_PROGRESS || status == Status.PENDING;
 	}
 }

@@ -48,7 +48,7 @@ public class MergeInfoService {
 			MultiValueMap<SvnFolder, SvnFolder> foldersByProjectMap) {
 		Boolean mergeOnSubFolders = globalSettingsProvider.getGlobalSettings().isMergeOnSubFoldersForProject(
 				project.getName());
-		List<MergeInfoResultItem> merges = new ArrayList<MergeInfoResultItem>();
+		List<MergeInfoResultItem> merges = new ArrayList<>();
 		log.debug("findMergesForProject for project " + project.getName());
 		List<SvnFolder> branchesByProject = foldersByProjectMap.get(project);
 		sortByName(branchesByProject);
@@ -65,7 +65,7 @@ public class MergeInfoService {
 			repository = globalSettingsProvider.getGlobalSettings().getDefaultRepository();
 		}
 		SvnMergeInfoProvider svnMergeInfoProvider = SvnMergeInfoProvider.create(repository);
-		List<MergeInfoResultItem> mergeInfoResultItems = new ArrayList<MergeInfoResultItem>();
+		List<MergeInfoResultItem> mergeInfoResultItems = new ArrayList<>();
 		try {
 			for (SvnFolder from : fromBranches) {
 				if (mergeOnSubfolders) {
@@ -89,7 +89,7 @@ public class MergeInfoService {
 	}
 
 	private MultiValueMap<SvnFolder, SvnFolder> groupByProject(List<SvnFolder> branches) {
-		MultiValueMap<SvnFolder, SvnFolder> foldersByProjectMap = new LinkedMultiValueMap<SvnFolder, SvnFolder>();
+		MultiValueMap<SvnFolder, SvnFolder> foldersByProjectMap = new LinkedMultiValueMap<>();
 		for (SvnFolder folder : branches) {
 			foldersByProjectMap.add(folder.getParent(), folder);
 		}

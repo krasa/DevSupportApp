@@ -87,6 +87,7 @@ public class FacadeImpl implements Facade {
 		this.repositoryGenericDAO = genericDAO.build(Repository.class);
 	}
 
+	@Transactional(readOnly = true)
 	@Override
 	public List<SvnFolder> getSubDirs(String name) {
 		return svnFolderDAO.getSubDirsByParentPath(name);
@@ -99,17 +100,20 @@ public class FacadeImpl implements Facade {
 		profileDAO.save(byId);
 	}
 
+	@Transactional(readOnly = true)
 	@Override
 	public List<String> getSelectedBranchesNames() {
 		return profileProvider.getSelectedBranchesNames();
 	}
 
+	@Transactional(readOnly = true)
 	@Override
 	public List<SvnFolder> getSelectedBranches() {
 		List<Branch> selectedBranches = profileProvider.getSelectedBranches();
 		return svnFolderDAO.findBranchesByNames(selectedBranches);
 	}
 
+	@Transactional(readOnly = true)
 	@Override
 	public SvnFolder getSvnFolderById(Integer id) {
 		return svnFolderDAO.findById(id);
@@ -120,27 +124,32 @@ public class FacadeImpl implements Facade {
 		profileProvider.updateSelectionOfSvnFolder(object, aBoolean);
 	}
 
+	@Transactional(readOnly = true)
 	@Override
 	public List<SvnFolder> findBranchesByNameLike(String name) {
 		return svnFolderDAO.findFoldersByNameLike(name, Type.BRANCH);
 	}
 
+	@Transactional(readOnly = true)
 	@Override
 	public List<Displayable> findBranchesByNameLikeAsDisplayable(String name) {
 		return new ArrayList<Displayable>(findBranchesByNameLike(name));
 	}
 
+	@Transactional(readOnly = true)
 	@Override
 	public List<Displayable> findTagsByNameLikeAsDisplayable(String input) {
 		return new ArrayList<Displayable>(svnFolderDAO.findFoldersByNameLike(input, Type.TAG));
 	}
 
+	@Transactional(readOnly = true)
 	@Override
 	public SvnFolder findBranchByInCaseSensitiveName(String name) {
 		return svnFolderDAO.findBranchByInCaseSensitiveName(name);
 
 	}
 
+	@Transactional(readOnly = true)
 	@Override
 	public MergeInfoResult getMergeInfoForAllSelectedBranches() {
 		List<Branch> selectedBranches = profileProvider.getSelectedBranches();
@@ -148,6 +157,7 @@ public class FacadeImpl implements Facade {
 		return mergeInfoService.findMerges(branchesByNames);
 	}
 
+	@Transactional(readOnly = true)
 	@Override
 	public MergeInfoResult getMergeInfoForAllSelectedBranchesInProject(String projectPath) {
 		List<Branch> selectedBranches = profileProvider.getSelectedBranches();
@@ -156,6 +166,7 @@ public class FacadeImpl implements Facade {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public Profile getProfileByIdOrDefault(Integer current) {
 		Profile byId = profileDAO.findById(current);
 		if (byId == null) {
@@ -176,11 +187,13 @@ public class FacadeImpl implements Facade {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public Boolean isMergeOnSubFoldersForProject(String path) {
 		GlobalSettings first = globalSettingsProvider.getGlobalSettings();
 		return first.isMergeOnSubFoldersForProject(path);
 	}
 
+	@Transactional(readOnly = true)
 	@Override
 	public GlobalSettings getGlobalSettings() {
 		return globalSettingsProvider.getGlobalSettings();
@@ -192,6 +205,7 @@ public class FacadeImpl implements Facade {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public List<SvnFolder> getAllBranchesByProjectName(String name) {
 		return svnFolderDAO.findByParentName(name, Type.BRANCH);
 	}
@@ -211,6 +225,7 @@ public class FacadeImpl implements Facade {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public String resolveProjectByPath(String path) {
 		int endIndex = path.indexOf("/");
 		if (endIndex > 0) {
@@ -229,6 +244,7 @@ public class FacadeImpl implements Facade {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public Boolean isLoadTags(String path) {
 		return globalSettingsProvider.getGlobalSettings().isLoadTags(path);
 	}
@@ -261,6 +277,7 @@ public class FacadeImpl implements Facade {
 		globalSettingsDAO.save(settings);
 	}
 
+	@Transactional(readOnly = true)
 	@Override
 	public ReportResult getReport() {
 		return reportService.getReport(getDefaultRepository());
@@ -361,22 +378,26 @@ public class FacadeImpl implements Facade {
 		globalSettingsDAO.save(globalSettings);
 	}
 
+	@Transactional(readOnly = true)
 	@Override
 	public List<SvnFolder> getProjects() {
 		return svnFolderDAO.findAllProjects();
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public List<Profile> getProfiles() {
 		return profileDAO.findAll();
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public Profile getDefaultProfile() {
 		return profileProvider.getFirstProfile();
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public List<SvnFolder> getBranches() {
 		return svnFolderDAO.findAll();
 	}

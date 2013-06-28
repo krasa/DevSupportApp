@@ -3,7 +3,6 @@ package krasa.build.backend.facade;
 import static org.junit.Assert.*;
 import krasa.build.backend.dao.CommonBuildDao;
 import krasa.build.backend.domain.BuildJob;
-import krasa.build.backend.domain.BuildRequest;
 import krasa.build.backend.domain.BuildableComponent;
 import krasa.build.backend.domain.Environment;
 import krasa.build.backend.domain.FullTest;
@@ -30,43 +29,35 @@ public class BuildFacadeImplTest extends FullTest {
 		environment = buildFacade.createEnvironment(ENV);
 		buildableComponent = buildFacade.createBuildableComponent(environment, "foo");
 		buildableComponent2 = buildFacade.createBuildableComponent(environment, "bar");
-
 	}
 
 	@Test
 	public void testCreateAndSaveBuildJob() throws Exception {
 		assertNotNull(buildableComponent.getId());
-		BuildJob build = buildFacade.createAndSaveBuildJob(new BuildRequest(buildableComponent, buildableComponent2));
-		assertNotNull(build.getRequest());
+		BuildJob build = buildFacade.createAndSaveBuildJob(buildableComponent);
+		assertNotNull(build.getBuildableComponent());
 		flush();
 
 		BuildableComponent component = commonBuildDao.refresh(buildableComponent);
 
-		BuildRequest latestBuildRequest = component.getLastBuildRequest();
-		assertNotNull(latestBuildRequest);
-		BuildJob lastBuildJob = latestBuildRequest.getBuildJob();
+		BuildJob lastBuildJob = component.getLastBuildJob();
 		assertEquals(build, lastBuildJob);
-		assertNotNull(lastBuildJob.getRequest());
-		assertNotNull(lastBuildJob.getRequest().getBuildJob());
-
-		assertEquals(2, lastBuildJob.getRequest().getBuildRequestToBuildableComponents().size());
-		assertEquals(ENV, lastBuildJob.getRequest().getEnvironmentName());
+		assertNotNull(lastBuildJob.getBuildableComponent());
+		assertNotNull(lastBuildJob.getBuildableComponent().getLastBuildJob());
 
 		refresh();
 		assertEquals(lastBuildJob, buildableComponent.getLastBuildJob());
-		assertEquals(1, buildableComponent.getAllBuildRequestToBuildableComponents().size());
+		assertEquals(1, buildableComponent.getAllBuildJobs().size());
 
 		Environment environment = buildFacade.getEnvironmentByName(ENV);
 		assertEquals(2, environment.getBuildableComponents().size());
 
 		flush();
-		commonBuildDao.delete(commonBuildDao.refresh(buildableComponent));
-		flush();
 	}
 
 	@Test
 	public void testBuildLog() throws Exception {
-		BuildJob build = buildFacade.createAndSaveBuildJob(new BuildRequest(buildableComponent, buildableComponent2));
+		BuildJob build = buildFacade.createAndSaveBuildJob(buildableComponent);
 		build.getProcess().getProcessLog().append("fooBar");
 		flush();
 
@@ -78,28 +69,25 @@ public class BuildFacadeImplTest extends FullTest {
 		assertEquals("fooBar", buildJobById.getBuildLog().getLogContent());
 		assertEquals("fooBar", buildJobById.getLog().getText());
 		assertEquals("", buildJobById.getNextLog(0).getText());
-
-		buildFacade.deleteComponentById(buildableComponent.getId());
-		flush();
 	}
 
 	@Test
 	public void testTwoBuilds() throws Exception {
-		BuildJob build = buildFacade.createAndSaveBuildJob(new BuildRequest(buildableComponent, buildableComponent2));
+		BuildJob build = buildFacade.createAndSaveBuildJob(buildableComponent);
 		flush();
-		BuildJob lastBuild = buildFacade.createAndSaveBuildJob(new BuildRequest(buildableComponent, buildableComponent2));
+		BuildJob lastBuild = buildFacade.createAndSaveBuildJob(buildableComponent);
 		flush();
 
 		refresh();
 		assertEquals(lastBuild, buildableComponent.getLastBuildJob());
-		assertEquals(2, buildableComponent.getAllBuildRequestToBuildableComponents().size());
+		assertEquals(2, buildableComponent.getAllBuildJobs().size());
 		assertEquals(2, commonBuildDao.findAll(buildableComponent).size());
 
 	}
 
 	@Test
 	public void testBuildDelete() throws Exception {
-		BuildJob build = buildFacade.createAndSaveBuildJob(new BuildRequest(buildableComponent, buildableComponent2));
+		BuildJob build = buildFacade.createAndSaveBuildJob(buildableComponent);
 		flush();
 
 		buildFacade.deleteComponentById(buildableComponent.getId());
@@ -107,12 +95,6 @@ public class BuildFacadeImplTest extends FullTest {
 
 		Environment environment = buildFacade.getEnvironmentByName(ENV);
 		assertEquals(1, environment.getBuildableComponents().size());
-		assertNotNull(buildFacade.getBuildJobById(build.getId()));
-
-		buildFacade.deleteComponentById(buildableComponent2.getId());
-		flush();
-
-		assertEquals(0, environment.getBuildableComponents().size());
 		assertNull(buildFacade.getBuildJobById(build.getId()));
 	}
 
