@@ -38,9 +38,9 @@ public interface BuildFacade {
 
 	void saveBuildMode(Integer id, String buildMode);
 
-	void buildComponent(BuildableComponentDto object);
+	BuildableComponentDto buildComponent(BuildableComponentDto object);
 
 	BuildJob getBuildJobByComponentId(Integer componentId);
 
-	void editBuildableComponent(BuildableComponentDto object);
+	BuildableComponentDto editBuildableComponent(BuildableComponentDto object);
 }

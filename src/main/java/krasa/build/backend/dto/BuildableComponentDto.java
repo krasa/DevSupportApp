@@ -23,6 +23,9 @@ public class BuildableComponentDto implements Serializable {
 	private Date buildStartTime;
 	private Status status;
 
+	public BuildableComponentDto() {
+	}
+
 	public BuildableComponentDto(BuildableComponent component) {
 		id = component.getId();
 		name = component.getName();
@@ -44,6 +47,10 @@ public class BuildableComponentDto implements Serializable {
 				return new BuildableComponentDto(component);
 			}
 		});
+	}
+
+	public static BuildableComponentDto transform(BuildableComponent component) {
+		return new BuildableComponentDto(component);
 	}
 
 	public Integer getId() {

@@ -102,7 +102,7 @@ public class SshBuildProcess extends AbstractProcess {
 	@Override
 	public ProcessStatus getStatus() {
 		if (instance != null) {
-			if (!instance.isConnected() && processStatus.getStatus() == Status.IN_PROGRESS) {
+			if (!instance.isConnected() && processStatus.getStatus() == Status.RUNNING) {
 				processStatus.setStatus(Status.DISCONNECTED);
 			}
 		}

@@ -56,7 +56,7 @@ public abstract class AbstractProcess implements Process {
 	protected abstract void runInternal() throws Exception;
 
 	private void onStart() {
-		processStatus.setStatus(Status.IN_PROGRESS);
+		processStatus.setStatus(Status.RUNNING);
 		notifyListeners();
 	}
 

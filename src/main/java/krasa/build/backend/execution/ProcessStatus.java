@@ -24,7 +24,7 @@ public class ProcessStatus {
 	}
 
 	public boolean isAlive() {
-		return status == Status.IN_PROGRESS || status == Status.PENDING;
+		return status == Status.RUNNING || status == Status.PENDING;
 	}
 
 	public void setStatus(Status status1) {

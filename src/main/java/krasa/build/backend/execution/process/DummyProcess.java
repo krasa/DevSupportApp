@@ -24,7 +24,7 @@ public class DummyProcess extends SshBuildProcess {
 				e.printStackTrace();
 			}
 		}
-		if (processStatus.getStatus() == Status.IN_PROGRESS) {
+		if (processStatus.getStatus() == Status.RUNNING) {
 			processStatus.setStatus(Status.SUCCESS);
 		}
 		return 0;

@@ -23,7 +23,7 @@ public class AsyncService {
 		BuildableComponent buildableComponent = buildJob.getBuildableComponent();
 		log.debug("sending event REFRESH, component={}, status={}", buildableComponent.getName(), buildJob.getStatus());
 		try {
-			ComponentStatusChangedEvent event = new ComponentStatusChangedEvent(new BuildableComponentDto(
+			ComponentChangedEvent event = new ComponentChangedEvent(new BuildableComponentDto(
 					buildableComponent));
 			EventBus.get(Application.get(WicketApplication.class.getName())).post(event);
 		} catch (Exception e) {

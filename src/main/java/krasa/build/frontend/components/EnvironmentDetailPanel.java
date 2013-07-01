@@ -1,6 +1,8 @@
 package krasa.build.frontend.components;
 
+import krasa.build.backend.domain.BuildableComponent;
 import krasa.build.backend.domain.Environment;
+import krasa.build.backend.dto.BuildableComponentDto;
 import krasa.build.backend.exception.AlreadyExistsException;
 import krasa.build.backend.facade.BuildFacade;
 import krasa.core.frontend.Ajax;
@@ -29,7 +31,7 @@ public class EnvironmentDetailPanel extends BasePanel {
 		add(createDeleteEnvironmentForm());
 		add(createComponentsTableForm());
 		add(createEnvironmentLabel());
-		add(createAddBranchFormPanel());
+		add(createAddComponentFormPanel());
 	}
 
 	private Label createEnvironmentLabel() {
@@ -65,18 +67,16 @@ public class EnvironmentDetailPanel extends BasePanel {
 		return new BuildComponentsTablePanel("builds", environmentEntityModelWrapper);
 	}
 
-	private AddComponentFormPanel createAddBranchFormPanel() {
+	private AddComponentFormPanel createAddComponentFormPanel() {
 		final AddComponentFormPanel autocomplete = new AddComponentFormPanel("addComponent", new ResourceModel(
 				"componentName")) {
-			@Override
-			protected void onUpdate(AjaxRequestTarget target) {
-				target.add(builds);
-			}
 
 			@Override
-			protected void addBranch(String fieldValue) {
+			protected void addBranch(String fieldValue, AjaxRequestTarget target) {
 				try {
-					buildFacade.createBuildableComponent(environmentEntityModelWrapper.getObject(), fieldValue);
+					BuildableComponent buildableComponent = buildFacade.createBuildableComponent(
+							environmentEntityModelWrapper.getObject(), fieldValue);
+					builds.addItem(Ajax.getAjaxRequestTarget(), new BuildableComponentDto(buildableComponent));
 				} catch (AlreadyExistsException e) {
 					error(e.toString());
 					Ajax.getAjaxRequestTarget().add(feedback);
@@ -84,9 +84,10 @@ public class EnvironmentDetailPanel extends BasePanel {
 			}
 
 			@Override
-			protected void addAllMatchingBranches(String fieldValue) {
+			protected void addAllMatchingBranches(String fieldValue, AjaxRequestTarget target) {
 				buildFacade.createBuildableComponentForAllMatchingComponents(environmentEntityModelWrapper.getObject(),
 						fieldValue);
+				target.add(builds);
 			}
 		};
 		return autocomplete;

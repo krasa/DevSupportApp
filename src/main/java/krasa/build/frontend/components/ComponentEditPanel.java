@@ -32,13 +32,13 @@ public class ComponentEditPanel extends BaseFormPanel<BuildableComponentDto> {
 		form.add(new AjaxButton("save") {
 			@Override
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-				buildFacade.editBuildableComponent(getFormPanelModel().getObject());
-				ComponentEditPanel.this.onSubmit(target);
+				BuildableComponentDto buildableComponentDto = buildFacade.editBuildableComponent(getFormPanelModel().getObject());
+				ComponentEditPanel.this.onSubmit(target, buildableComponentDto);
 			}
 		});
 	}
 
-	public void onSubmit(AjaxRequestTarget target) {
+	public void onSubmit(AjaxRequestTarget target, BuildableComponentDto buildableComponentDto) {
 	};
 
 }

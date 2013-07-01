@@ -61,9 +61,6 @@ public class BuildFacadeImpl implements BuildFacade {
 		runningBuildJobsHolder.put(buildJob);
 		taskExecutor.submit(buildJob.getProcess());
 		log.info("process scheduled " + buildableComponent.toString());
-		if (taskExecutor.getThreadPoolExecutor().getActiveCount() >= ExecutorConfig.MAX_CONCURRENT_BUILDS) {
-			asyncService.sendRefresh(buildJob);
-		}
 		return buildJob;
 	}
 
@@ -144,9 +141,10 @@ public class BuildFacadeImpl implements BuildFacade {
 
 	@Override
 	@Transactional
-	public void buildComponent(BuildableComponentDto object) {
+	public BuildableComponentDto buildComponent(BuildableComponentDto object) {
 		BuildableComponent buildableComponent = buildableComponentDAO.findById(object.getId());
-		build(buildableComponent);
+		BuildJob build = build(buildableComponent);
+		return BuildableComponentDto.transform(build.getBuildableComponent());
 	}
 
 	@Override
@@ -158,11 +156,12 @@ public class BuildFacadeImpl implements BuildFacade {
 
 	@Override
 	@Transactional
-	public void editBuildableComponent(BuildableComponentDto object) {
+	public BuildableComponentDto editBuildableComponent(BuildableComponentDto object) {
 		BuildableComponent byId = buildableComponentDAO.findById(object.getId());
 		byId.setName(object.getName());
 		byId.setBuildMode(object.getBuildMode());
 		buildableComponentDAO.save(byId);
+		return BuildableComponentDto.transform(byId);
 	}
 
 	@Transactional
@@ -193,13 +192,7 @@ public class BuildFacadeImpl implements BuildFacade {
 	@Override
 	public void deleteEnvironment(Integer id) {
 		Environment environment = environmentDAO.findById(id);
-
-		List<BuildableComponent> buildableComponents = environment.getBuildableComponents();
-		for (BuildableComponent buildableComponent : buildableComponents) {
-			buildableComponentDAO.delete(buildableComponent);
-		}
 		environmentDAO.delete(environment);
-
 	}
 
 	@Override
@@ -208,7 +201,7 @@ public class BuildFacadeImpl implements BuildFacade {
 		return Environment.sortByName(environmentDAO.findAll());
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional
 	@Override
 	public Environment createEnvironment(String environmentName) throws AlreadyExistsException {
 		List<Environment> by = environmentDAO.findBy(Environment.NAME, environmentName);

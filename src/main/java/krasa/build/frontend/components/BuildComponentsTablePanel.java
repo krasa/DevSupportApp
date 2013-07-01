@@ -1,5 +1,6 @@
 package krasa.build.frontend.components;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,7 +8,8 @@ import krasa.build.backend.domain.Environment;
 import krasa.build.backend.dto.BuildableComponentDto;
 import krasa.build.backend.exception.ProcessAlreadyRunning;
 import krasa.build.backend.facade.BuildFacade;
-import krasa.build.backend.facade.ComponentStatusChangedEvent;
+import krasa.build.backend.facade.ComponentChangedEvent;
+import krasa.build.backend.facade.ComponentDeletedEvent;
 import krasa.build.frontend.pages.LogPage;
 import krasa.core.frontend.StaticImage;
 import krasa.core.frontend.commons.EditablePanel;
@@ -41,13 +43,15 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.markup.repeater.IItemFactory;
 import org.apache.wicket.markup.repeater.Item;
-import org.apache.wicket.markup.repeater.OddEvenItem;
+import org.apache.wicket.markup.repeater.RefreshingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.azeckoski.reflectutils.ReflectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,20 +79,29 @@ public class BuildComponentsTablePanel extends BasePanel {
 	}
 
 	private AjaxFallbackDefaultDataTable<BuildableComponentDto, String> createTable() {
-		table = new AjaxFallbackDefaultDataTable<BuildableComponentDto, String>("branches", getColumns(), getModel(),
+		table = new AjaxFallbackDefaultDataTable<BuildableComponentDto, String>("components", getColumns(), getModel(),
 				100) {
 			@Override
 			protected Item<BuildableComponentDto> newRowItem(String id, int index, IModel<BuildableComponentDto> model) {
-				Item<BuildableComponentDto> components = new OddEvenItem<BuildableComponentDto>(id, index, model) {
+				Item<BuildableComponentDto> components = new Item<BuildableComponentDto>(id, index, model) {
 					@Override
 					public void onEvent(IEvent<?> event) {
 						super.onEvent(event);
-						if ((event.getPayload() instanceof ComponentStatusChangedEvent)) {
-							ComponentStatusChangedEvent payload = (ComponentStatusChangedEvent) event.getPayload();
+						if (event.getPayload() instanceof ComponentChangedEvent) {
+							ComponentChangedEvent payload = (ComponentChangedEvent) event.getPayload();
 							BuildableComponentDto buildableComponentDto = payload.getBuildableComponentDto();
 							if (buildableComponentDto.getId().equals(getModelObject().getId())) {
 								setModelObject(payload.getBuildableComponentDto());
 								payload.getTarget().add(this);
+								event.stop();
+							}
+						} else if (event.getPayload() instanceof ComponentDeletedEvent) {
+							ComponentDeletedEvent payload = (ComponentDeletedEvent) event.getPayload();
+							BuildableComponentDto buildableComponentDto = payload.getBuildableComponentDto();
+							AjaxRequestTarget target = payload.getTarget();
+							if (buildableComponentDto.getId().equals(getModelObject().getId())) {
+								this.setVisible(false);
+								target.add(this);
 								event.stop();
 							}
 						}
@@ -103,12 +116,35 @@ public class BuildComponentsTablePanel extends BasePanel {
 
 	}
 
+	public void addItem(AjaxRequestTarget target, BuildableComponentDto buildableComponentDto) {
+		try {
+			RefreshingView datagrid = (RefreshingView) ReflectUtils.getInstance().getFieldValue(
+					table, "datagrid");
+			Method method = RefreshingView.class.getDeclaredMethod("newItemFactory");
+			method.setAccessible(true);
+			IItemFactory factory = (IItemFactory) method.invoke(datagrid);
+			Item item = factory.newItem(buildableComponentDto.getId(), new Model(buildableComponentDto));
+			datagrid.add(item);
+			target.prependJavaScript(String.format(
+					"var item=document.createElement('%s');item.id='%s';"
+							+ "Wicket.$('%s').getElementsByTagName(\"tbody\")[0].appendChild(item);", "tr", item.getMarkupId(),
+					table.getMarkupId()));
+			target.add(item);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	@Subscribe
-	public void receiveMessage(AjaxRequestTarget target, ComponentStatusChangedEvent message) {
+	public void refreshRow(AjaxRequestTarget target, ComponentChangedEvent message) {
 		if (message.getBuildableComponentDto().getEnvironmentId().equals(environmentId)) {
 			message.setTarget(target);
 			send(table, Broadcast.DEPTH, message);
 		}
+	}
+
+	private void refreshRow(AjaxRequestTarget target, BuildableComponentDto buildableComponentDto) {
+		refreshRow(target, new ComponentChangedEvent(buildableComponentDto));
 	}
 
 	private DummyModelDataProvider<BuildableComponentDto> getModel() {
@@ -167,19 +203,23 @@ public class BuildComponentsTablePanel extends BasePanel {
 				return new LinkPanel<BuildableComponentDto>(componentId, getDisplayModel(), rowModel) {
 					@Override
 					protected Link getComponent(String id, IModel<String> labelModel,
-							IModel<BuildableComponentDto> rowModel) {
-						BuildableComponentDto object = rowModel.getObject();
-						LabeledBookmarkablePageLink labeledBookmarkablePageLink = new LabeledBookmarkablePageLink(id,
-								LogPage.class, LogPage.params(object), labelModel) {
+												final IModel<BuildableComponentDto> rowModel) {
+						LabeledBookmarkablePageLink link = new LabeledBookmarkablePageLink(id, LogPage.class,
+								LogPage.params(rowModel.getObject()), labelModel) {
 
 							@Override
 							public void onComponentTagBody(MarkupStream markupStream, ComponentTag openTag) {
 								replaceComponentTagBody(markupStream, openTag,
 										"<img border=\"0\" src=\"/img/5_content_copy.png\" alt=\"Go to log\">");
 							}
+
+							@Override
+							protected void onConfigure() {
+								super.onConfigure();
+								setVisible(rowModel.getObject().getBuildJobId() != null);
+							}
 						};
-						labeledBookmarkablePageLink.setVisible(object.getBuildJobId() != null);
-						return labeledBookmarkablePageLink;
+						return link;
 					}
 				};
 			}
@@ -191,7 +231,8 @@ public class BuildComponentsTablePanel extends BasePanel {
 			@Override
 			protected void onSubmit(IModel<BuildableComponentDto> model, AjaxRequestTarget target, Form<?> form) {
 				try {
-					buildFacade.buildComponent(model.getObject());
+					BuildableComponentDto buildableComponentDto = buildFacade.buildComponent(model.getObject());
+					refreshRow(target, buildableComponentDto);
 				} catch (ProcessAlreadyRunning e) {
 					info("already building");
 					target.add(feedback);
@@ -207,9 +248,9 @@ public class BuildComponentsTablePanel extends BasePanel {
 				final ModalWindow modalWindow = new ModalWindow(MODAL);
 				modalWindow.setContent(new ComponentEditPanel(modalWindow.getContentId(), model) {
 					@Override
-					public void onSubmit(AjaxRequestTarget target) {
+					public void onSubmit(AjaxRequestTarget target, BuildableComponentDto buildableComponentDto) {
 						modalWindow.close(target);
-						target.add(BuildComponentsTablePanel.this);
+						refreshRow(target, buildableComponentDto);
 					}
 				});
 				modalWindow.setAutoSize(true);
@@ -225,8 +266,16 @@ public class BuildComponentsTablePanel extends BasePanel {
 			@Override
 			protected void onSubmit(IModel<BuildableComponentDto> model, AjaxRequestTarget target, Form<?> form) {
 				buildFacade.deleteComponentById(model.getObject().getId());
-				target.add(form);
+				sendDeletedRowEvent(model, target);
 			}
 		};
+	}
+
+	private void sendDeletedRowEvent(IModel<BuildableComponentDto> model, AjaxRequestTarget target) {
+		BuildableComponentDto buildableComponentDto = new BuildableComponentDto();
+		buildableComponentDto.setId(model.getObject().getId());
+		ComponentDeletedEvent componentDeletedEvent = new ComponentDeletedEvent(buildableComponentDto);
+		componentDeletedEvent.setTarget(target);
+		send(table, Broadcast.DEPTH, componentDeletedEvent);
 	}
 }

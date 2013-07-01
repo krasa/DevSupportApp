@@ -43,7 +43,7 @@ public abstract class AddBranchFormPanel extends BasePanel {
 			protected void onSubmit() {
 				AjaxRequestTarget target = Ajax.getAjaxRequestTarget();
 				String fieldValue = autocomplete.getFieldValue();
-				AddBranchFormPanel.this.addBranch(fieldValue);
+				AddBranchFormPanel.this.addBranch(fieldValue, target);
 				onUpdate(target);
 				autocomplete.resetFieldValue(target);
 			}
@@ -64,7 +64,7 @@ public abstract class AddBranchFormPanel extends BasePanel {
 			@Override
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
 				String fieldValue = autocomplete.getFieldValue();
-				addAllMatchingBranches(fieldValue);
+				addAllMatchingBranches(fieldValue, target);
 				onUpdate(target);
 				autocomplete.resetFieldValue(target);
 			}
@@ -82,14 +82,17 @@ public abstract class AddBranchFormPanel extends BasePanel {
 		return new BranchAutoCompletePanel("autocomplete");
 	}
 
-	protected void addAllMatchingBranches(String fieldValue) {
+	protected void addAllMatchingBranches(String fieldValue, AjaxRequestTarget target) {
 		facade.addAllMatchingBranchesIntoProfile(fieldValue);
 	}
 
-	protected void addBranch(String fieldValue) {
+	protected void addBranch(String fieldValue, AjaxRequestTarget target) {
 		facade.addBranchIntoProfile(fieldValue);
 	}
 
-	protected abstract void onUpdate(AjaxRequestTarget target);
+	protected void onUpdate(AjaxRequestTarget target) {
+	}
+
+	;
 
 }

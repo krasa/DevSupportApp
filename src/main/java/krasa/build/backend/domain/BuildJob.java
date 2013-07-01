@@ -169,6 +169,6 @@ public class BuildJob extends AbstractEntity implements ProcessStatusListener {
 	}
 
 	public boolean isNotFinished() {
-		return status == Status.IN_PROGRESS || status == Status.PENDING;
+		return status == Status.RUNNING || status == Status.IN_PROGRESS || status == Status.PENDING;
 	}
 }

@@ -57,6 +57,15 @@
 		<commons-io.version>2.4</commons-io.version>
 	</properties>
 	<dependencies>
+		<!-- Reflection Utils -->
+		<dependency>
+			<groupId>org.azeckoski</groupId>
+			<artifactId>reflectutils</artifactId>
+			<version>0.9.15</version>
+			<systemPath>${pom.basedir}/reflectutils-0.9.16.jar</systemPath>
+			<scope>system</scope>
+		</dependency>
+
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>

@@ -4,12 +4,12 @@ import krasa.build.backend.dto.BuildableComponentDto;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 
-public class ComponentStatusChangedEvent {
+public class ComponentChangedEvent {
 
 	private AjaxRequestTarget target;
 	private BuildableComponentDto buildableComponentDto;
 
-	public ComponentStatusChangedEvent(BuildableComponentDto buildableComponentDto) {
+	public ComponentChangedEvent(BuildableComponentDto buildableComponentDto) {
 		this.buildableComponentDto = buildableComponentDto;
 	}
 
