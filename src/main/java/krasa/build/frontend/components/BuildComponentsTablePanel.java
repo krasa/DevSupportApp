@@ -122,6 +122,7 @@ public class BuildComponentsTablePanel extends BasePanel {
 					table, "datagrid");
 			Method method = RefreshingView.class.getDeclaredMethod("newItemFactory");
 			method.setAccessible(true);
+
 			IItemFactory factory = (IItemFactory) method.invoke(datagrid);
 			Item item = factory.newItem(buildableComponentDto.getId(), new Model(buildableComponentDto));
 			datagrid.add(item);
