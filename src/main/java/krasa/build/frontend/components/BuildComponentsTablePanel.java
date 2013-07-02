@@ -117,7 +117,7 @@ public class BuildComponentsTablePanel extends BasePanel {
 	}
 
 	public void addItem(AjaxRequestTarget target, BuildableComponentDto buildableComponentDto) {
-		try {
+		try {//
 			RefreshingView datagrid = (RefreshingView) ReflectUtils.getInstance().getFieldValue(
 					table, "datagrid");
 			Method method = RefreshingView.class.getDeclaredMethod("newItemFactory");
