@@ -64,7 +64,7 @@ public class EnvironmentDetailPanel extends BasePanel {
 	}
 
 	private BuildComponentsTablePanel createComponentsTablePanel() {
-		return new BuildComponentsTablePanel("builds", enviro; nmentEntityModelWrapper);
+		return new BuildComponentsTablePanel("builds", environmentEntityModelWrapper);
 	}
 
 	private AddComponentFormPanel createAddComponentFormPanel() {
