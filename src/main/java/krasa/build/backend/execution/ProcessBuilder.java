@@ -7,7 +7,7 @@ import krasa.build.backend.domain.BuildJob;
 import krasa.build.backend.domain.BuildableComponent;
 import krasa.build.backend.execution.process.AbstractProcess;
 import krasa.build.backend.execution.process.ProcessLog;
-import krasa.build.backend.execution.process.SshBuildProcess;
+import krasa.build.backend.execution.process.SshjBuildProcess;
 import krasa.build.backend.execution.strategy.BuildCommandBuilderStrategy;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +39,8 @@ public class ProcessBuilder {
 	}
 
 	protected AbstractProcess getBuildProcess(ProcessLog stringBufferTail, List<String> command) {
-		return new SshBuildProcess(stringBufferTail, command);
+		// return new JschSshBuildProcess(stringBufferTail, command);
+		return new SshjBuildProcess(stringBufferTail, command);
 	}
 
 }

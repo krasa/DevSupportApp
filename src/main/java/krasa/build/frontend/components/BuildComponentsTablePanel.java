@@ -83,7 +83,7 @@ public class BuildComponentsTablePanel extends BasePanel {
 				100) {
 			@Override
 			protected Item<BuildableComponentDto> newRowItem(String id, int index, IModel<BuildableComponentDto> model) {
-				Item<BuildableComponentDto> components = new Item<BuildableComponentDto>(id, index, model) {
+				Item<BuildableComponentDto> item = new Item<BuildableComponentDto>(id, index, model) {
 					@Override
 					public void onEvent(IEvent<?> event) {
 						super.onEvent(event);
@@ -107,9 +107,9 @@ public class BuildComponentsTablePanel extends BasePanel {
 						}
 					}
 				};
-				components.setMarkupId(ROW_ID_PREFIX + model.getObject().getId());
-				components.setOutputMarkupId(true);
-				return components;
+				item.setMarkupId(ROW_ID_PREFIX + model.getObject().getId());
+				item.setOutputMarkupId(true);
+				return item;
 			}
 		};
 		return table;
@@ -117,18 +117,17 @@ public class BuildComponentsTablePanel extends BasePanel {
 	}
 
 	public void addItem(AjaxRequestTarget target, BuildableComponentDto buildableComponentDto) {
-		try {//
-			RefreshingView datagrid = (RefreshingView) ReflectUtils.getInstance().getFieldValue(
-					table, "datagrid");
+		try {
+			RefreshingView datagrid = (RefreshingView) ReflectUtils.getInstance().getFieldValue(table, "datagrid");
 			Method method = RefreshingView.class.getDeclaredMethod("newItemFactory");
 			method.setAccessible(true);
 
 			IItemFactory factory = (IItemFactory) method.invoke(datagrid);
+
 			Item item = factory.newItem(buildableComponentDto.getId(), new Model(buildableComponentDto));
 			datagrid.add(item);
-			target.prependJavaScript(String.format(
-					"var item=document.createElement('%s');item.id='%s';"
-							+ "Wicket.$('%s').getElementsByTagName(\"tbody\")[0].appendChild(item);", "tr", item.getMarkupId(),
+			target.prependJavaScript(String.format("var item=document.createElement('%s');item.id='%s';"
+					+ "Wicket.$('%s').getElementsByTagName(\"tbody\")[0].appendChild(item);", "tr", item.getMarkupId(),
 					table.getMarkupId()));
 			target.add(item);
 		} catch (Exception e) {
@@ -204,14 +203,14 @@ public class BuildComponentsTablePanel extends BasePanel {
 				return new LinkPanel<BuildableComponentDto>(componentId, getDisplayModel(), rowModel) {
 					@Override
 					protected Link getComponent(String id, IModel<String> labelModel,
-												final IModel<BuildableComponentDto> rowModel) {
+							final IModel<BuildableComponentDto> rowModel) {
 						LabeledBookmarkablePageLink link = new LabeledBookmarkablePageLink(id, LogPage.class,
 								LogPage.params(rowModel.getObject()), labelModel) {
 
 							@Override
 							public void onComponentTagBody(MarkupStream markupStream, ComponentTag openTag) {
 								replaceComponentTagBody(markupStream, openTag,
-										"<img border=\"0\" src=\"/img/5_content_copy.png\" alt=\"Go to log\">");
+										"<img border=\"0\" src=\"/img/5_content_copy.png\" alt=\"Go to log\"/>");
 							}
 
 							@Override

@@ -109,11 +109,15 @@ public class BuildJob extends AbstractEntity implements ProcessStatusListener {
 		return process;
 	}
 
-	public boolean isAlive() {
+	public boolean isProcessAlive() {
 		if (process == null) {
 			return false;
 		}
 		return process.getStatus().isAlive();
+	}
+
+	public boolean isNotFinished() {
+		return status == Status.RUNNING || status == Status.PENDING;
 	}
 
 	public void kill() {
@@ -166,9 +170,5 @@ public class BuildJob extends AbstractEntity implements ProcessStatusListener {
 		return Objects.toStringHelper(this).add("id", id).add("command", command).add("buildableComponent",
 				buildableComponent).add("process", process).add("status", status).add("startTime", startTime).add(
 				"endTime", endTime).toString();
-	}
-
-	public boolean isNotFinished() {
-		return status == Status.RUNNING || status == Status.IN_PROGRESS || status == Status.PENDING;
 	}
 }

@@ -17,6 +17,13 @@ public class Repository extends AbstractEntity<Repository> implements Serializab
 	@Column
 	private boolean indexTrunk;
 
+	public Repository(String url) {
+		this.url = url;
+	}
+
+	public Repository() {
+	}
+
 	public String getUrl() {
 		return url;
 	}

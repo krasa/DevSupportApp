@@ -7,7 +7,7 @@ import krasa.build.backend.domain.Status;
 
 import com.google.common.base.Objects;
 
-public class DummyProcess extends SshBuildProcess {
+public class DummyProcess extends JschSshBuildProcess {
 
 	public DummyProcess(ProcessLog stringBufferTail, List<String> command) {
 		super(stringBufferTail, command);

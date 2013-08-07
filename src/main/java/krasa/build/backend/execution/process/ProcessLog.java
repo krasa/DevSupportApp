@@ -8,12 +8,13 @@ import java.io.PrintStream;
 
 import krasa.build.backend.dto.Result;
 import krasa.core.backend.common.ArrayListDeque;
+import net.schmizz.sshj.common.IOUtils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ProcessLog {
-	protected final static Logger log = LoggerFactory.getLogger(SshBuildProcess.class);
+	protected final static Logger log = LoggerFactory.getLogger(JschSshBuildProcess.class);
 	public static final int NUM_ELEMENTS = 2500;
 	public static final int BUFFER_MAX_LENGTH = 2500;
 	protected final StringBuilder buffer = new StringBuilder();
@@ -137,4 +138,7 @@ public class ProcessLog {
 		});
 	}
 
+	public void readFully(InputStream extInputStream) throws IOException {
+		append(IOUtils.readFully(extInputStream).toString()).newLine();
+	}
 }

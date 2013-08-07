@@ -41,7 +41,7 @@ public class BuildJobsHolder {
 		if (lastBuildJob != null) {
 			BuildJob buildJob = buildJobHashMap.get(lastBuildJob.getId());
 			if (buildJob != null) {
-				if (buildJob.isAlive()) {
+				if (buildJob.isProcessAlive()) {
 					log.debug("process already running" + buildJob);
 					throw new ProcessAlreadyRunning(buildJob);
 				}

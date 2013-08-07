@@ -23,9 +23,15 @@ public class AsyncService {
 		BuildableComponent buildableComponent = buildJob.getBuildableComponent();
 		log.debug("sending event REFRESH, component={}, status={}", buildableComponent.getName(), buildJob.getStatus());
 		try {
-			ComponentChangedEvent event = new ComponentChangedEvent(new BuildableComponentDto(
-					buildableComponent));
+			ComponentChangedEvent event = new ComponentChangedEvent(new BuildableComponentDto(buildableComponent));
 			EventBus.get(Application.get(WicketApplication.class.getName())).post(event);
+		} catch (IllegalArgumentException e) {
+			// TODO wicket bug?
+			if (e.getMessage().equals("Argument 'page' may not be null.")) {
+				log.error("sendRefresh:" + e.getMessage());
+			} else {
+				log.error(e.getMessage(), e);
+			}
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
