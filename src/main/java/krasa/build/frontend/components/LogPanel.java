@@ -52,17 +52,17 @@ public class LogPanel extends Panel {
 	}
 
 	private SpanMultiLineLabel createNextLog() {
-		SpanMultiLineLabel spanMultiLineLabel = new SpanMultiLineLabel("nextLog",
-				new LoadableDetachableModel<String>() {
-					@Override
-					protected String load() {
-						int length = last.getLength();
-						last = getProgress().getNextLog(length);
-						String text = last.getText();
-						text = text.replaceAll("\n", "\n</br>");
-						return text;
-					}
-				}) {
+		final LoadableDetachableModel<String> model = new LoadableDetachableModel<String>() {
+			@Override
+			protected String load() {
+				int length = last.getLength();
+				last = getProgress().getNextLog(length);
+				String text = last.getText();
+				text = text.replaceAll("\n", "\n</br>");
+				return text;
+			}
+		};
+		SpanMultiLineLabel spanMultiLineLabel = new SpanMultiLineLabel("nextLog", model) {
 
 			// This is needed because, wicket created dynamic ids for the "nextLog" component
 			@Override
@@ -82,11 +82,11 @@ public class LogPanel extends Panel {
 				 */
 
 				if (getProgress().getStatus() == Status.PENDING) {
-				} else if (!getProgress().isAlive()) {
+				} else if (!getProgress().isProcessAlive()) {
 					stop(target);
 					target.add(kill);
 					target.add(kill2);
-				} else {
+				} else if (!model.getObject().isEmpty()) {
 					// @formatter:off
 					target.prependJavaScript("window.shouldScroll = $(window).scrollTop() + $(window).height()  >= $(document).height();");
 					target.appendJavaScript("$('#logData').append('<span>' + $('#nextLog').text()   + '</span>');"

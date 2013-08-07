@@ -18,7 +18,7 @@ import com.jcraft.jsch.Session;
 @Ignore
 public class SSHBuildsTest {
 	/**
-	 * Test of sendCommand method, of class SSHManager.
+	 * Test of sendCommand method, of class JschSSHManager.
 	 */
 	@Test
 	public void testSendCommand() throws InterruptedException, IOException {

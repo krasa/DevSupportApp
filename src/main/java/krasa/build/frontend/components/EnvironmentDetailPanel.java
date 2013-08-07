@@ -76,7 +76,9 @@ public class EnvironmentDetailPanel extends BasePanel {
 				try {
 					BuildableComponent buildableComponent = buildFacade.createBuildableComponent(
 							environmentEntityModelWrapper.getObject(), fieldValue);
-					builds.addItem(Ajax.getAjaxRequestTarget(), new BuildableComponentDto(buildableComponent));
+					if (buildableComponent != null) {
+						builds.addItem(Ajax.getAjaxRequestTarget(), new BuildableComponentDto(buildableComponent));
+					}
 				} catch (AlreadyExistsException e) {
 					error(e.toString());
 					Ajax.getAjaxRequestTarget().add(feedback);

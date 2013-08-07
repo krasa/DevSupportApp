@@ -1,9 +1,3 @@
-/* 
- * SSHManager
- * 
- * @author cabbott
- * @version 1.0
- */
 package krasa.build.backend.execution.ssh;
 
 import java.io.PrintStream;
@@ -15,14 +9,14 @@ import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 
-public class SSHManager {
-	protected static final org.slf4j.Logger log = LoggerFactory.getLogger(SSHManager.class);
+public class JschSSHManager {
+	protected static final org.slf4j.Logger log = LoggerFactory.getLogger(JschSSHManager.class);
 
 	protected Channel channel;
 	protected static Session session;
 	private SCPInfo scpInfo;
 
-	public SSHManager(SCPInfo scpInfo) {
+	public JschSSHManager(SCPInfo scpInfo) {
 		this.scpInfo = scpInfo;
 	}
 

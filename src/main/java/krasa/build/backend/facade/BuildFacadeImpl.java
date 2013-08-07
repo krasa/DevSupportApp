@@ -8,6 +8,7 @@ import java.util.List;
 import krasa.build.backend.config.ExecutorConfig;
 import krasa.build.backend.dao.CommonBuildDao;
 import krasa.build.backend.domain.BuildJob;
+import krasa.build.backend.domain.BuildLog;
 import krasa.build.backend.domain.BuildableComponent;
 import krasa.build.backend.domain.Environment;
 import krasa.build.backend.domain.Status;
@@ -22,6 +23,7 @@ import krasa.merge.backend.domain.SvnFolder;
 import krasa.merge.backend.facade.Facade;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -225,11 +227,18 @@ public class BuildFacadeImpl implements BuildFacade {
 
 	private void checkInProgressStatus(List<BuildableComponent> buildableComponents) {
 		for (BuildableComponent buildableComponent : buildableComponents) {
-			if (buildableComponent != null) {
-				BuildJob lastBuildJob = buildableComponent.getLastBuildJob();
-				if (lastBuildJob != null && lastBuildJob.isNotFinished()
-						&& runningBuildJobsHolder.get(lastBuildJob) == null) {
+			BuildJob lastBuildJob = buildableComponent.getLastBuildJob();
+			if (lastBuildJob != null) {
+				BuildJob buildJob = runningBuildJobsHolder.get(lastBuildJob);
+				if (lastBuildJob.isNotFinished() && buildJob == null) {
 					lastBuildJob.setStatus(Status.KILLED);
+					buildJobDAO.save(lastBuildJob);
+				} else if (lastBuildJob.isNotFinished() && buildJob != null
+						&& !buildJob.getProcess().getStatus().isAlive()) {
+					lastBuildJob.setStatus(buildJob.getProcess().getStatus().getStatus());
+					BuildLog buildLog = lastBuildJob.getBuildLog();
+					buildLog.setLogContent(buildLog.getLogContent() + "\n-------------------\nProcess died\n"
+							+ ExceptionUtils.getStackTrace(buildJob.getProcess().getStatus().getException()));
 					buildJobDAO.save(lastBuildJob);
 				}
 			}

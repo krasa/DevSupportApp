@@ -20,7 +20,7 @@ public class PocessKillButton extends AjaxButton {
 	protected void onConfigure() {
 		BuildJob object = model.getObject();
 		if (object != null) {
-			this.setEnabled(object.isAlive());
+			this.setEnabled(object.isProcessAlive());
 		}
 		super.onConfigure();
 	}
