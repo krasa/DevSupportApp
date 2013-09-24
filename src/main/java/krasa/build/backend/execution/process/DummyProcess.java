@@ -5,6 +5,8 @@ import java.util.List;
 
 import krasa.build.backend.domain.Status;
 
+import org.apache.commons.lang3.RandomStringUtils;
+
 import com.google.common.base.Objects;
 
 public class DummyProcess extends JschSshBuildProcess {
@@ -16,10 +18,11 @@ public class DummyProcess extends JschSshBuildProcess {
 	@Override
 	protected int doWork() throws IOException {
 		int i = 0;
-		while (i < 20 && processStatus.getStatus() != Status.KILLED) {
+		Integer integer = Integer.valueOf(RandomStringUtils.randomNumeric(1));
+		while (i < integer && processStatus.getStatus() != Status.KILLED) {
 			processLog.append(String.valueOf(++i)).newLine();
 			try {
-				Thread.sleep(100);
+				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

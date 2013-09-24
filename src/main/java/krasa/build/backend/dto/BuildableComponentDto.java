@@ -116,4 +116,11 @@ public class BuildableComponentDto implements Serializable {
 	public void setStatus(Status status) {
 		this.status = status;
 	}
+
+	public Date getTotalTime() {
+		if (buildEndTime == null) {
+			return null;
+		}
+		return new Date(buildEndTime.getTime() - buildStartTime.getTime());
+	}
 }

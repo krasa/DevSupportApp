@@ -25,6 +25,7 @@ public class AsyncService {
 		try {
 			ComponentChangedEvent event = new ComponentChangedEvent(new BuildableComponentDto(buildableComponent));
 			EventBus.get(Application.get(WicketApplication.class.getName())).post(event);
+			EventBus.get(Application.get(WicketApplication.class.getName())).post(new ComponentBuildEvent());
 		} catch (IllegalArgumentException e) {
 			// TODO wicket bug?
 			if (e.getMessage().equals("Argument 'page' may not be null.")) {

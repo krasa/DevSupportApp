@@ -1,6 +1,7 @@
 package krasa.build.frontend.pages;
 
 import krasa.build.backend.domain.BuildJob;
+import krasa.build.backend.dto.BuildJobDto;
 import krasa.build.backend.dto.BuildableComponentDto;
 import krasa.build.backend.facade.BuildFacade;
 import krasa.build.frontend.components.BuildLeftPanel;
@@ -95,9 +96,9 @@ public class LogPage extends BasePage {
 		return pageParameters;
 	}
 
-	public static PageParameters params(BuildJob buildJob) {
+	public static PageParameters params(BuildJobDto buildJob) {
 		PageParameters pageParameters = new PageParameters();
-		pageParameters.add(ID, buildJob.getId());
+		pageParameters.add(ID, buildJob.getBuildJobId());
 		return pageParameters;
 	}
 }

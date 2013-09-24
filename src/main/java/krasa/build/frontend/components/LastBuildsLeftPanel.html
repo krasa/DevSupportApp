@@ -8,14 +8,20 @@
       lang="en">
 <body>
 <wicket:panel>
-    <h3>Environments</h3>
+    <h3>Last builds</h3>
+    <span wicket:id="list">
     <ul class="nav">
         <li wicket:id="item">
-            <a href="#" wicket:id="name"></a>
+            <a href="#" wicket:id="link">
+                <span wicket:id="status"></span> - <span wicket:id="endTime"></span>
+                <br/>
+                <span wicket:id="name"></span> <br/>
+                <span wicket:id="   environment"></span>
+            </a>
         </li>
     </ul>
-    <span wicket:id="currentlyBuilding"></span>
-    <span wicket:id="lastBuilds"></span>
+    </span>
+
 </wicket:panel>
 </body>
 </html>

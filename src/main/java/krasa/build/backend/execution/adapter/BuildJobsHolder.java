@@ -1,5 +1,8 @@
 package krasa.build.backend.execution.adapter;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -13,11 +16,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import com.google.common.collect.EvictingQueue;
+
 @Component
 public class BuildJobsHolder {
 	protected final Logger log = LoggerFactory.getLogger(getClass());
 
 	private static Map<Integer, BuildJob> buildJobHashMap = new ConcurrentHashMap<>();
+	private static EvictingQueue<BuildJob> finished = EvictingQueue.create(10);
 
 	@Null
 	public BuildJob get(BuildJob request) {
@@ -32,7 +38,12 @@ public class BuildJobsHolder {
 		return buildJobHashMap.get(id);
 	}
 
+	public List<BuildJob> getLastFinished() {
+		return Arrays.asList(finished.toArray(new BuildJob[finished.size()]));
+	}
+
 	public void remove(BuildJob buildJob) {
+		finished.add(buildJob);
 		buildJobHashMap.remove(buildJob.getId());
 	}
 
@@ -47,5 +58,9 @@ public class BuildJobsHolder {
 				}
 			}
 		}
+	}
+
+	public Collection<BuildJob> getAll() {
+		return buildJobHashMap.values();
 	}
 }

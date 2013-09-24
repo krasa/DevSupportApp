@@ -175,7 +175,7 @@ public class BuildComponentsTablePanel extends BasePanel {
 		});
 		columns.add(new DateColumn<BuildableComponentDto>(new Model<>("build start"), "buildStartTime",
 				"buildStartTime"));
-		columns.add(new DateColumn<BuildableComponentDto>(new Model<>("build end"), "buildEndTime", "buildEndTime"));
+		columns.add(new DateColumn<BuildableComponentDto>(new Model<>("total time"), "totalTime", "totalTime", "mm:ss"));
 		columns.add(buildColumn());
 		columns.add(logColumn());
 		columns.add(new PanelColumn<BuildableComponentDto>(new Model<>(""), "status") {

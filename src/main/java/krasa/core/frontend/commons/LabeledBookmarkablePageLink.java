@@ -25,13 +25,15 @@ public class LabeledBookmarkablePageLink extends BookmarkablePageLink {
 		this.label = label;
 	}
 
-	public LabeledBookmarkablePageLink(String id, Class pageClass, PageParameters parameters, String label) {
-		super(id, pageClass);
-		this.label = label;
+	public LabeledBookmarkablePageLink(String id, Class pageClass, PageParameters parameters) {
+		super(id, pageClass, parameters);
 	}
 
 	@Override
 	public void onComponentTagBody(MarkupStream markupStream, ComponentTag openTag) {
-		replaceComponentTagBody(markupStream, openTag, label);
+		super.onComponentTagBody(markupStream, openTag);
+		if (label != null) {
+			replaceComponentTagBody(markupStream, openTag, label);
+		}
 	}
 }

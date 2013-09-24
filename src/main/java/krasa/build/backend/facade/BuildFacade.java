@@ -5,6 +5,7 @@ import java.util.List;
 import krasa.build.backend.domain.BuildJob;
 import krasa.build.backend.domain.BuildableComponent;
 import krasa.build.backend.domain.Environment;
+import krasa.build.backend.dto.BuildJobDto;
 import krasa.build.backend.dto.BuildableComponentDto;
 import krasa.build.backend.exception.AlreadyExistsException;
 import krasa.build.backend.execution.ProcessStatus;
@@ -42,5 +43,9 @@ public interface BuildFacade {
 
 	BuildJob getBuildJobByComponentId(Integer componentId);
 
+	List<BuildJobDto> getRunningBuildJobs();
+
 	BuildableComponentDto editBuildableComponent(BuildableComponentDto object);
+
+	List<BuildJobDto> getLastFinishedBuildJobs();
 }

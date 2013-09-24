@@ -9,6 +9,14 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 
 public class DateColumn<T> extends PropertyColumn<T, String> {
+
+	private String datePattern = DateModel.DD_MM_YYYY_HH_MM;
+
+	public DateColumn(IModel<String> displayModel, String sortProperty, String propertyExpression, String datePattern) {
+		super(displayModel, sortProperty, propertyExpression);
+		this.datePattern = datePattern;
+	}
+
 	public DateColumn(IModel<String> displayModel, String sortProperty, String propertyExpression) {
 		super(displayModel, sortProperty, propertyExpression);
 	}
@@ -20,6 +28,6 @@ public class DateColumn<T> extends PropertyColumn<T, String> {
 	@Override
 	public IModel<Object> getDataModel(IModel<T> rowModel) {
 		PropertyModel<Date> propertyModel = new PropertyModel<>(rowModel, getPropertyExpression());
-		return new DateModel(propertyModel);
+		return new DateModel(propertyModel, datePattern);
 	}
 }
