@@ -1,6 +1,7 @@
 package krasa.build.backend.domain;
 
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -28,6 +29,8 @@ public class BuildableComponent extends AbstractEntity {
 	private String buildMode;
 	@ManyToOne(optional = false, fetch = FetchType.EAGER)
 	private Environment environment;
+	@Column
+	public Date lastSuccessBuildDuration;
 
 	public BuildableComponent(String componentName) {
 		name = componentName;
@@ -40,6 +43,14 @@ public class BuildableComponent extends AbstractEntity {
 		BuildableComponent buildableComponent = new BuildableComponent();
 		buildableComponent.setName(name);
 		return buildableComponent;
+	}
+
+	public Date getLastSuccessBuildDuration() {
+		return lastSuccessBuildDuration;
+	}
+
+	public void setLastSuccessBuildDuration(Date lastSuccessBuildDuration) {
+		this.lastSuccessBuildDuration = lastSuccessBuildDuration;
 	}
 
 	public Environment getEnvironment() {

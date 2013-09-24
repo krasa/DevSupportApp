@@ -18,6 +18,8 @@ public class LogPanel extends Panel {
 	private final IModel<BuildJob> model;
 	protected final PocessKillButton kill;
 	protected final PocessKillButton kill2;
+	private final PocessRerunButton rerun1;
+	private final PocessRerunButton rerun2;
 	protected Result last;
 
 	public LogPanel(String id, IModel<BuildJob> model) {
@@ -35,6 +37,10 @@ public class LogPanel extends Panel {
 		kill2 = new PocessKillButton("kill2", model);
 		add(kill);
 		add(kill2);
+		rerun1 = new PocessRerunButton("rerun1", model);
+		add(rerun1);
+		rerun2 = new PocessRerunButton("rerun2", model);
+		add(rerun2);
 	}
 
 	private BuildJob getProgress() {
@@ -82,8 +88,10 @@ public class LogPanel extends Panel {
 				 */
 
 				if (getProgress().getStatus() == Status.PENDING) {
-				} else if (!getProgress().isProcessAlive()) {
+				} else if (!getProgress().isProcessAlive() && model.getObject().isEmpty()) {
 					stop(target);
+					target.add(rerun1);
+					target.add(rerun2);
 					target.add(kill);
 					target.add(kill2);
 				} else if (!model.getObject().isEmpty()) {

@@ -15,7 +15,7 @@ import org.tmatesoft.svn.core.wc.SVNRevision;
 import org.tmatesoft.svn.core.wc.SVNUpdateClient;
 
 public class SvnBranchesCheckouter {
-	public static final int INT = 13300;
+	public static final int INT = 13400;
 	public static final String HTTP_SVN_SDP = "http://svn/sdp";
 	static SVNClientManager svnClientManager = SVNClientManager.newInstance();
 
@@ -28,9 +28,12 @@ public class SvnBranchesCheckouter {
 			for (SvnFolder svnFolder : projectContent) {
 				if (svnFolder.getName().endsWith(String.valueOf(INT))) {
 					String url = HTTP_SVN_SDP + "/" + svnFolder.getPath();
-					String pathname = "D:/workspace/_projekty/" + INT + "/" + svnFolder.getName();
-					System.err.println("checking out: " + url + " into " + pathname);
-					checkout(SVNURL.parseURIEncoded(url), SVNRevision.HEAD, new File(pathname), true);
+					String pathname = "D:/workspace/_projekty/_T-Mobile/" + INT + "/" + svnFolder.getName();
+					File destPath = new File(pathname);
+					if (!destPath.exists()) {
+						System.err.println("checking out: " + url + " into " + pathname);
+						checkout(SVNURL.parseURIEncoded(url), SVNRevision.HEAD, destPath, true);
+					}
 				}
 			}
 		}

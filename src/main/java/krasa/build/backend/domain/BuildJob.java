@@ -37,7 +37,7 @@ public class BuildJob extends AbstractEntity implements ProcessStatusListener {
 	public Date startTime;
 	@Column
 	public Date endTime;
-	@Column
+	@Column(length = 1000)
 	public String command;
 	@OneToOne(cascade = CascadeType.ALL, mappedBy = "buildJob")
 	private BuildLog buildLog;

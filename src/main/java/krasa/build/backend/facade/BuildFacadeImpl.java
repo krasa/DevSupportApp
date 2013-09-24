@@ -1,6 +1,7 @@
 package krasa.build.backend.facade;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -12,18 +13,22 @@ import krasa.build.backend.domain.BuildLog;
 import krasa.build.backend.domain.BuildableComponent;
 import krasa.build.backend.domain.Environment;
 import krasa.build.backend.domain.Status;
+import krasa.build.backend.dto.BuildJobDto;
 import krasa.build.backend.dto.BuildableComponentDto;
 import krasa.build.backend.exception.AlreadyExistsException;
 import krasa.build.backend.execution.ProcessStatus;
 import krasa.build.backend.execution.adapter.BuildJobsHolder;
 import krasa.core.backend.dao.GenericDAO;
 import krasa.core.backend.dao.GenericDaoBuilder;
+import krasa.core.frontend.WicketApplication;
 import krasa.merge.backend.domain.Displayable;
 import krasa.merge.backend.domain.SvnFolder;
 import krasa.merge.backend.facade.Facade;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.wicket.Application;
+import org.apache.wicket.atmosphere.EventBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,6 +69,10 @@ public class BuildFacadeImpl implements BuildFacade {
 		taskExecutor.submit(buildJob.getProcess());
 		log.info("process scheduled " + buildableComponent.toString());
 		return buildJob;
+	}
+
+	private void notifyComponentBuildChanged() {
+		EventBus.get(Application.get(WicketApplication.class.getName())).post(new ComponentBuildEvent());
 	}
 
 	protected BuildJob createAndSaveBuildJob(BuildableComponent buildableComponent) {
@@ -157,6 +166,12 @@ public class BuildFacadeImpl implements BuildFacade {
 	}
 
 	@Override
+	public List<BuildJobDto> getRunningBuildJobs() {
+		Collection<BuildJob> all = runningBuildJobsHolder.getAll();
+		return BuildJobDto.translate(all);
+	}
+
+	@Override
 	@Transactional
 	public BuildableComponentDto editBuildableComponent(BuildableComponentDto object) {
 		BuildableComponent byId = buildableComponentDAO.findById(object.getId());
@@ -164,6 +179,13 @@ public class BuildFacadeImpl implements BuildFacade {
 		byId.setBuildMode(object.getBuildMode());
 		buildableComponentDAO.save(byId);
 		return BuildableComponentDto.transform(byId);
+	}
+
+	@Override
+	public List<BuildJobDto> getLastFinishedBuildJobs() {
+		List<BuildJobDto> translate = BuildJobDto.translate(runningBuildJobsHolder.getLastFinished());
+		Collections.reverse(translate);
+		return translate;
 	}
 
 	@Transactional
@@ -174,6 +196,13 @@ public class BuildFacadeImpl implements BuildFacade {
 			buildJob.setStartTime(new Date());
 		} else {
 			buildJob.setEndTime(new Date());
+			if (processStatus.getStatus() == Status.SUCCESS) {
+				BuildableComponent buildableComponent = buildJob.getBuildableComponent();
+				Date lastSuccessBuildDuration = new Date(buildJob.getEndTime().getTime()
+						- buildJob.getStartTime().getTime());
+				buildableComponent.setLastSuccessBuildDuration(lastSuccessBuildDuration);
+				buildableComponentDAO.save(buildableComponent);
+			}
 			runningBuildJobsHolder.remove(buildJob);
 		}
 		buildJob.onBeforeSave();

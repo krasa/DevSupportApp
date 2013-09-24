@@ -24,6 +24,8 @@ public class BuildLeftPanel extends BasePanel {
 	public BuildLeftPanel(String id, IModel<Environment> actualEnvironment) {
 		super(id);
 		this.actualEnvironment = actualEnvironment;
+		add(new CurrentlyBuildingLeftPanel("currentlyBuilding"));
+		add(new LastBuildsLeftPanel("lastBuilds"));
 		initList();
 	}
 

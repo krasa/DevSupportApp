@@ -1,6 +1,7 @@
 package krasa.core.frontend;
 
 import krasa.build.frontend.pages.BuildPage;
+import krasa.build.frontend.pages.LogPage;
 import krasa.merge.frontend.pages.mergeinfo.MergeInfoPage;
 
 import org.apache.wicket.Component;
@@ -44,6 +45,7 @@ public class WicketApplication extends WebApplication {
 		super.init();
 		getComponentInstantiationListeners().add(new SpringComponentInjector(this));
 		mountPage("build", BuildPage.class);
+		mountPage("buildLog", LogPage.class);
 
 		// add your configuration here
 		eventBus = new EventBus(this);
