@@ -1,17 +1,17 @@
 package krasa.build.backend.execution;
 
-import krasa.build.backend.dto.Result;
-import krasa.build.backend.dto.Result;
-import krasa.build.backend.execution.process.ProcessLog;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Assert;
 import org.junit.Test;
+
+import krasa.build.backend.dto.Result;
+import krasa.build.backend.execution.process.ProcessLog;
 
 /**
  * @author Vojtech Krasaool
  */
 public class ProcessLogTest {
-
+	//
 	public static final int COUNT = 3000;
 	int i = 0;
 	protected ProcessLog processLog;
