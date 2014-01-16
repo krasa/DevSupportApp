@@ -12,7 +12,6 @@ import krasa.build.backend.execution.ProcessStatus;
 import krasa.merge.backend.domain.Displayable;
 
 public interface BuildFacade {
-	BuildJob build(BuildableComponent request);
 
 	List<Environment> getEnvironments();
 

@@ -42,11 +42,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public class FacadeImpl implements Facade {
+
 	protected final Logger log = LoggerFactory.getLogger(getClass());
 
 	@Autowired
 	private GlobalSettingsProvider globalSettingsProvider;
-	@Autowired
 	private GenericDAO<GlobalSettings> globalSettingsDAO;
 	@Autowired
 	private SvnFolderDAO svnFolderDAO;

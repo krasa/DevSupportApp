@@ -3,6 +3,8 @@ package krasa.build.frontend.components;
 import java.util.Date;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import krasa.build.backend.dto.BuildJobDto;
 import krasa.build.backend.facade.BuildFacade;
 import krasa.build.backend.facade.ComponentBuildEvent;
@@ -21,11 +23,14 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.request.cycle.RequestCycle;
+import org.apache.wicket.request.http.WebRequest;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class LastBuildsLeftPanel extends Panel {
+
 	protected final Logger log = LoggerFactory.getLogger(getClass());
 
 	@SpringBean
@@ -36,7 +41,10 @@ public class LastBuildsLeftPanel extends Panel {
 
 	@Subscribe
 	public void refreshRow(AjaxRequestTarget target, ComponentBuildEvent message) {
-		log.debug("Refreshing");
+		WebRequest req = (WebRequest) RequestCycle.get().getRequest();
+		HttpServletRequest httpReq = (HttpServletRequest) req.getContainerRequest();
+		String clientAddress = httpReq.getRemoteHost();
+		log.debug("Refreshing ip:{}", clientAddress);
 		target.add(list);
 	}
 
@@ -48,6 +56,7 @@ public class LastBuildsLeftPanel extends Panel {
 
 	private IModel<List<BuildJobDto>> getLastFinishedBuildsModel() {
 		return new LoadableDetachableModel<List<BuildJobDto>>() {
+
 			@Override
 			protected List<BuildJobDto> load() {
 				return facade.getLastFinishedBuildJobs();
@@ -58,6 +67,7 @@ public class LastBuildsLeftPanel extends Panel {
 	private void initList() {
 		list = new WebMarkupContainer("list");
 		runningBuildJobDtoListView = new ListView<BuildJobDto>("item", model) {
+
 			@Override
 			protected void populateItem(final ListItem<BuildJobDto> listItem) {
 

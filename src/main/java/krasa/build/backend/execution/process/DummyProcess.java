@@ -18,7 +18,7 @@ public class DummyProcess extends JschSshBuildProcess {
 	@Override
 	protected int doWork() throws IOException {
 		int i = 0;
-		Integer integer = Integer.valueOf(RandomStringUtils.randomNumeric(1));
+		Integer integer = Integer.valueOf(RandomStringUtils.randomNumeric(3));
 		while (i < integer && processStatus.getStatus() != Status.KILLED) {
 			processLog.append(String.valueOf(++i)).newLine();
 			try {

@@ -15,7 +15,10 @@ import org.springframework.beans.factory.annotation.Value;
 
 import com.jcraft.jsch.Channel;
 
+/*randomly disconnets*/
+@Deprecated
 public class JschSshBuildProcess extends AbstractProcess {
+
 	@Value("${ssh.username}")
 	String userName;
 	@Value("${ssh.password}")

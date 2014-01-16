@@ -20,15 +20,12 @@ import krasa.build.backend.execution.ProcessStatus;
 import krasa.build.backend.execution.adapter.BuildJobsHolder;
 import krasa.core.backend.dao.GenericDAO;
 import krasa.core.backend.dao.GenericDaoBuilder;
-import krasa.core.frontend.WicketApplication;
 import krasa.merge.backend.domain.Displayable;
 import krasa.merge.backend.domain.SvnFolder;
 import krasa.merge.backend.facade.Facade;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.wicket.Application;
-import org.apache.wicket.atmosphere.EventBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class BuildFacadeImpl implements BuildFacade {
+
 	protected final Logger log = LoggerFactory.getLogger(getClass());
 	protected GenericDAO<Environment> environmentDAO;
 	private GenericDAO<BuildableComponent> buildableComponentDAO;
@@ -57,23 +55,6 @@ public class BuildFacadeImpl implements BuildFacade {
 	private krasa.build.backend.execution.ProcessBuilder processBuilder;
 	@Autowired
 	AsyncService asyncService;
-
-	@Transactional
-	@Override
-	public BuildJob build(BuildableComponent buildableComponent) {
-		checkPreviousBuilds(buildableComponent);
-		BuildJob buildJob = createAndSaveBuildJob(buildableComponent);
-		commonBuildDao.flush();
-
-		runningBuildJobsHolder.put(buildJob);
-		taskExecutor.submit(buildJob.getProcess());
-		log.info("process scheduled " + buildableComponent.toString());
-		return buildJob;
-	}
-
-	private void notifyComponentBuildChanged() {
-		EventBus.get(Application.get(WicketApplication.class.getName())).post(new ComponentBuildEvent());
-	}
 
 	protected BuildJob createAndSaveBuildJob(BuildableComponent buildableComponent) {
 		buildableComponent = refresh(buildableComponent);
@@ -156,6 +137,17 @@ public class BuildFacadeImpl implements BuildFacade {
 		BuildableComponent buildableComponent = buildableComponentDAO.findById(object.getId());
 		BuildJob build = build(buildableComponent);
 		return BuildableComponentDto.transform(build.getBuildableComponent());
+	}
+
+	private BuildJob build(BuildableComponent buildableComponent) {
+		checkPreviousBuilds(buildableComponent);
+		BuildJob buildJob = createAndSaveBuildJob(buildableComponent);
+		commonBuildDao.flush();
+
+		runningBuildJobsHolder.put(buildJob);
+		taskExecutor.submit(buildJob.getProcess());
+		log.info("process scheduled " + buildableComponent.toString());
+		return buildJob;
 	}
 
 	@Override

@@ -10,24 +10,27 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class BuildCommandBuilderStrategy {
+
 	public List<String> toCommand(BuildableComponent buildableComponent) {
 		String environment = buildableComponent.getEnvironment().getName();
+		String buildableComponentName = buildableComponent.getName();
+		String buildMode = buildableComponent.getBuildMode();
+
 		StringBuilder sb = new StringBuilder();
 		sb.append("echo \"ENV ").append(environment);
-		String buildableComponentName = buildableComponent.getName();
 		if (buildableComponentName.startsWith("BUILD") || buildableComponentName.startsWith("RUN")) {
 			sb.append("\n").append(buildableComponentName);
 		} else {
 			String[] split = buildableComponentName.split("_");
 			String name = getName(split);
 			sb.append("\nBUILD ").append(name.toLowerCase()).append(" BRANCH ").append(split[split.length - 1]);
-			if (StringUtils.isNotBlank(buildableComponent.getBuildMode())) {
-				sb.append(" MODE ").append(buildableComponent.getBuildMode().toUpperCase());
+			if (StringUtils.isNotBlank(buildMode)) {
+				sb.append(" MODE ").append(buildMode.toUpperCase());
 			}
 		}
 		sb.append("\"|onbuild -c /dev/stdin");
 
-		return Arrays.asList(sb.toString(), "exit");
+		return Arrays.asList(sb.toString());
 	}
 
 	private String getName(String[] split) {

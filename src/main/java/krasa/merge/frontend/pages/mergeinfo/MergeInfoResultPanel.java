@@ -13,7 +13,6 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.PropertyModel;
-import org.tmatesoft.svn.core.SVNLogEntry;
 
 /**
  * @author Vojtech Krasa
@@ -30,21 +29,26 @@ public class MergeInfoResultPanel extends Panel {
 			final LoadableDetachableModel<MergeInfoResult> loadableDetachableModel) {
 		return new ListView<MergeInfoResultItem>("resultItem",
 				new AbstractReadOnlyModel<List<? extends MergeInfoResultItem>>() {
+
 					@Override
 					public List<? extends MergeInfoResultItem> getObject() {
 						return loadableDetachableModel.getObject().getMergeInfoResultItems();
 					}
 				}) {
+
 			@Override
 			protected void populateItem(final ListItem<MergeInfoResultItem> components) {
 				components.add(new Label("from", new PropertyModel<String>(components.getModel(), "from")));
 				components.add(new Label("to", new PropertyModel<String>(components.getModel(), "to")));
-				components.add(new SVNLogEntryTablePanel("tablePanel", new AbstractReadOnlyModel<List<SVNLogEntry>>() {
-					@Override
-					public List<SVNLogEntry> getObject() {
-						return components.getModel().getObject().getMerges();
-					}
-				}));
+				components.add(new SVNLogEntryTablePanel("tablePanel",
+						new AbstractReadOnlyModel<MergeInfoResultItem>() {
+
+							@Override
+							public MergeInfoResultItem getObject() {
+								MergeInfoResultItem object = components.getModel().getObject();
+								return object;
+							}
+						}));
 			}
 		};
 	}

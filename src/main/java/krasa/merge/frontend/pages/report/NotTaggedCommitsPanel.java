@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import krasa.merge.backend.domain.SvnFolder;
+import krasa.merge.backend.dto.MergeInfoResultItem;
 import krasa.merge.backend.dto.ReportResult;
 import krasa.merge.frontend.component.table.SVNLogEntryTablePanel;
 
@@ -22,6 +23,7 @@ import org.tmatesoft.svn.core.SVNDirEntry;
 import org.tmatesoft.svn.core.SVNLogEntry;
 
 public class NotTaggedCommitsPanel extends Panel {
+
 	protected AjaxFallbackDefaultDataTable<SvnFolder, String> table;
 
 	public NotTaggedCommitsPanel(String id, final IModel<ReportResult> model) {
@@ -32,6 +34,7 @@ public class NotTaggedCommitsPanel extends Panel {
 		Collections.sort(branches);
 
 		ListView<String> components = new ListView<String>("resultItem", branches) {
+
 			@Override
 			protected void populateItem(ListItem<String> components) {
 				final String branchName = components.getModelObject();
@@ -68,23 +71,30 @@ public class NotTaggedCommitsPanel extends Panel {
 				components.add(view);
 			}
 
-			private AbstractReadOnlyModel<List<SVNLogEntry>> getModel(final String branchName) {
-				return new AbstractReadOnlyModel<List<SVNLogEntry>>() {
+			private IModel<MergeInfoResultItem> getModel(final String branchName) {
+				return new AbstractReadOnlyModel<MergeInfoResultItem>() {
+
 					@Override
-					public List<SVNLogEntry> getObject() {
-						return model.getObject().getAllCommits(branchName);
+					public MergeInfoResultItem getObject() {
+						ReportResult object1 = model.getObject();
+						List<SVNLogEntry> allCommits = object1.getAllCommits(branchName);
+						return new MergeInfoResultItem(allCommits);
 					}
 				};
 			}
 
-			private AbstractReadOnlyModel<List<SVNLogEntry>> getModel(final String branchName, final SVNDirEntry tag,
+			private IModel<MergeInfoResultItem> getModel(final String branchName, final SVNDirEntry tag,
 					final IModel<ReportResult> model) {
-				return new AbstractReadOnlyModel<List<SVNLogEntry>>() {
+				return new AbstractReadOnlyModel<MergeInfoResultItem>() {
+
 					@Override
-					public List<SVNLogEntry> getObject() {
-						return model.getObject().getDifferenceBetweenTagAndBranchAsStrings(tag, branchName);
+					public MergeInfoResultItem getObject() {
+						List<SVNLogEntry> differenceBetweenTagAndBranchAsStrings = model.getObject().getDifferenceBetweenTagAndBranchAsStrings(
+								tag, branchName);
+						return new MergeInfoResultItem(differenceBetweenTagAndBranchAsStrings);
 					}
 				};
+
 			}
 
 		};

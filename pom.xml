@@ -31,18 +31,18 @@
 		<jetty.version>8.1.9.v20130131</jetty.version>
 		<jetty.plugin.version>8.1.9.v20130131</jetty.plugin.version>
 
-		<wicket.version>6.10.0</wicket.version>
-		<wicket.atmosphere.version>0.13</wicket.atmosphere.version>
+		<wicket.version>6.13.0</wicket.version>
+		<wicket.atmosphere.version>0.15</wicket.atmosphere.version>
 
-		<spring.version>3.2.3.RELEASE</spring.version>
-		<hibernate.version>4.2.2.Final</hibernate.version>
-		<hibernate-validator.version>5.0.1.Final</hibernate-validator.version>
+		<spring.version>4.0.0.RELEASE</spring.version>
+		<hibernate.version>4.3.0.Final</hibernate.version>
+		<hibernate-validator.version>5.0.2.Final</hibernate-validator.version>
 		<validation-api.version>1.1.0.Final</validation-api.version>
 
-		<svnkit.version>1.7.8</svnkit.version>
+		<svnkit.version>1.8.2</svnkit.version>
 		<guava.version>15.0</guava.version>
 		<hsqldb.version>2.2.9</hsqldb.version>
-		<aspectjweaver.version>1.6.9</aspectjweaver.version>
+		<aspectjweaver.version>1.7.4</aspectjweaver.version>
 
 
 		<sshj.version>0.8.1</sshj.version>
@@ -454,6 +454,7 @@
 				<enabled>true</enabled>
 			</snapshots>
 		</repository>
+
 	</repositories>
 
 </project>

@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class GlobalSettingsProviderImpl implements GlobalSettingsProvider {
 
-	@Autowired
 	private GenericDAO<GlobalSettings> globalSettingsDAO;
 	private GenericDaoBuilder genericDAO;
 	protected static GlobalSettings first;

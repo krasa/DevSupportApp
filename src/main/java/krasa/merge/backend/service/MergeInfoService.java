@@ -27,6 +27,7 @@ import org.tmatesoft.svn.core.SVNLogEntry;
  */
 @Service
 public class MergeInfoService {
+
 	protected final Logger log = LoggerFactory.getLogger(getClass());
 	@Autowired
 	private SvnFolderDAO svnFolderDAO;
@@ -71,11 +72,11 @@ public class MergeInfoService {
 				if (mergeOnSubfolders) {
 					for (String commonFolder : to.getCommonSubFolders(from)) {
 						List<SVNLogEntry> merges = svnMergeInfoProvider.getMerges(from, to, commonFolder);
-						mergeInfoResultItems.add(new MergeInfoResultItem(to, from, commonFolder, merges));
+						mergeInfoResultItems.add(new MergeInfoResultItem(to, from, repository, commonFolder, merges));
 					}
 				} else {
 					List<SVNLogEntry> merges = svnMergeInfoProvider.getMerges(from, to);
-					mergeInfoResultItems.add(new MergeInfoResultItem(to, from, merges));
+					mergeInfoResultItems.add(new MergeInfoResultItem(to, from, repository, merges));
 				}
 			}
 		} catch (SVNException e) {

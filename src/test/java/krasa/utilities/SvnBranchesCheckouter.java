@@ -15,20 +15,21 @@ import org.tmatesoft.svn.core.wc.SVNRevision;
 import org.tmatesoft.svn.core.wc.SVNUpdateClient;
 
 public class SvnBranchesCheckouter {
-	public static final int INT = 13400;
-	public static final String HTTP_SVN_SDP = "http://svn/sdp";
+
+	public static final int INT = 14100;
+	public static final String SVN = "http://svn/sdp";
+	public static final String TARGET = "D:/workspace/_projekty/_T-Mobile/";
 	static SVNClientManager svnClientManager = SVNClientManager.newInstance();
 
 	public static void main(String[] args) throws SVNException {
-
-		SvnFolderProvider svnFolderProvider = new SvnFolderProvider(new Repository(HTTP_SVN_SDP));
+		SvnFolderProvider svnFolderProvider = new SvnFolderProvider(new Repository(SVN));
 		List<SVNDirEntry> projects = svnFolderProvider.getProjects();
 		for (SVNDirEntry project : projects) {
 			List<SvnFolder> projectContent = svnFolderProvider.getProjectContent(project.getName(), false);
 			for (SvnFolder svnFolder : projectContent) {
 				if (svnFolder.getName().endsWith(String.valueOf(INT))) {
-					String url = HTTP_SVN_SDP + "/" + svnFolder.getPath();
-					String pathname = "D:/workspace/_projekty/_T-Mobile/" + INT + "/" + svnFolder.getName();
+					String url = SVN + "/" + svnFolder.getPath();
+					String pathname = TARGET + INT + "/" + svnFolder.getName();
 					File destPath = new File(pathname);
 					if (!destPath.exists()) {
 						System.err.println("checking out: " + url + " into " + pathname);
