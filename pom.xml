@@ -39,7 +39,7 @@
 		<hibernate-validator.version>5.0.2.Final</hibernate-validator.version>
 		<validation-api.version>1.1.0.Final</validation-api.version>
 
-		<svnkit.version>1.8.2</svnkit.version>
+		<svnkit.version>1.7.8</svnkit.version>
 		<guava.version>15.0</guava.version>
 		<hsqldb.version>2.2.9</hsqldb.version>
 		<aspectjweaver.version>1.7.4</aspectjweaver.version>
@@ -55,6 +55,8 @@
 		<commons-dbcp.version>1.4</commons-dbcp.version>
 		<commons-lang3.version>3.1</commons-lang3.version>
 		<commons-io.version>2.4</commons-io.version>
+		<h2.version>1.3.172</h2.version>
+		<camel-core.version>2.12.2</camel-core.version>
 	</properties>
 	<dependencies>
 		<!-- Reflection Utils -->
@@ -69,8 +71,54 @@
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
-			<version>1.3.172</version>
+			<version>${h2.version}</version>
 		</dependency>
+
+		<!--<dependency>-->
+		<!--<groupId>org.apache.camel</groupId>-->
+		<!--<artifactId>camel-core</artifactId>-->
+		<!--<version>${camel-core.version}</version>-->
+		<!--</dependency>-->
+		<!--<dependency>-->
+		<!--<groupId>org.apache.camel</groupId>-->
+		<!--<artifactId>camel-spring</artifactId>-->
+		<!--<version>2.12.2</version>-->
+		<!--</dependency>-->
+		<!--<dependency>-->
+		<!--<groupId>org.apache.camel</groupId>-->
+		<!--<artifactId>camel-example-spring</artifactId>-->
+		<!--<version>2.12.2</version>-->
+		<!--<scope>test</scope>-->
+		<!--</dependency>-->
+		<!--<dependency>-->
+		<!--<groupId>org.apache.camel</groupId>-->
+		<!--<artifactId>camel-example-bam</artifactId>-->
+		<!--<version>2.12.2</version>-->
+		<!--<scope>test</scope>-->
+		<!--</dependency>-->
+		<!--<dependency>-->
+		<!--<groupId>org.apache.camel</groupId>-->
+		<!--<artifactId>camel-test-spring</artifactId>-->
+		<!--<version>2.12.2</version>-->
+		<!--<scope>test</scope>-->
+		<!--</dependency>-->
+		<!--<dependency>-->
+		<!--<groupId>org.apache.camel</groupId>-->
+		<!--<artifactId>camel-example-loadbalancing</artifactId>-->
+		<!--<version>2.12.2</version>-->
+		<!--<scope>test</scope>-->
+		<!--</dependency>-->
+		<!--<dependency>-->
+		<!--<groupId>org.apache.camel</groupId>-->
+		<!--<artifactId>camel-example-route-throttling</artifactId>-->
+		<!--<version>2.12.2</version>-->
+		<!--<scope>test</scope>-->
+		<!--</dependency>-->
+		<!--<dependency>-->
+		<!--<groupId>org.apache.camel</groupId>-->
+		<!--<artifactId>camel-spring-javaconfig</artifactId>-->
+		<!--<version>2.12.2</version>-->
+		<!--</dependency>-->
 
 		<!--<dependency>-->
 		<!--<groupId>com.google.code.gson</groupId>-->

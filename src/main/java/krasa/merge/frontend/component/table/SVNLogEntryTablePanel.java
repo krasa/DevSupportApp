@@ -8,9 +8,13 @@ import java.util.List;
 import krasa.core.frontend.commons.DateModel;
 import krasa.core.frontend.commons.FishEyeLink;
 import krasa.core.frontend.commons.FishEyeLinkModel;
+import krasa.core.frontend.commons.table.ButtonColumn;
 import krasa.merge.backend.dto.MergeInfoResultItem;
-import krasa.merge.backend.service.SvnMergeService;
+import krasa.merge.backend.service.MergeService;
 
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.event.Broadcast;
+import org.apache.wicket.event.IEvent;
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackDefaultDataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.ISortState;
@@ -33,26 +37,55 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.tmatesoft.svn.core.SVNLogEntry;
 
 public class SVNLogEntryTablePanel extends Panel {
-
+	public static final String ROW_ID_PREFIX = "revision";
 	@SpringBean
-	SvnMergeService svnMergeService;
+	protected MergeService mergeService;
+
 	private IModel<MergeInfoResultItem> model;
+	protected AjaxFallbackDefaultDataTable<SVNLogEntry, String> table;
 
 	public SVNLogEntryTablePanel(String id, final IModel<MergeInfoResultItem> model) {
 		super(id, model);
 		this.model = model;
 		final ArrayList<IColumn<SVNLogEntry, String>> columns = getColumns();
-		AjaxFallbackDefaultDataTable<SVNLogEntry, String> table = new AjaxFallbackDefaultDataTable<>("merges", columns,
-				new DataProvider(new AbstractReadOnlyModel<List<SVNLogEntry>>() {
+		final DataProvider dataProvider = new DataProvider(new AbstractReadOnlyModel<List<SVNLogEntry>>() {
 
-					@Override
-					public List<SVNLogEntry> getObject() {
-						return model.getObject().getMerges();
-					}
-				}), 100);
+			@Override
+			public List<SVNLogEntry> getObject() {
+				return model.getObject().getMerges();
+			}
+		});
+		createTable(columns, dataProvider);
 		Form form = new Form("form");
 		add(form);
 		form.add(table);
+	}
+
+	protected void createTable(final ArrayList<IColumn<SVNLogEntry, String>> columns, final DataProvider dataProvider) {
+		table = new AjaxFallbackDefaultDataTable<SVNLogEntry, String>("merges", columns, dataProvider, 100) {
+			@Override
+			protected Item<SVNLogEntry> newRowItem(String id, int index, IModel<SVNLogEntry> model) {
+				Item<SVNLogEntry> item = new Item<SVNLogEntry>(id, index, model) {
+					@Override
+					public void onEvent(IEvent<?> event) {
+						super.onEvent(event);
+						if (event.getPayload() instanceof DeleteRowEvent) {
+							DeleteRowEvent payload = (DeleteRowEvent) event.getPayload();
+							SVNLogEntry logEntry = (SVNLogEntry) payload.getObject();
+							AjaxRequestTarget target = payload.getTarget();
+							if (logEntry.getRevision() == (getModelObject().getRevision())) {
+								this.setVisible(false);
+								target.add(this);
+								event.stop();
+							}
+						}
+					}
+				};
+				item.setMarkupId(ROW_ID_PREFIX + model.getObject().getRevision());
+				item.setOutputMarkupId(true);
+				return item;
+			}
+		};
 	}
 
 	private ArrayList<IColumn<SVNLogEntry, String>> getColumns() {
@@ -86,16 +119,32 @@ public class SVNLogEntryTablePanel extends Panel {
 				cellItem.add(new Label(componentId, new DateModel(date)));
 			}
 		});
-		// if (model.getObject().isMergeable()) {
-		// columns.add(new ButtonColumn<SVNLogEntry>(new Model<String>("merge")) {
-		//
-		// @Override
-		// protected void onSubmit(IModel<SVNLogEntry> revision, AjaxRequestTarget target, Form<?> form) {
-		// svnMergeService.merge(model.getObject(), revision.getObject());
-		// }
-		// });
-		// }
+		if (model.getObject().isMergeable()) {
+			columns.add(new ButtonColumn<SVNLogEntry>(new Model<String>("merge")) {
+
+				@Override
+				protected void onSubmit(IModel<SVNLogEntry> revision, AjaxRequestTarget target, Form<?> form) {
+					mergeService.merge(model.getObject(), revision.getObject());
+					sendDeletedRowEvent(revision, target);
+
+				}
+			});
+			columns.add(new ButtonColumn<SVNLogEntry>(new Model<String>("mergeSvnMergeInfoOnly")) {
+
+				@Override
+				protected void onSubmit(IModel<SVNLogEntry> revision, AjaxRequestTarget target, Form<?> form) {
+					mergeService.mergeSvnMergeInfoOnly(model.getObject(), revision.getObject());
+					sendDeletedRowEvent(revision, target);
+				}
+			});
+		}
 		return columns;
+	}
+
+	private void sendDeletedRowEvent(IModel<SVNLogEntry> model, AjaxRequestTarget target) {
+		DeleteRowEvent<SVNLogEntry> componentDeletedEvent = new DeleteRowEvent<>(model.getObject());
+		componentDeletedEvent.setTarget(target);
+		send(table, Broadcast.DEPTH, componentDeletedEvent);
 	}
 
 	private class DataProvider implements ISortableDataProvider<SVNLogEntry, String> {

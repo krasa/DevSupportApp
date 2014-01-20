@@ -10,6 +10,8 @@ import javax.persistence.ManyToOne;
 
 import krasa.merge.backend.domain.Repository;
 
+import com.sun.istack.internal.Nullable;
+
 /**
  * @author Vojtech Krasa
  */
@@ -24,6 +26,7 @@ public class GlobalSettings extends AbstractEntity {
 	@ManyToOne
 	private Repository defaultRepository;
 
+	@Nullable
 	public Repository getDefaultRepository() {
 		return defaultRepository;
 	}

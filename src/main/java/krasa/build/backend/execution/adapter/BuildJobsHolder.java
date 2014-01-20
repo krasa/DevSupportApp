@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.validation.constraints.Null;
-
 import krasa.build.backend.domain.BuildJob;
 import krasa.build.backend.domain.BuildableComponent;
 import krasa.build.backend.exception.ProcessAlreadyRunning;
@@ -17,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.EvictingQueue;
+import com.sun.istack.internal.Nullable;
 
 @Component
 public class BuildJobsHolder {
@@ -25,7 +24,7 @@ public class BuildJobsHolder {
 	private static Map<Integer, BuildJob> buildJobHashMap = new ConcurrentHashMap<>();
 	private static EvictingQueue<BuildJob> finished = EvictingQueue.create(10);
 
-	@Null
+	@Nullable
 	public BuildJob get(BuildJob request) {
 		return buildJobHashMap.get(request.getId());
 	}

@@ -91,7 +91,10 @@ public interface Facade {
 
 	void saveRepository(Repository modelObject);
 
-	List<? extends Repository> getAllRepositories();
+	List<Repository> getAllRepositories();
 
 	void deleteRepository(Integer modelObject);
+
+	void deleteAllSvnBranches();
+
 }

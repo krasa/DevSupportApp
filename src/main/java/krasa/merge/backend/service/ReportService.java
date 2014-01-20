@@ -9,6 +9,7 @@ import krasa.merge.backend.domain.Repository;
 import krasa.merge.backend.domain.SvnFolder;
 import krasa.merge.backend.dto.ReportResult;
 import krasa.merge.backend.svn.SvnFolderProvider;
+import krasa.merge.backend.svn.SvnFolderProviderImpl;
 import krasa.merge.backend.svn.SvnReportProvider;
 import krasa.merge.backend.svn.connection.SVNConnector;
 
@@ -39,7 +40,7 @@ public class ReportService {
 		ReportResult reportResult = new ReportResult();
 		SVNRepository connect = new SVNConnector().connect(repository);
 		SvnReportProvider svnReportProvider = new SvnReportProvider(connect);
-		SvnFolderProvider svnFolderProvider = new SvnFolderProvider(repository, connect);
+		SvnFolderProvider svnFolderProvider = new SvnFolderProviderImpl(repository, connect);
 
 		List<Branch> selectedBranches = profileProvider.getSelectedBranches();
 		List<SvnFolder> branchesByNames = svnFolderDAO.findBranchesByNames(selectedBranches);

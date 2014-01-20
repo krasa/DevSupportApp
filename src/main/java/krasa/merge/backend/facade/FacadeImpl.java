@@ -260,14 +260,25 @@ public class FacadeImpl implements Facade {
 	}
 
 	@Override
-	public List<? extends Repository> getAllRepositories() {
+	public List<Repository> getAllRepositories() {
 		return repositoryGenericDAO.findAll();
 	}
 
 	@Override
 	public void deleteRepository(Integer id) {
 		Repository byId = repositoryGenericDAO.findById(id);
+		final GlobalSettings globalSettings = getGlobalSettings();
+		final Repository defaultRepository = globalSettings.getDefaultRepository();
+		if (defaultRepository != null && defaultRepository.equals(byId)) {
+			globalSettings.setDefaultRepository(null);
+			globalSettingsDAO.save(globalSettings);
+		}
 		repositoryGenericDAO.delete(byId);
+	}
+
+	@Override
+	public void deleteAllSvnBranches() {
+		svnFolderDAO.deleteAll();
 	}
 
 	@Override

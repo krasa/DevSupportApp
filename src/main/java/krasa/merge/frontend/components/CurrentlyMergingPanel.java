@@ -1,12 +1,13 @@
-package krasa.build.frontend.components;
+package krasa.merge.frontend.components;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 
-import krasa.build.backend.dto.BuildJobDto;
-import krasa.build.backend.facade.BuildFacade;
-import krasa.build.backend.facade.ComponentBuildEvent;
-import krasa.build.frontend.pages.LogPage;
 import krasa.core.frontend.commons.LabeledBookmarkablePageLink;
+import krasa.merge.backend.dto.MergeJobDto;
+import krasa.merge.backend.facade.MergeEvent;
+import krasa.merge.backend.service.MergeService;
+import krasa.merge.frontend.pages.MergeLogPage;
 
 import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -25,18 +26,19 @@ import org.apache.wicket.util.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class CurrentlyBuildingLeftPanel extends Panel {
+public class CurrentlyMergingPanel extends Panel {
 	protected final Logger log = LoggerFactory.getLogger(getClass());
 
 	@SpringBean
-	private BuildFacade facade;
-	private ListView<BuildJobDto> runningBuildJobDtoListView;
-	private IModel<List<BuildJobDto>> currentlyBuildingModel;
+	private MergeService mergeService;
+	private ListView<MergeJobDto> runningMergeJobDtoListView;
+	public static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("mm:ss");
+	private IModel<List<MergeJobDto>> currentlyMergeingModel;
 	private WebMarkupContainer list;
 	private AbstractAjaxTimerBehavior abstractAjaxTimerBehavior;
 
 	@Subscribe
-	public void refreshRow(AjaxRequestTarget target, ComponentBuildEvent message) {
+	public void refreshRow(AjaxRequestTarget target, MergeEvent message) {
 		log.debug("Refreshing");
 		target.add(list);
 		if (abstractAjaxTimerBehavior.isStopped()) {
@@ -44,9 +46,9 @@ public class CurrentlyBuildingLeftPanel extends Panel {
 		}
 	}
 
-	public CurrentlyBuildingLeftPanel(String id) {
+	public CurrentlyMergingPanel(String id) {
 		super(id);
-		currentlyBuildingModel = getCurrentlyBuildingModel();
+		currentlyMergeingModel = getCurrentlyMergeingModel();
 		initList();
 		addAjaxRefreshBehaviour();
 	}
@@ -55,7 +57,7 @@ public class CurrentlyBuildingLeftPanel extends Panel {
 		abstractAjaxTimerBehavior = new AbstractAjaxTimerBehavior(Duration.seconds(1)) {
 			@Override
 			protected void onTimer(AjaxRequestTarget ajaxRequestTarget) {
-				if (currentlyBuildingModel.getObject().size() != 0) {
+				if (currentlyMergeingModel.getObject().size() != 0) {
 					ajaxRequestTarget.add(list);
 				} else {
 					stop(ajaxRequestTarget);
@@ -65,22 +67,22 @@ public class CurrentlyBuildingLeftPanel extends Panel {
 		add(abstractAjaxTimerBehavior);
 	}
 
-	private IModel<List<BuildJobDto>> getCurrentlyBuildingModel() {
-		return new LoadableDetachableModel<List<BuildJobDto>>() {
+	private IModel<List<MergeJobDto>> getCurrentlyMergeingModel() {
+		return new LoadableDetachableModel<List<MergeJobDto>>() {
 			@Override
-			protected List<BuildJobDto> load() {
-				return facade.getRunningBuildJobs();
+			protected List<MergeJobDto> load() {
+				return mergeService.getRunningMergeJobs();
 			}
 		};
 	}
 
 	private void initList() {
 		list = new WebMarkupContainer("list");
-		runningBuildJobDtoListView = new ListView<BuildJobDto>("item", currentlyBuildingModel) {
+		runningMergeJobDtoListView = new ListView<MergeJobDto>("item", currentlyMergeingModel) {
 			@Override
-			protected void populateItem(final ListItem<BuildJobDto> listItem) {
-				LabeledBookmarkablePageLink link = new LabeledBookmarkablePageLink("link", LogPage.class,
-						LogPage.params(listItem.getModelObject()));
+			protected void populateItem(final ListItem<MergeJobDto> listItem) {
+				LabeledBookmarkablePageLink link = new LabeledBookmarkablePageLink("link", MergeLogPage.class,
+						MergeLogPage.params(listItem.getModelObject()));
 				link.add(new Label("prefix", new RunningJobLabelModel(listItem)));
 				link.add(new Label("component", new PropertyModel<>(listItem.getModel(), "component")));
 				link.add(new Label("environment", new PropertyModel<>(listItem.getModel(), "environment")));
@@ -89,29 +91,29 @@ public class CurrentlyBuildingLeftPanel extends Panel {
 			}
 		};
 		list.setOutputMarkupId(true);
-		list.add(runningBuildJobDtoListView);
+		list.add(runningMergeJobDtoListView);
 		add(list);
 	}
 
 	private static class RunningJobLabelModel extends AbstractReadOnlyModel<String> {
-		private final ListItem<BuildJobDto> listItem;
+		private final ListItem<MergeJobDto> listItem;
 
-		public RunningJobLabelModel(ListItem<BuildJobDto> listItem) {
+		public RunningJobLabelModel(ListItem<MergeJobDto> listItem) {
 			this.listItem = listItem;
 		}
 
 		@Override
 		public String getObject() {
-			BuildJobDto modelObject = listItem.getModelObject();
+			MergeJobDto modelObject = listItem.getModelObject();
 
 			String s = "";
-			if (modelObject.getStart() == null) {
-				s = "Pending, ";
-			}
-			String format = modelObject.getRemainsAsString();
-			if (format != null) {
-				s = format + ", ";
-			}
+			// if (modelObject.getStart() == null) {
+			// s = "Pending, ";
+			// }
+			// String format = modelObject.getRemainsAsString();
+			// if (format != null) {
+			// s = format + ", ";
+			// }
 
 			return s;
 		}

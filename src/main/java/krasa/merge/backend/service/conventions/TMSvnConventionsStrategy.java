@@ -47,7 +47,7 @@ public class TMSvnConventionsStrategy extends SvnConventionsStrategy {
 		try {
 			return Integer.valueOf(name.substring(name.lastIndexOf("_") + 1));
 		} catch (NumberFormatException e) {
-			log.warn(name + " " + e.getMessage());
+			log.debug(name + " " + e.getMessage());
 			return -1;
 		}
 	}

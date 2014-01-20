@@ -1,6 +1,7 @@
 package krasa.build.backend.dto;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -9,7 +10,6 @@ import java.util.Date;
 import java.util.List;
 
 import krasa.build.backend.domain.BuildJob;
-import krasa.build.frontend.components.CurrentlyBuildingLeftPanel;
 
 public class BuildJobDto implements Serializable {
 
@@ -117,7 +117,7 @@ public class BuildJobDto implements Serializable {
 			l = -l;
 		}
 		Date date = new Date(l);
-		String format = CurrentlyBuildingLeftPanel.SIMPLE_DATE_FORMAT.format(date);
+		String format = new SimpleDateFormat("mm:ss").format(date);
 		if (negative) {
 			return "-" + format;
 		}

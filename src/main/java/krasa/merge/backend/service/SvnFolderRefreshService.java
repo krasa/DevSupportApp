@@ -13,6 +13,7 @@ import krasa.merge.backend.domain.Repository;
 import krasa.merge.backend.domain.SvnFolder;
 import krasa.merge.backend.service.conventions.ConventionsStrategyHolder;
 import krasa.merge.backend.svn.SvnFolderProvider;
+import krasa.merge.backend.svn.SvnFolderProviderImpl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -45,7 +46,7 @@ public class SvnFolderRefreshService {
 		List<Repository> all = repositoryGenericDAO.findAll();
 		Set<String> projectSet = new HashSet<>();
 		for (Repository repository : all) {
-			SvnFolderProvider svnFolderProvider = new SvnFolderProvider(repository);
+			SvnFolderProvider svnFolderProvider = getSvnFolderProvider(repository);
 			List<SVNDirEntry> projects = svnFolderProvider.getProjects();
 			for (SVNDirEntry project : projects) {
 				projectSet.add(project.getName());
@@ -82,10 +83,10 @@ public class SvnFolderRefreshService {
 		if (repository == null) {
 			repository = globalSettingsProvider.getGlobalSettings().getDefaultRepository();
 		}
-		SvnFolderProvider provider = new SvnFolderProvider(repository);
+		SvnFolderProvider provider = getSvnFolderProvider(repository);
 		try {
 			Boolean loadTags = globalSettingsProvider.getGlobalSettings().isLoadTags(project.getPath());
-			List<SvnFolder> childs = provider.getProjectContent(project.getName(), loadTags);
+			List<SvnFolder> childs = provider.getProjectContent(project, loadTags);
 			Set<String> childSet = new HashSet<>();
 			for (SvnFolder child : childs) {
 				childSet.add(child.getName());
@@ -109,6 +110,10 @@ public class SvnFolderRefreshService {
 				}
 			}
 		}
+	}
+
+	private SvnFolderProvider getSvnFolderProvider(Repository repository) {
+		return new SvnFolderProviderImpl(repository);
 	}
 
 	private void postProcessAfterRefresh(SvnFolder project) {

@@ -64,10 +64,6 @@ public class BuildFacadeImpl implements BuildFacade {
 		return buildJob;
 	}
 
-	private void checkPreviousBuilds(BuildableComponent request) {
-		runningBuildJobsHolder.checkPreviousBuilds(request);
-	}
-
 	@Override
 	@Transactional
 	public BuildableComponent createBuildableComponent(Environment environment, String componentName)
@@ -140,7 +136,7 @@ public class BuildFacadeImpl implements BuildFacade {
 	}
 
 	private BuildJob build(BuildableComponent buildableComponent) {
-		checkPreviousBuilds(buildableComponent);
+		runningBuildJobsHolder.checkPreviousBuilds(buildableComponent);
 		BuildJob buildJob = createAndSaveBuildJob(buildableComponent);
 		commonBuildDao.flush();
 

@@ -5,7 +5,9 @@ import java.util.List;
 
 import krasa.merge.backend.domain.Repository;
 import krasa.merge.backend.domain.SvnFolder;
+import krasa.merge.backend.domain.Type;
 import krasa.merge.backend.svn.SvnFolderProvider;
+import krasa.merge.backend.svn.SvnFolderProviderImpl;
 
 import org.tmatesoft.svn.core.SVNDirEntry;
 import org.tmatesoft.svn.core.SVNException;
@@ -22,10 +24,11 @@ public class SvnBranchesCheckouter {
 	static SVNClientManager svnClientManager = SVNClientManager.newInstance();
 
 	public static void main(String[] args) throws SVNException {
-		SvnFolderProvider svnFolderProvider = new SvnFolderProvider(new Repository(SVN));
+		SvnFolderProvider svnFolderProvider = new SvnFolderProviderImpl(new Repository(SVN));
 		List<SVNDirEntry> projects = svnFolderProvider.getProjects();
 		for (SVNDirEntry project : projects) {
-			List<SvnFolder> projectContent = svnFolderProvider.getProjectContent(project.getName(), false);
+			List<SvnFolder> projectContent = svnFolderProvider.getProjectContent(
+					new SvnFolder(project, project.getName(), Type.PROJECT), false);
 			for (SvnFolder svnFolder : projectContent) {
 				if (svnFolder.getName().endsWith(String.valueOf(INT))) {
 					String url = SVN + "/" + svnFolder.getPath();

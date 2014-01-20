@@ -1,6 +1,5 @@
 package krasa.build.backend.config;
 
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.AsyncTaskExecutor;
@@ -13,10 +12,19 @@ public class ExecutorConfig {
 
 	public static final String REFRESH_EXECUTOR = "refreshExecutor";
 	public static final String BUILD_EXECUTOR = "buildExecutor";
+	public static final String AUTO_MERGE_EXECUTOR = "buildExecutor";
 	public static final int MAX_CONCURRENT_BUILDS = 3;
+	public static final int MAX_CONCURRENT_MERGES = 3;
 
-	@Bean
-	@Qualifier(BUILD_EXECUTOR)
+	@Bean(name = AUTO_MERGE_EXECUTOR)
+	public ThreadPoolTaskExecutor mergeExecutor() {
+		ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
+		threadPoolTaskExecutor.setMaxPoolSize(MAX_CONCURRENT_MERGES);
+		threadPoolTaskExecutor.setCorePoolSize(MAX_CONCURRENT_MERGES);
+		return threadPoolTaskExecutor;
+	}
+
+	@Bean(name = BUILD_EXECUTOR)
 	public ThreadPoolTaskExecutor buildExecutor() {
 		ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
 		threadPoolTaskExecutor.setMaxPoolSize(MAX_CONCURRENT_BUILDS);
@@ -24,8 +32,7 @@ public class ExecutorConfig {
 		return threadPoolTaskExecutor;
 	}
 
-	@Bean
-	@Qualifier(REFRESH_EXECUTOR)
+	@Bean(name = REFRESH_EXECUTOR)
 	public AsyncTaskExecutor refreshExecutor() {
 		ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
 		threadPoolTaskExecutor.setCorePoolSize(10);

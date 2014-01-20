@@ -26,7 +26,6 @@ public class ConfigurationPage extends BasePage {
 	private Facade facade;
 	@SpringBean
 	private SvnFolderRefreshService svnFolderResfreshService;
-	protected IndicatingAjaxButton components;
 
 	public ConfigurationPage() {
 		initComponents();
@@ -58,7 +57,7 @@ public class ConfigurationPage extends BasePage {
 				error("Error");
 			}
 		});
-		components = new IndicatingAjaxButton("refreshReleasesFormSvn") {
+		form.add(new IndicatingAjaxButton("refreshReleasesFormSvn") {
 			@Override
 			protected void onSubmit(AjaxRequestTarget ajaxRequestTarget, Form<?> components) {
 				facade.refreshReleasesFromSvn();
@@ -70,9 +69,20 @@ public class ConfigurationPage extends BasePage {
 			protected void onError(AjaxRequestTarget ajaxRequestTarget, Form<?> components) {
 				error("Error");
 			}
-		};
-		components.setOutputMarkupId(true);
-		form.add(components);
+		});
+		form.add(new IndicatingAjaxButton("clearSvn") {
+			@Override
+			protected void onSubmit(AjaxRequestTarget ajaxRequestTarget, Form<?> components) {
+				facade.deleteAllSvnBranches();
+				ajaxRequestTarget.add(form);
+				info("Processing");
+			}
+
+			@Override
+			protected void onError(AjaxRequestTarget ajaxRequestTarget, Form<?> components) {
+				error("Error");
+			}
+		});
 
 		// form.add(new TagItTextField<String>("tagit", Model.of("")) {
 		//
