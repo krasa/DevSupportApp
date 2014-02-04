@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.annotation.Nullable;
+
 import krasa.build.backend.domain.BuildJob;
 import krasa.build.backend.domain.BuildableComponent;
 import krasa.build.backend.exception.ProcessAlreadyRunning;
@@ -15,10 +17,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.EvictingQueue;
-import com.sun.istack.internal.Nullable;
 
 @Component
 public class BuildJobsHolder {
+
 	protected final Logger log = LoggerFactory.getLogger(getClass());
 
 	private static Map<Integer, BuildJob> buildJobHashMap = new ConcurrentHashMap<>();

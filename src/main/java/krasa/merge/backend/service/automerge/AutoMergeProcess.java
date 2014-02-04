@@ -24,6 +24,7 @@ import org.tmatesoft.svn.core.wc.SVNStatusType;
 import org.tmatesoft.svn.core.wc.SVNUpdateClient;
 
 public class AutoMergeProcess implements Runnable {
+
 	protected final Logger log = LoggerFactory.getLogger(getClass());
 
 	protected StringBuilder processLog = new StringBuilder();
@@ -83,15 +84,17 @@ public class AutoMergeProcess implements Runnable {
 					SVNDepth.INFINITY, true, System.out, null);
 
 			SVNCommitClient commitClient = clientManager.getCommitClient();
-			commit(workingCopy, commitClient, diffClient);
+			commit(autoMergeJob, workingCopy, commitClient, diffClient);
 		} catch (SVNException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
 	private void cleanup(SVNClientManager clientManager, File workingCopy) throws SVNException {
-		clientManager.getWCClient().doCleanup(workingCopy);
-		clientManager.getWCClient().doRevert(new File[] { workingCopy }, SVNDepth.INFINITY, null);
+		if (workingCopy.exists()) {
+			clientManager.getWCClient().doCleanup(workingCopy);
+			clientManager.getWCClient().doRevert(new File[] { workingCopy }, SVNDepth.INFINITY, null);
+		}
 	}
 
 	private SVNDiffClient getDiffClient(SVNClientManager clientManager, AutoMergeJob autoMergeJob) {
@@ -105,8 +108,16 @@ public class AutoMergeProcess implements Runnable {
 		return diffClient;
 	}
 
-	protected void commit(File workingCopy, SVNCommitClient commitClient, SVNDiffClient diffClient) throws SVNException {
-		commitClient.doCommit(new File[] { workingCopy }, false, "##merge", null, null, false, false, SVNDepth.INFINITY);
+	protected void commit(AutoMergeJob autoMergeJob, File workingCopy, SVNCommitClient commitClient,
+			SVNDiffClient diffClient) throws SVNException {
+		String commitMessage;
+		if (autoMergeJob.getJobMode() == AutoMergeJobMode.ONLY_MERGE_INFO) {
+			commitMessage = "##merge mergeinfo";
+		} else {
+			commitMessage = "##merge";
+		}
+		commitClient.doCommit(new File[] { workingCopy }, false, commitMessage, null, null, false, false,
+				SVNDepth.INFINITY);
 	}
 
 	protected void merge(SVNURL from, File workingCopy, SVNRevisionRange rangeToMerge, SVNDiffClient diffClient)

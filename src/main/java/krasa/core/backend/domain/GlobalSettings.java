@@ -3,6 +3,7 @@ package krasa.core.backend.domain;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.annotation.Nullable;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -10,13 +11,12 @@ import javax.persistence.ManyToOne;
 
 import krasa.merge.backend.domain.Repository;
 
-import com.sun.istack.internal.Nullable;
-
 /**
  * @author Vojtech Krasa
  */
 @Entity
 public class GlobalSettings extends AbstractEntity {
+
 	@ElementCollection(targetClass = String.class, fetch = FetchType.EAGER)
 	private Set<String> projectsWithSubfoldersMergeSearching = new HashSet<>();
 
