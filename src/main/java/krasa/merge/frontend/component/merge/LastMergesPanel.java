@@ -1,9 +1,4 @@
-package krasa.merge.frontend.components;
-
-import java.util.Date;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
+package krasa.merge.frontend.component.merge;
 
 import krasa.build.backend.facade.ComponentBuildEvent;
 import krasa.core.frontend.commons.DateModel;
@@ -11,7 +6,6 @@ import krasa.core.frontend.commons.LabeledBookmarkablePageLink;
 import krasa.merge.backend.dto.MergeJobDto;
 import krasa.merge.backend.service.MergeService;
 import krasa.merge.frontend.pages.MergeLogPage;
-
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.atmosphere.Subscribe;
@@ -28,6 +22,10 @@ import org.apache.wicket.request.http.WebRequest;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
+import java.util.List;
 
 public class LastMergesPanel extends Panel {
 

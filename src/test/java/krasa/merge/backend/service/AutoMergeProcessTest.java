@@ -3,9 +3,7 @@ package krasa.merge.backend.service;
 import krasa.merge.backend.service.automerge.AutoMergeJob;
 import krasa.merge.backend.service.automerge.AutoMergeJobMode;
 import krasa.merge.backend.service.automerge.AutoMergeProcess;
-
 import org.tmatesoft.svn.core.SVNException;
-import org.tmatesoft.svn.core.wc.SVNClientManager;
 
 public class AutoMergeProcessTest {
 
@@ -18,7 +16,6 @@ public class AutoMergeProcessTest {
 				AutoMergeJobMode.ALL);
 
 		AutoMergeProcess svnMergeService = new AutoMergeProcess(autoMergeJob, null);
-		SVNClientManager svnClientManager = svnMergeService.getSvnClientManager(autoMergeJob);
 		// mergeService.processMerge(autoMergeJob., workingCopy, autoMergeJob.getSvnRevisionRange());
 
 	}

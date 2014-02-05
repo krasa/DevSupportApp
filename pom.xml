@@ -59,6 +59,12 @@
 		<camel-core.version>2.12.2</camel-core.version>
 	</properties>
 	<dependencies>
+		<dependency>
+			<groupId>com.google.gag</groupId>
+			<artifactId>gag</artifactId>
+			<version>1.0.1</version>
+		</dependency>
+
 		<!-- Reflection Utils -->
 		<dependency>
 			<groupId>org.azeckoski</groupId>
@@ -274,6 +280,12 @@
 			<groupId>org.apache.wicket</groupId>
 			<artifactId>wicket-util</artifactId>
 			<version>${wicket.version}</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>slf4j-api</artifactId>
+					<groupId>org.slf4j</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 
@@ -281,6 +293,12 @@
 			<groupId>org.apache.wicket</groupId>
 			<artifactId>wicket-datetime</artifactId>
 			<version>${wicket.version}</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>slf4j-api</artifactId>
+					<groupId>org.slf4j</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<dependency>

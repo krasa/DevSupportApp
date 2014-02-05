@@ -1,17 +1,14 @@
 package krasa.merge.backend.service.automerge;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
-import javax.annotation.Nullable;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Component
 public class AutoMergeQueue {
@@ -24,11 +21,11 @@ public class AutoMergeQueue {
 	public AutoMergeJob getAndRemove(AutoMergeJob request) {
 		List<AutoMergeJob> autoMergeJobs = new ArrayList<>();
 		for (AutoMergeJob autoMergeJob : queue) {
-			if (autoMergeJob.getToPath().equals(request.getToPath())) {
+			if (request.isSameDestination(autoMergeJob)) {
 				autoMergeJobs.add(autoMergeJob);
 			}
 		}
-		sort(autoMergeJobs);
+		AutoMergeJob.sort(autoMergeJobs);
 		final AutoMergeJob autoMergeJob;
 		if (autoMergeJobs.isEmpty()) {
 			autoMergeJob = null;
@@ -37,17 +34,6 @@ public class AutoMergeQueue {
 			queue.remove(autoMergeJob);
 		}
 		return autoMergeJob;
-	}
-
-	protected void sort(List<AutoMergeJob> autoMergeJobs) {
-		Collections.sort(autoMergeJobs, new Comparator<AutoMergeJob>() {
-
-			@Override
-			public int compare(AutoMergeJob o1, AutoMergeJob o2) {
-				Long revision = o1.getRevision();
-				return revision.compareTo(o2.getRevision());
-			}
-		});
 	}
 
 	public void put(AutoMergeJob job) {

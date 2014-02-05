@@ -1,14 +1,10 @@
-package krasa.merge.frontend.components;
-
-import java.text.SimpleDateFormat;
-import java.util.List;
+package krasa.merge.frontend.component.merge;
 
 import krasa.core.frontend.commons.LabeledBookmarkablePageLink;
 import krasa.merge.backend.dto.MergeJobDto;
 import krasa.merge.backend.facade.MergeEvent;
 import krasa.merge.backend.service.MergeService;
 import krasa.merge.frontend.pages.MergeLogPage;
-
 import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.atmosphere.Subscribe;
@@ -25,6 +21,9 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.util.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.text.SimpleDateFormat;
+import java.util.List;
 
 public class CurrentlyMergingPanel extends Panel {
 	protected final Logger log = LoggerFactory.getLogger(getClass());

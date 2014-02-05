@@ -5,5 +5,6 @@ package krasa.merge.backend.service.automerge;
  */
 public enum AutoMergeJobMode {
 	ALL,
-	ONLY_MERGE_INFO
+	ONLY_MERGE_INFO,
+	DIFF
 }

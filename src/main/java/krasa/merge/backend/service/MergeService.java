@@ -1,7 +1,5 @@
 package krasa.merge.backend.service;
 
-import java.util.List;
-
 import krasa.merge.backend.dto.MergeInfoResultItem;
 import krasa.merge.backend.dto.MergeJobDto;
 import krasa.merge.backend.service.automerge.AutoMergeExecutor;
@@ -9,10 +7,12 @@ import krasa.merge.backend.service.automerge.AutoMergeJob;
 import krasa.merge.backend.service.automerge.AutoMergeJobMode;
 import krasa.merge.backend.service.automerge.AutoMergeProcess;
 import krasa.merge.backend.service.automerge.MergeJobsHolder;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNLogEntry;
+
+import java.util.List;
 
 @Service
 public class MergeService {
@@ -47,4 +47,13 @@ public class MergeService {
 
 	}
 
+	public String getDiff(MergeInfoResultItem mergeInfoResultItem, SVNLogEntry svnLogEntry) {
+		AutoMergeJob autoMergeJob = AutoMergeJob.create(mergeInfoResultItem, svnLogEntry,
+				AutoMergeJobMode.DIFF);
+		try {
+			return autoMergeJob.getRevisionDiff();
+		} catch (SVNException e) {
+			throw new RuntimeException(e);
+		}
+	}
 }

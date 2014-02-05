@@ -1,14 +1,14 @@
 package krasa.merge.backend.dto;
 
+import krasa.merge.backend.service.automerge.AutoMergeJob;
+import krasa.merge.backend.service.automerge.AutoMergeProcess;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-
-import krasa.merge.backend.service.automerge.AutoMergeJob;
-import krasa.merge.backend.service.automerge.AutoMergeProcess;
 
 /**
  * @author Vojtech Krasa
@@ -27,12 +27,7 @@ public class MergeJobDto implements Serializable, Comparable<MergeJobDto> {
 		List<MergeJobDto> mergebuildJobs = new ArrayList<>();
 
 		for (AutoMergeProcess autoMergeProcess : all) {
-			final AutoMergeJob mergeJob = autoMergeProcess.getAutoMergeJob();
-			MergeJobDto e = new MergeJobDto();
-			e.setFrom(mergeJob.getFrom());
-			e.setTo(mergeJob.getTo());
-			e.setStatus(mergeJob.getStatus().name());
-			e.setRevision(mergeJob.getRevision());
+			MergeJobDto e = AutoMergeJob.getMergeJobDto(autoMergeProcess);
 			mergebuildJobs.add(e);
 		}
 		Collections.sort(mergebuildJobs);
