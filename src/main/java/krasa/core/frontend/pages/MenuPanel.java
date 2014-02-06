@@ -8,6 +8,7 @@ import krasa.merge.frontend.pages.config.ConfigurationPage;
 import krasa.merge.frontend.pages.config.ProfilesPage;
 import krasa.merge.frontend.pages.mergeinfo.MergeInfoPage;
 import krasa.merge.frontend.pages.report.ReportPage;
+import krasa.release.TokenizationPage;
 
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -21,8 +22,9 @@ public final class MenuPanel extends Panel {
 	public MenuPanel(String id, final BasePage parent) {
 		super(id);
 		// add(new BookmarkablePageLink("projects", HomePage.class));
-		add(new BookmarkablePageLink("MergeInfo", MergeInfoPage.class));
+		add(new BookmarkablePageLink("Merge", MergeInfoPage.class));
 		add(new BookmarkablePageLink("Build", BuildPage.class));
+		add(new BookmarkablePageLink("Tokenization", TokenizationPage.class));
 		add(new BookmarkablePageLink("ReportPage", ReportPage.class));
 		add(new BookmarkablePageLink("ReleasesPage", ProfilesPage.class));
 		add(new BookmarkablePageLink("config", ConfigurationPage.class));

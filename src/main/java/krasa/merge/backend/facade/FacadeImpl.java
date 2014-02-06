@@ -282,6 +282,11 @@ public class FacadeImpl implements Facade {
 	}
 
 	@Override
+	public void deleteAllBranchesFromProfile() {
+		profileProvider.deleteAllBranchesFromProfile();
+	}
+
+	@Override
 	public void setMergeOnSubFoldersForProject(String path, Boolean modelObject) {
 		GlobalSettings settings = globalSettingsProvider.getGlobalSettings();
 		settings.setProjectsWithSubfoldersMergeSearching(path, modelObject);

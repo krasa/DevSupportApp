@@ -421,6 +421,16 @@
 			<artifactId>annotations</artifactId>
 			<version>2.0.1</version>
 		</dependency>
+		<dependency>
+			<groupId>com.google.code.maven-replacer-plugin</groupId>
+			<artifactId>replacer</artifactId>
+			<version>1.5.2</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.1</version>
+		</dependency>
 	</dependencies>
 
 
@@ -489,6 +499,12 @@
 				<artifactId>jetty-maven-plugin</artifactId>
 				<version>${jetty.plugin.version}</version>
 				<configuration>
+					<systemProperties>
+						<systemProperty>
+							<name>APPENDER</name>
+							<value>SIFT</value>
+						</systemProperty>
+					</systemProperties>
 					<webAppConfig>
 						<contextPath>/</contextPath>
 					</webAppConfig>

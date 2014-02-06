@@ -178,4 +178,8 @@ public class SvnFolder extends AbstractEntity implements Displayable {
 	public String getDisplayableText() {
 		return getName();
 	}
+
+	public boolean nameEndsWith(final String suffix) {
+		return getName().endsWith(suffix);
+	}
 }

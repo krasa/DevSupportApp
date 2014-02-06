@@ -8,6 +8,8 @@ import java.util.Set;
 
 import krasa.merge.backend.domain.SvnFolder;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNLogEntry;
 import org.tmatesoft.svn.core.SVNLogEntryPath;
@@ -17,6 +19,7 @@ import org.tmatesoft.svn.core.io.SVNRepository;
  * @author Vojtech Krasa
  */
 public class SvnReportProvider {
+	protected static final Logger log = LoggerFactory.getLogger(SvnReportProvider.class);
 	private SVNRepository repository;
 
 	public SvnReportProvider(SVNRepository repository) {
@@ -34,21 +37,20 @@ public class SvnReportProvider {
 				SVNLogEntry logEntry = (SVNLogEntry) entries.next();
 
 				svnLogEntries.add(logEntry);
-				System.out.println("---------------------------------------------");
-				System.out.println("revision: " + logEntry.getRevision());
-				System.out.println("author: " + logEntry.getAuthor());
-				System.out.println("date: " + logEntry.getDate());
-				System.out.println("log message: " + logEntry.getMessage());
+				log.info("---------------------------------------------");
+				log.info("revision: " + logEntry.getRevision());
+				log.info("author: " + logEntry.getAuthor());
+				log.info("date: " + logEntry.getDate());
+				log.info("log message: " + logEntry.getMessage());
 
 				if (logEntry.getChangedPaths().size() > 0) {
-					System.out.println();
-					System.out.println("changed paths:");
+					log.info("changed paths:");
 					Set changedPathsSet = logEntry.getChangedPaths().keySet();
 
 					for (Iterator changedPaths = changedPathsSet.iterator(); changedPaths.hasNext();) {
 						SVNLogEntryPath entryPath = (SVNLogEntryPath) logEntry.getChangedPaths().get(
 								changedPaths.next());
-						System.out.println(" "
+						log.info(" "
 								+ entryPath.getType()
 								+ " "
 								+ entryPath.getPath()

@@ -8,20 +8,13 @@
 <body>
 
 <wicket:extend>
-    <wicket:child/>
-    <div wicket:id="info"></div>
     <form wicket:id="form">
-
-        <input type="submit" wicket:id="kill"/>
-        <input type="submit" wicket:id="rerun1"/>
-
-        <div wicket:id="log"></div>
-
-        <input type="submit" wicket:id="kill2"/>
-        <input type="submit" wicket:id="rerun2"/>
-
+        <input type="text" wicket:id="branchNameSuffix"/>
+        <input type="text" wicket:id="json"/>
+        <input type="button" wicket:id="setAsDefault" value="Set as default"/>
+        <input type="button" wicket:id="reset" value="Reset as default"/>
+        <input type="button" wicket:id="execute" wicket:message="value:execute"/>
     </form>
-
 </wicket:extend>
 
 </body>

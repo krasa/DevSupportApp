@@ -1,7 +1,5 @@
 package krasa.build.frontend.components;
 
-import krasa.build.backend.domain.BuildJob;
-import krasa.build.backend.domain.Status;
 import krasa.build.backend.dto.Result;
 import krasa.core.frontend.commons.SpanMultiLineLabel;
 
@@ -9,49 +7,32 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
 import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.util.time.Duration;
 
 public class LogPanel extends Panel {
 
-	private final IModel<BuildJob> model;
-	protected final PocessKillButton kill;
-	protected final PocessKillButton kill2;
-	private final PocessRerunButton rerun1;
-	private final PocessRerunButton rerun2;
+	private final LogModel model;
 	protected Result last;
 
-	public LogPanel(String id, IModel<BuildJob> model) {
+	public LogPanel(String id, LogModel model) {
 		super(id);
 		this.model = model;
 
-		if (getProgress() != null) {
+		if (model.exists()) {
 			add(createLogData());
 			add(createNextLog());
 		} else {
 			add(new EmptyPanel("logData"));
 			add(new EmptyPanel("nextLog"));
 		}
-		kill = new PocessKillButton("kill", model);
-		kill2 = new PocessKillButton("kill2", model);
-		add(kill);
-		add(kill2);
-		rerun1 = new PocessRerunButton("rerun1", model);
-		add(rerun1);
-		rerun2 = new PocessRerunButton("rerun2", model);
-		add(rerun2);
-	}
-
-	private BuildJob getProgress() {
-		return model.getObject();
 	}
 
 	private SpanMultiLineLabel createLogData() {
 		return new SpanMultiLineLabel("logData", new LoadableDetachableModel<String>() {
 			@Override
 			protected String load() {
-				last = getProgress().getLog();
+				last = model.getLog();
 				return last.getText();
 			}
 		});
@@ -62,7 +43,7 @@ public class LogPanel extends Panel {
 			@Override
 			protected String load() {
 				int length = last.getLength();
-				last = getProgress().getNextLog(length);
+				last = LogPanel.this.model.getNextLog(length);
 				String text = last.getText();
 				text = text.replaceAll("\n", "\n</br>");
 				return text;
@@ -87,13 +68,9 @@ public class LogPanel extends Panel {
 				 * insert "nextLog" after "logData".
 				 */
 
-				if (getProgress().getStatus() == Status.PENDING) {
-				} else if (!getProgress().isProcessAlive() && model.getObject().isEmpty()) {
+				if (!LogPanel.this.model.isAlive() && model.getObject().isEmpty()) {
 					stop(target);
-					target.add(rerun1);
-					target.add(rerun2);
-					target.add(kill);
-					target.add(kill2);
+					onUpdate(target);
 				} else if (!model.getObject().isEmpty()) {
 					// @formatter:off
 					target.prependJavaScript("window.shouldScroll = $(window).scrollTop() + $(window).height()  >= $(document).height();");
@@ -109,5 +86,9 @@ public class LogPanel extends Panel {
 		});
 		nextLog.setOutputMarkupId(true);
 		return nextLog;
+	}
+
+	protected void onUpdate(AjaxRequestTarget target) {
+
 	}
 }

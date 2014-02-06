@@ -97,4 +97,5 @@ public interface Facade {
 
 	void deleteAllSvnBranches();
 
+	void deleteAllBranchesFromProfile();
 }

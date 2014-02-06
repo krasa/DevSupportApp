@@ -11,6 +11,8 @@ public class Start {
 
 	public static void main(String[] args) throws Exception {
 		System.setProperty("spring.profiles.active", "DUMMY");
+		System.setProperty("APPENDER", "STDOUT");
+		// System.setProperty("APPENDER2", "SIFT");
 		// System.setProperty("spring.profiles.active", "LIVE");
 
 		server = new Server();

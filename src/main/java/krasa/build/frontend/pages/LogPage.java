@@ -3,12 +3,17 @@ package krasa.build.frontend.pages;
 import krasa.build.backend.domain.BuildJob;
 import krasa.build.backend.dto.BuildJobDto;
 import krasa.build.backend.dto.BuildableComponentDto;
+import krasa.build.backend.dto.Result;
 import krasa.build.backend.facade.BuildFacade;
 import krasa.build.frontend.components.BuildLeftPanel;
+import krasa.build.frontend.components.LogModel;
 import krasa.build.frontend.components.LogPanel;
+import krasa.build.frontend.components.PocessKillButton;
+import krasa.build.frontend.components.PocessRerunButton;
 import krasa.core.frontend.pages.BasePage;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptContentHeaderItem;
@@ -30,10 +35,14 @@ public class LogPage extends BasePage {
 	protected final Logger log = LoggerFactory.getLogger(getClass());
 
 	protected Form form;
-	private IModel<BuildJob> model;
 	@SpringBean
 	protected BuildFacade facade;
+	protected PocessKillButton kill;
+	protected PocessKillButton kill2;
+	private IModel<BuildJob> model;
 	private Integer buildJobId;
+	private PocessRerunButton rerun1;
+	private PocessRerunButton rerun2;
 
 	public LogPage(PageParameters parameters) {
 		super(parameters);
@@ -56,6 +65,18 @@ public class LogPage extends BasePage {
 
 			}
 		});
+	}
+
+	public static PageParameters params(BuildableComponentDto component) {
+		PageParameters pageParameters = new PageParameters();
+		pageParameters.add(COMPONENT_ID, component.getId());
+		return pageParameters;
+	}
+
+	public static PageParameters params(BuildJobDto buildJob) {
+		PageParameters pageParameters = new PageParameters();
+		pageParameters.add(ID, buildJob.getBuildJobId());
+		return pageParameters;
 	}
 
 	private void initializeJobId() {
@@ -81,24 +102,54 @@ public class LogPage extends BasePage {
 			}
 		}));
 		form = new Form("form");
-		form.add(new LogPanel("log", model));
+
+		form.add(getLogPanel());
 		add(form);
+
+		kill = new PocessKillButton("kill", model);
+		kill2 = new PocessKillButton("kill2", model);
+		form.add(kill);
+		form.add(kill2);
+		rerun1 = new PocessRerunButton("rerun1", model);
+		form.add(rerun1);
+		rerun2 = new PocessRerunButton("rerun2", model);
+		form.add(rerun2);
+	}
+
+	private LogPanel getLogPanel() {
+		return new LogPanel("log", new LogModel() {
+			@Override
+			public boolean isAlive() {
+				return model.getObject().isProcessAlive();
+			}
+
+			@Override
+			public Result getLog() {
+				return model.getObject().getLog();
+			}
+
+			@Override
+			public Result getNextLog(int length) {
+				return model.getObject().getNextLog(length);
+			}
+
+			@Override
+			public boolean exists() {
+				return model.getObject() != null;
+			}
+		}) {
+			@Override
+			protected void onUpdate(AjaxRequestTarget target) {
+				target.add(rerun1);
+				target.add(rerun2);
+				target.add(kill);
+				target.add(kill2);
+			}
+		};
 	}
 
 	@Override
 	protected Component newLeftColumnPanel(String id) {
 		return new BuildLeftPanel(id, null);
-	}
-
-	public static PageParameters params(BuildableComponentDto component) {
-		PageParameters pageParameters = new PageParameters();
-		pageParameters.add(COMPONENT_ID, component.getId());
-		return pageParameters;
-	}
-
-	public static PageParameters params(BuildJobDto buildJob) {
-		PageParameters pageParameters = new PageParameters();
-		pageParameters.add(ID, buildJob.getBuildJobId());
-		return pageParameters;
 	}
 }

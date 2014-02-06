@@ -69,4 +69,11 @@ public class ProfileProvider {
 		save(profile);
 	}
 
+	public void deleteAllBranchesFromProfile() {
+		Profile profile = getCurrentProfile();
+		profile.removeAllBranches();
+		save(profile);
+
+	}
+
 }

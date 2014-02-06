@@ -1,13 +1,26 @@
 package krasa.merge.backend.service.automerge;
 
-import com.google.gag.annotation.remark.Win;
-import com.google.gag.enumeration.Outcome;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+
 import krasa.build.backend.domain.Status;
 import krasa.build.backend.execution.ProcessStatus;
 import krasa.build.backend.execution.process.ProcessStatusListener;
 import krasa.core.backend.domain.AbstractEntity;
+import krasa.core.backend.utils.MdcUtils;
 import krasa.merge.backend.dto.MergeInfoResultItem;
 import krasa.merge.backend.dto.MergeJobDto;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tmatesoft.svn.core.ISVNLogEntryHandler;
@@ -18,7 +31,6 @@ import org.tmatesoft.svn.core.SVNLogEntry;
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.wc.ISVNEventHandler;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
-import org.tmatesoft.svn.core.wc.SVNCommitClient;
 import org.tmatesoft.svn.core.wc.SVNDiffClient;
 import org.tmatesoft.svn.core.wc.SVNEvent;
 import org.tmatesoft.svn.core.wc.SVNRevision;
@@ -26,21 +38,13 @@ import org.tmatesoft.svn.core.wc.SVNRevisionRange;
 import org.tmatesoft.svn.core.wc.SVNStatusType;
 import org.tmatesoft.svn.core.wc.SVNUpdateClient;
 
-import javax.persistence.Access;
-import javax.persistence.AccessType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import com.google.gag.annotation.remark.Win;
+import com.google.gag.enumeration.Outcome;
 
 @Entity
 @Access(AccessType.FIELD)
 public class AutoMergeJob extends AbstractEntity implements ProcessStatusListener {
+
 	protected final Logger log = LoggerFactory.getLogger(getClass());
 
 	@Column
@@ -56,7 +60,7 @@ public class AutoMergeJob extends AbstractEntity implements ProcessStatusListene
 	private AutoMergeJobMode jobMode = AutoMergeJobMode.ALL;
 
 	public AutoMergeJob(String from, String to, String fromPath, String toPath, String repository, long revision,
-						final AutoMergeJobMode all) {
+			final AutoMergeJobMode all) {
 		this.from = from;
 		this.to = to;
 		this.fromPath = fromPath;
@@ -67,7 +71,7 @@ public class AutoMergeJob extends AbstractEntity implements ProcessStatusListene
 	}
 
 	public static AutoMergeJob create(MergeInfoResultItem mergeInfoResultItem, SVNLogEntry svnLogEntry,
-									  final AutoMergeJobMode mergeJobMode) {
+			final AutoMergeJobMode mergeJobMode) {
 		String from = mergeInfoResultItem.getFrom();
 		String to = mergeInfoResultItem.getTo();
 		String fromPath = mergeInfoResultItem.getFromPath();
@@ -100,6 +104,7 @@ public class AutoMergeJob extends AbstractEntity implements ProcessStatusListene
 
 	@Win(Outcome.EPIC)
 	public void merge() {
+		MdcUtils.putLogName("autoMerge_" + jobMode.name() + "_" + to);
 		SVNClientManager clientManager = getSvnClientManager();
 		File workingCopy = getWorkingCopy();
 		try {
@@ -115,15 +120,12 @@ public class AutoMergeJob extends AbstractEntity implements ProcessStatusListene
 
 			merge(from, workingCopy, rangeToMerge, diffClient);
 
-			diffClient.setShowCopiesAsAdds(true);
-			diffClient.doDiff(workingCopy, SVNRevision.UNDEFINED, SVNRevision.WORKING, SVNRevision.COMMITTED,
-					SVNDepth.INFINITY, true, System.out, null);
-
-			SVNCommitClient commitClient = clientManager.getCommitClient();
-
-			commit(clientManager, workingCopy, from, rangeToMerge, commitClient);
+			String commitMessage = getCommitMessage(clientManager, from, rangeToMerge);
+			new CommitJob().commit(clientManager, workingCopy, commitMessage);
 		} catch (SVNException e) {
 			throw new RuntimeException(e);
+		} finally {
+			MdcUtils.removeLogName();
 		}
 	}
 
@@ -132,8 +134,8 @@ public class AutoMergeJob extends AbstractEntity implements ProcessStatusListene
 		final ByteArrayOutputStream out = new ByteArrayOutputStream();
 		SVNClientManager clientManager = getSvnClientManager();
 		final SVNDiffClient diffClient = getDiffClient(clientManager);
-		diffClient.doDiff(getFromUrl(), getSvnRevisionRange().getStartRevision(), getFromUrl(), getSvnRevisionRange().getEndRevision(),
-				SVNDepth.INFINITY, true, out);
+		diffClient.doDiff(getFromUrl(), getSvnRevisionRange().getStartRevision(), getFromUrl(),
+				getSvnRevisionRange().getEndRevision(), SVNDepth.INFINITY, true, out);
 		return out.toString();
 	}
 
@@ -167,20 +169,15 @@ public class AutoMergeJob extends AbstractEntity implements ProcessStatusListene
 		processLog.append(str);
 	}
 
-
 	protected void appendNewLine() {
 		processLog.append("\n");
 	}
 
-	protected void commit(SVNClientManager clientManager, File workingCopy, SVNURL from, SVNRevisionRange rangeToMerge, SVNCommitClient commitClient) throws SVNException {
-		String commitMessage = getCommitMessage(clientManager, from, rangeToMerge);
-		commitClient.doCommit(new File[]{workingCopy}, false, commitMessage, null, null, false, false,
-				SVNDepth.INFINITY);
-	}
-
-	private String getCommitMessage(SVNClientManager clientManager, SVNURL from, SVNRevisionRange rangeToMerge) throws SVNException {
+	private String getCommitMessage(SVNClientManager clientManager, SVNURL from, SVNRevisionRange rangeToMerge)
+			throws SVNException {
 		final MyISVNLogEntryHandler handler = new MyISVNLogEntryHandler();
-		clientManager.getLogClient().doLog(from, new String[]{}, getSvnRevisionRange().getEndRevision(), rangeToMerge.getEndRevision(), rangeToMerge.getEndRevision(), false, false, 1, handler);
+		clientManager.getLogClient().doLog(from, new String[] {}, getSvnRevisionRange().getEndRevision(),
+				rangeToMerge.getEndRevision(), rangeToMerge.getEndRevision(), false, false, 1, handler);
 		String message = handler.message;
 		String commitMessage;
 		if (jobMode == AutoMergeJobMode.ONLY_MERGE_INFO) {
@@ -198,7 +195,7 @@ public class AutoMergeJob extends AbstractEntity implements ProcessStatusListene
 	private void cleanup(SVNClientManager clientManager, File workingCopy) throws SVNException {
 		if (workingCopy.exists()) {
 			clientManager.getWCClient().doCleanup(workingCopy);
-			clientManager.getWCClient().doRevert(new File[]{workingCopy}, SVNDepth.INFINITY, null);
+			clientManager.getWCClient().doRevert(new File[] { workingCopy }, SVNDepth.INFINITY, null);
 		}
 	}
 

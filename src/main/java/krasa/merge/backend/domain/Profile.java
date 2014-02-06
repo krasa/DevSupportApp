@@ -23,6 +23,7 @@ import org.tmatesoft.svn.core.SVNDirEntry;
  */
 @Entity
 public class Profile extends AbstractEntity<Profile> implements Serializable {
+
 	public static final String DATE_PATTERN = "yyyy.MM.dd HH:MM";
 
 	@Column
@@ -51,6 +52,10 @@ public class Profile extends AbstractEntity<Profile> implements Serializable {
 			strings.add(branch.getName());
 		}
 		return strings;
+	}
+
+	public void removeAllBranches() {
+		getBranches().clear();
 	}
 
 	public enum Type {

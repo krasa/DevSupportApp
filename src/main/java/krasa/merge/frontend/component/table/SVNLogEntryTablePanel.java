@@ -1,5 +1,10 @@
 package krasa.merge.frontend.component.table;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+
 import krasa.core.frontend.commons.DateModel;
 import krasa.core.frontend.commons.FishEyeLink;
 import krasa.core.frontend.commons.FishEyeLinkModel;
@@ -7,10 +12,12 @@ import krasa.core.frontend.commons.table.ButtonColumn;
 import krasa.merge.backend.dto.MergeInfoResultItem;
 import krasa.merge.backend.service.MergeService;
 import krasa.merge.frontend.component.merge.DiffPanel;
+
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.event.Broadcast;
 import org.apache.wicket.event.IEvent;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
+import org.apache.wicket.extensions.ajax.markup.html.AjaxLazyLoadPanel;
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackDefaultDataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.ISortState;
@@ -29,22 +36,19 @@ import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.tmatesoft.svn.core.SVNLogEntry;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-
 public class SVNLogEntryTablePanel extends Panel {
+
 	public static final String ROW_ID_PREFIX = "revision";
 	@SpringBean
 	protected MergeService mergeService;
 
 	private IModel<MergeInfoResultItem> model;
 	protected AjaxFallbackDefaultDataTable<SVNLogEntry, String> table;
-	protected ModalWindow modal1;
+	protected DiffModalWindow modalWindow;
 
 	public SVNLogEntryTablePanel(String id, final IModel<MergeInfoResultItem> model) {
 		super(id, model);
@@ -62,14 +66,16 @@ public class SVNLogEntryTablePanel extends Panel {
 		add(form);
 		form.add(table);
 
-		add(modal1 = new DiffModalWindow("modal1"));
+		add(modalWindow = new DiffModalWindow("modal1"));
 	}
 
 	protected void createTable(final ArrayList<IColumn<SVNLogEntry, String>> columns, final DataProvider dataProvider) {
 		table = new AjaxFallbackDefaultDataTable<SVNLogEntry, String>("merges", columns, dataProvider, 100) {
+
 			@Override
 			protected Item<SVNLogEntry> newRowItem(String id, int index, IModel<SVNLogEntry> model) {
 				Item<SVNLogEntry> item = new Item<SVNLogEntry>(id, index, model) {
+
 					@Override
 					public void onEvent(IEvent<?> event) {
 						super.onEvent(event);
@@ -124,7 +130,7 @@ public class SVNLogEntryTablePanel extends Panel {
 			}
 		});
 		if (model.getObject().isMergeable()) {
-			columns.add(new ButtonColumn<SVNLogEntry>(new Model<String>("merge")) {
+			columns.add(new ButtonColumn<SVNLogEntry>(new ResourceModel("merge")) {
 
 				@Override
 				protected void onSubmit(IModel<SVNLogEntry> revision, AjaxRequestTarget target, Form<?> form) {
@@ -133,7 +139,7 @@ public class SVNLogEntryTablePanel extends Panel {
 
 				}
 			});
-			columns.add(new ButtonColumn<SVNLogEntry>(new Model<String>("mergeSvnMergeInfoOnly")) {
+			columns.add(new ButtonColumn<SVNLogEntry>(new ResourceModel("mergeSvnMergeInfoOnly")) {
 
 				@Override
 				protected void onSubmit(IModel<SVNLogEntry> revision, AjaxRequestTarget target, Form<?> form) {
@@ -141,11 +147,32 @@ public class SVNLogEntryTablePanel extends Panel {
 					sendDeletedRowEvent(revision, target);
 				}
 			});
-			columns.add(new ButtonColumn<SVNLogEntry>(new Model<String>("showDiff")) {
+			columns.add(new ButtonColumn<SVNLogEntry>(new ResourceModel("showDiff")) {
+
 				@Override
-				protected void onSubmit(IModel<SVNLogEntry> revision, AjaxRequestTarget target, Form<?> form) {
-					modal1.setContent(new DiffPanel(modal1.getContentId(), revision, model));
-					modal1.show(target);
+				protected void onSubmit(final IModel<SVNLogEntry> revision, AjaxRequestTarget target, Form<?> form) {
+					modalWindow.setContent(new AjaxLazyLoadPanel(modalWindow.getContentId()) {
+
+						@Override
+						protected void onComponentLoaded(Component component, AjaxRequestTarget target) {
+							super.onComponentLoaded(component, target);
+							target.appendJavaScript("SyntaxHighlighter.highlight();");
+
+						}
+
+						@Override
+						public Component getLazyLoadComponent(String markupId) {
+							return new DiffPanel(markupId, modalWindow, revision, model) {
+
+								@Override
+								protected void onMerged(IModel<SVNLogEntry> revision, AjaxRequestTarget target) {
+									SVNLogEntryTablePanel.this.sendDeletedRowEvent(revision, target);
+								}
+							};
+
+						}
+					});
+					modalWindow.show(target);
 				}
 			});
 		}

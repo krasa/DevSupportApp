@@ -39,6 +39,7 @@ public abstract class AddBranchFormPanel extends BasePanel {
 
 	private Form createAddBranchForm(ResourceModel labelModel) {
 		Form form = new Form("addBranchForm") {
+
 			@Override
 			protected void onSubmit() {
 				AjaxRequestTarget target = Ajax.getAjaxRequestTarget();
@@ -61,6 +62,7 @@ public abstract class AddBranchFormPanel extends BasePanel {
 		form.add(autocomplete = createAutoCompletePanel());
 		form.add(feedback = new MyFeedbackPanel("feedback"));
 		form.add(new AjaxButton("addAll") {
+
 			@Override
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
 				String fieldValue = autocomplete.getFieldValue();
@@ -75,6 +77,23 @@ public abstract class AddBranchFormPanel extends BasePanel {
 				target.add(feedback);
 			}
 		});
+		AjaxButton deleteAll = new AjaxButton("deleteAll") {
+
+			@Override
+			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+				facade.deleteAllBranchesFromProfile();
+				onUpdate(target);
+				autocomplete.resetFieldValue(target);
+			}
+
+			@Override
+			protected void onError(AjaxRequestTarget target, Form<?> form) {
+				super.onError(target, form);
+				target.add(feedback);
+			}
+		};
+		deleteAll.setDefaultFormProcessing(false);
+		form.add(deleteAll);
 		return form;
 	}
 

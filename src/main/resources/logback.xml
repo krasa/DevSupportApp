@@ -1,4 +1,22 @@
 <configuration scan="true" scanPeriod="60 seconds">
+	<appender name="SIFT" class="ch.qos.logback.classic.sift.SiftingAppender">
+		<!-- in the absence of the class attribute, it is assumed that the
+				desired discriminator type is
+				ch.qos.logback.classic.sift.MDCBasedDiscriminator -->
+		<discriminator>
+			<key>logName</key>
+			<defaultValue>main</defaultValue>
+		</discriminator>
+		<sift>
+			<appender name="FILE-${logName}" class="ch.qos.logback.core.FileAppender">
+				<file>logs/${logName}.log</file>
+				<append>false</append>
+				<layout class="ch.qos.logback.classic.PatternLayout">
+					<pattern>%d{HH:mm:ss} %5p %c{1} [%t]: - %m%n</pattern>
+				</layout>
+			</appender>
+		</sift>
+	</appender>
 
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
@@ -9,7 +27,8 @@
 	</appender>
 
 	<root level="info">
-		<appender-ref ref="STDOUT"/>
+		<appender-ref ref="${APPENDER}"/>
+		<appender-ref ref="${APPENDER2}"/>
 	</root>
 
 	<logger name="krasa" level="debug"/>

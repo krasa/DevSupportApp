@@ -14,7 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ProcessLog {
-	protected final static Logger log = LoggerFactory.getLogger(JschSshBuildProcess.class);
+	protected final static Logger log = LoggerFactory.getLogger(ProcessLog.class);
+
 	public static final int NUM_ELEMENTS = 2500;
 	public static final int BUFFER_MAX_LENGTH = 2500;
 	protected final StringBuilder buffer = new StringBuilder();
