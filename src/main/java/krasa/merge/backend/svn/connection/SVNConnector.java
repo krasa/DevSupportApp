@@ -1,7 +1,6 @@
 package krasa.merge.backend.svn.connection;
 
 import krasa.merge.backend.domain.Repository;
-import krasa.merge.backend.svn.SvnReportProvider;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +17,8 @@ import org.tmatesoft.svn.core.wc.SVNWCUtil;
  * @author Vojtech Krasa
  */
 public class SVNConnector {
-	protected static final Logger log = LoggerFactory.getLogger(SvnReportProvider.class);
+
+	protected static final Logger log = LoggerFactory.getLogger(SVNConnector.class);
 
 	public SVNRepository connect(Repository repository) {
 		return connect(repository.getUrl());
@@ -38,7 +38,6 @@ public class SVNConnector {
 			repository.setAuthenticationManager(authManager);
 
 			log.info("Repository Root: " + repository.getRepositoryRoot(true));
-			log.info("Repository UUID: " + repository.getRepositoryUUID(true));
 
 			SVNNodeKind nodeKind = repository.checkPath("", -1);
 			if (nodeKind == SVNNodeKind.NONE) {

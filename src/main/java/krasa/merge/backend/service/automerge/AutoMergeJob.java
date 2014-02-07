@@ -121,7 +121,8 @@ public class AutoMergeJob extends AbstractEntity implements ProcessStatusListene
 			merge(from, workingCopy, rangeToMerge, diffClient);
 
 			String commitMessage = getCommitMessage(clientManager, from, rangeToMerge);
-			new CommitJob().commit(clientManager, workingCopy, commitMessage);
+			new DiffCommand().diff(clientManager, workingCopy);
+			new CommitCommand().commit(clientManager, workingCopy, commitMessage);
 		} catch (SVNException e) {
 			throw new RuntimeException(e);
 		} finally {

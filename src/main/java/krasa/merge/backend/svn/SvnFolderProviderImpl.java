@@ -22,6 +22,7 @@ import org.tmatesoft.svn.core.io.SVNRepository;
  * @author Vojtech Krasa
  */
 public class SvnFolderProviderImpl implements SvnFolderProvider {
+
 	protected final Logger log = LoggerFactory.getLogger(getClass());
 	protected final boolean indexTrunk;
 	private SVNRepository repository;
@@ -170,7 +171,7 @@ public class SvnFolderProviderImpl implements SvnFolderProvider {
 				result.add(new SvnFolder(subFolderEntry, pathToParentDir + "/" + subFolderEntry.getName(), type));
 			}
 		}
-		log.info("iteration of branches finnished");
+		log.debug("iteration of branches finnished");
 		return result;
 	}
 

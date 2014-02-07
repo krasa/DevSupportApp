@@ -3,7 +3,9 @@ package krasa.release.tokenization;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ReplacementDefinition {
+import krasa.core.backend.domain.AbstractEntity;
+
+public class ReplacementDefinition extends AbstractEntity {
 
 	private List<String> includes = new ArrayList<>();
 	private List<Replacement> replacements = new ArrayList<>();

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd"
+        >
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<body>
+
+<wicket:extend>
+    <span wicket:id="modalWindow"></span>
+
+    <form wicket:id="form">
+        fromVersion: <input type="text" wicket:id="fromVersion"/><br/>
+        toVersion: <input type="text" wicket:id="toVersion"/><br/>
+        branchNamePattern: <input type="text" wicket:id="branchNamePattern"/><br/>
+        json: <textarea rows="50" cols="180" wicket:id="json"/><br/>
+        <input type="button" wicket:id="setAsDefault" value="Set as default"/>
+        <input type="button" wicket:id="reset" value="Reset as default"/>
+        <input type="button" wicket:id="execute" wicket:message="value:execute"/>
+        <input type="button" wicket:id="executeSynchronously" wicket:message="value:executeSynchronously"/>
+    </form>
+</wicket:extend>
+
+</body>
+</html>
+
+

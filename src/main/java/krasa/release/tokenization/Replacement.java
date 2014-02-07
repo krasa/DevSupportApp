@@ -1,7 +1,6 @@
 package krasa.release.tokenization;
 
 public class Replacement {
-
 	private String token;
 	private String value;
 

@@ -10,6 +10,7 @@ import org.apache.wicket.application.IComponentInstantiationListener;
 import org.apache.wicket.atmosphere.EventBus;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.Request;
 import org.apache.wicket.request.Response;
@@ -25,6 +26,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  * @see krasa.Start#main(String[])
  */
 public class WicketApplication extends WebApplication {
+
 	private EventBus eventBus;
 
 	private BeanFactory beanFactory;
@@ -50,10 +52,13 @@ public class WicketApplication extends WebApplication {
 		// add your configuration here
 		eventBus = new EventBus(this);
 		getComponentInstantiationListeners().add(new IComponentInstantiationListener() {
+
 			public void onInstantiation(Component component) {
 				if (component instanceof Form)
 					component.setOutputMarkupId(true);
-				if (component instanceof WebMarkupContainer)
+				else if (component instanceof FormComponent)
+					component.setOutputMarkupId(true);
+				else if (component instanceof WebMarkupContainer)
 					return;
 				component.setOutputMarkupId(true);
 			}

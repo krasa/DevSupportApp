@@ -48,7 +48,7 @@ public class SVNLogEntryTablePanel extends Panel {
 
 	private IModel<MergeInfoResultItem> model;
 	protected AjaxFallbackDefaultDataTable<SVNLogEntry, String> table;
-	protected DiffModalWindow modalWindow;
+	protected FixedModalWindow modalWindow;
 
 	public SVNLogEntryTablePanel(String id, final IModel<MergeInfoResultItem> model) {
 		super(id, model);
@@ -66,7 +66,7 @@ public class SVNLogEntryTablePanel extends Panel {
 		add(form);
 		form.add(table);
 
-		add(modalWindow = new DiffModalWindow("modal1"));
+		add(modalWindow = new FixedModalWindow("modal1"));
 	}
 
 	protected void createTable(final ArrayList<IColumn<SVNLogEntry, String>> columns, final DataProvider dataProvider) {

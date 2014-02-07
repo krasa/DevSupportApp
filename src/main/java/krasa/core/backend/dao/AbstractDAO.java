@@ -22,6 +22,12 @@ public abstract class AbstractDAO<T extends AbstractEntity> implements DAO<T> {
 	@Autowired
 	protected SessionFactory sf;
 
+	protected AbstractDAO() {
+	}
+
+	public AbstractDAO(Class<T> domainClass) {
+	}
+
 	public void flush() {
 		sf.getCurrentSession().flush();
 		sf.getCurrentSession().clear();
@@ -29,12 +35,6 @@ public abstract class AbstractDAO<T extends AbstractEntity> implements DAO<T> {
 
 	public Session getSession() {
 		return sf.getCurrentSession();
-	}
-
-	protected AbstractDAO() {
-	}
-
-	public AbstractDAO(Class<T> domainClass) {
 	}
 
 	@Override
@@ -95,6 +95,13 @@ public abstract class AbstractDAO<T extends AbstractEntity> implements DAO<T> {
 		}
 		Integer id = Integer.valueOf(o.toString());
 		return findById(id);
+	}
+
+	@Override
+	public List<T> findLast(int count) {
+		final Query query = getSession().createQuery(" from " + getEntityName() + " order by id desc");
+		query.setMaxResults(count);
+		return query.list();
 	}
 
 	@Override

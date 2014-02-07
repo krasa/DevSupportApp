@@ -3,9 +3,9 @@ package krasa.release.tokenization;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.tmatesoft.svn.core.SVNException;
@@ -17,14 +17,13 @@ public class Example {
 	public static final String SVN_REPO_URL = "http://svn/sdp";
 	// public static final String TEMP = "target/branchPrepare-" + System.currentTimeMillis() + "-";
 	public static final String TEMP = "target/branchPrepare";
-	public static final int VERSION = 9999;
 
-	protected static BranchTokenReplacementJobParameters loadFromJsonFake() {
+	protected static TokenizationJobParameters loadFromJsonFake() {
 		List<ReplacementDefinition> replacementDefinitions = new ArrayList<>();
 		addPom(replacementDefinitions);
 		addProperties(replacementDefinitions);
 
-		Map<String, String> stringStringHashMap = new HashMap<>();
+		Map<String, String> stringStringHashMap = new TreeMap<>();
 
 		stringStringHashMap.put("old.build.version", "9999");
 		stringStringHashMap.put("old.db.version", "9999");
@@ -33,17 +32,17 @@ public class Example {
 		stringStringHashMap.put("new.build.version", "14100");
 		stringStringHashMap.put("new.db.version", "14100");
 		stringStringHashMap.put("new.pom.version", "14.1.0");
-		BranchTokenReplacementJobParameters branchTokenReplacementJobParameters = new BranchTokenReplacementJobParameters(
-				replacementDefinitions, stringStringHashMap);
+		TokenizationJobParameters tokenizationJobParameters = new TokenizationJobParameters(replacementDefinitions,
+				stringStringHashMap);
 
-		String s1 = new Gson().toJson(branchTokenReplacementJobParameters);
+		String s1 = tokenizationJobParameters.toJson(tokenizationJobParameters);
 
 		return loadFromJson(s1);
 	}
 
-	protected static BranchTokenReplacementJobParameters loadFromJson(String s1) {
+	protected static TokenizationJobParameters loadFromJson(String s1) {
 		System.err.println(s1);
-		return new Gson().fromJson(s1, BranchTokenReplacementJobParameters.class);
+		return new Gson().fromJson(s1, TokenizationJobParameters.class);
 	}
 
 	private static void addProperties(List<ReplacementDefinition> replacementDefinitions) {
@@ -76,11 +75,11 @@ public class Example {
 	}
 
 	public static void main(String[] args) throws SVNException, IOException, MojoExecutionException {
-		BranchTokenReplacementJobParameters jobParameters = loadFromJsonFake();
+		TokenizationJobParameters jobParameters = loadFromJsonFake();
 
-		BranchesTokenReplacementJob branchesTokenReplacementJob = new BranchesTokenReplacementJob(jobParameters,
-				SVN_REPO_URL, new File(TEMP), String.valueOf(VERSION));
+		TokenizationJobCommand tokenizationJobCommand = new TokenizationJobCommand(jobParameters, SVN_REPO_URL,
+				new File(TEMP), ".*_9999");
 
-		branchesTokenReplacementJob.replace();
+		// tokenizationJobCommand.replace();
 	}
 }

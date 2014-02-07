@@ -12,6 +12,29 @@
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
+
+	<servlet>
+		<servlet-name>MyApplication</servlet-name>
+		<servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+
+		<init-param>
+			<param-name>jersey.config.server.provider.packages</param-name>
+			<param-value>
+				krasa.release
+			</param-value>
+		</init-param>
+		<init-param>
+			<param-name>jersey.config.server.provider.scanning.recursive</param-name>
+			<param-value>true</param-value>
+		</init-param>
+
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>MyApplication</servlet-name>
+		<url-pattern>/rest/*</url-pattern>
+	</servlet-mapping>
+
+
 	<!--
 		There are three means to configure Wickets configuration mode and they 
 		are tested in the order given.
@@ -66,4 +89,5 @@
 		<servlet-name>Atmospherefilter</servlet-name>
 		<url-pattern>/*</url-pattern>
 	</servlet-mapping>
+
 </web-app>

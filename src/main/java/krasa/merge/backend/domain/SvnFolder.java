@@ -27,6 +27,7 @@ import org.tmatesoft.svn.core.SVNDirEntry;
 public class SvnFolder extends AbstractEntity implements Displayable {
 
 	public static final Comparator<SvnFolder> NAME_COMPARATOR = new Comparator<SvnFolder>() {
+
 		@Override
 		public int compare(SvnFolder o1, SvnFolder o2) {
 			return o2.getName().compareTo(o1.getName());
@@ -179,7 +180,7 @@ public class SvnFolder extends AbstractEntity implements Displayable {
 		return getName();
 	}
 
-	public boolean nameEndsWith(final String suffix) {
-		return getName().endsWith(suffix);
+	public boolean nameMatches(final String regex) {
+		return getName().matches(regex);
 	}
 }

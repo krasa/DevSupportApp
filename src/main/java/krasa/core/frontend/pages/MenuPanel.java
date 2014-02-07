@@ -8,7 +8,7 @@ import krasa.merge.frontend.pages.config.ConfigurationPage;
 import krasa.merge.frontend.pages.config.ProfilesPage;
 import krasa.merge.frontend.pages.mergeinfo.MergeInfoPage;
 import krasa.merge.frontend.pages.report.ReportPage;
-import krasa.release.TokenizationPage;
+import krasa.release.frontend.TokenizationPage;
 
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.Panel;

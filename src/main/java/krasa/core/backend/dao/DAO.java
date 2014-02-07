@@ -16,6 +16,8 @@ public interface DAO<T extends AbstractEntity> {
 
 	T findLast();
 
+	List findLast(int count);
+
 	T save(T object);
 
 	void deleteAll();

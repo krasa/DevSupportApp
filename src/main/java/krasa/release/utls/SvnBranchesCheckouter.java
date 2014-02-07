@@ -1,4 +1,4 @@
-package krasa.release;
+package krasa.release.utls;
 
 import java.io.File;
 import java.util.List;
@@ -11,6 +11,7 @@ import krasa.merge.backend.svn.SvnFolderProviderImpl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tmatesoft.svn.core.SVNDepth;
 import org.tmatesoft.svn.core.SVNDirEntry;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNURL;
@@ -30,7 +31,8 @@ public class SvnBranchesCheckouter {
 		new SvnBranchesCheckouter().checkout(SVN, new File(TARGET + INT), String.valueOf(INT));
 	}
 
-	public void checkout(String svnUrl, final File baseDir, final String branchNameSuffix) throws SVNException {
+	public void checkout(String svnUrl, final File baseDir, final String branchNamePattern,
+			CheckoutCallback... checkoutCallback) throws SVNException {
 		SVNClientManager svnClientManager = SVNClientManager.newInstance();
 		SvnFolderProvider svnFolderProvider = new SvnFolderProviderImpl(new Repository(svnUrl));
 		List<SVNDirEntry> projects = svnFolderProvider.getProjects();
@@ -38,13 +40,19 @@ public class SvnBranchesCheckouter {
 			List<SvnFolder> projectContent = svnFolderProvider.getProjectContent(
 					new SvnFolder(project, project.getName(), Type.PROJECT), false);
 			for (SvnFolder svnFolder : projectContent) {
-				if (svnFolder.nameEndsWith(branchNameSuffix)) {
+				if (svnFolder.nameMatches(branchNamePattern)) {
 					String url = svnUrl + "/" + svnFolder.getPath();
 					String pathname = baseDir + "/" + svnFolder.getName();
 					File destPath = new File(pathname);
 					if (!destPath.exists()) {
 						log.info("checking out: " + url + " into " + pathname);
 						checkoutSingleFolder(svnClientManager, url, destPath);
+						for (CheckoutCallback callback : checkoutCallback) {
+							callback.checkouted(url, destPath);
+						}
+					} else {
+						svnClientManager.getUpdateClient().doUpdate(destPath, SVNRevision.HEAD, SVNDepth.INFINITY,
+								false, false);
 					}
 				}
 			}
@@ -52,18 +60,16 @@ public class SvnBranchesCheckouter {
 	}
 
 	public void checkoutSingleFolder(SVNClientManager svnClientManager, String url, File destPath) throws SVNException {
-
 		SVNUpdateClient updateClient = svnClientManager.getUpdateClient();
-		/*
-		 * sets externals not to be ignored during the checkout
-		 */
 		updateClient.setIgnoreExternals(false);
-		/*
-		 * returns the number of the revision at which the working copy is
-		 */
 		log.info("checkouting: {} into {}", url, destPath.getAbsolutePath());
-		updateClient.doCheckout(SVNURL.parseURIEncoded(url), destPath, SVNRevision.HEAD, SVNRevision.HEAD, true);
+		updateClient.doCheckout(SVNURL.parseURIEncoded(url), destPath, SVNRevision.HEAD, SVNRevision.HEAD,
+				SVNDepth.INFINITY, true);
 		log.info("Branch checkouted: {}", destPath.getAbsolutePath());
 	}
 
+	public abstract class CheckoutCallback {
+
+		public abstract void checkouted(String url, File destPath);
+	}
 }

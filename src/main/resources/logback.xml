@@ -14,6 +14,11 @@
 				<layout class="ch.qos.logback.classic.PatternLayout">
 					<pattern>%d{HH:mm:ss} %5p %c{1} [%t]: - %m%n</pattern>
 				</layout>
+				<filter class="ch.qos.logback.classic.filter.LevelFilter">
+					<level>DEBUG</level>
+					<onMatch>DENY</onMatch>
+					<onMismatch>ACCEPT</onMismatch>
+				</filter>
 			</appender>
 		</sift>
 	</appender>

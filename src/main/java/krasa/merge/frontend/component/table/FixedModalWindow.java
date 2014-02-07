@@ -6,11 +6,11 @@ import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 /**
  * @author Vojtech Krasa
  */
-public class DiffModalWindow extends ModalWindow {
+public class FixedModalWindow extends ModalWindow {
 
 	private static final long serialVersionUID = 1L;
 
-	public DiffModalWindow(String id) {
+	public FixedModalWindow(String id) {
 		super(id);
 		setInitialWidth(1000);
 		setInitialHeight(1000);
