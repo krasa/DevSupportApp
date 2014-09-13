@@ -1,19 +1,15 @@
 package krasa.merge.backend.service;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
-import krasa.core.backend.dao.GenericDAO;
-import krasa.core.backend.dao.GenericDaoBuilder;
+import krasa.core.backend.config.MainConfig;
+import krasa.core.backend.dao.*;
 import krasa.core.backend.service.GlobalSettingsProvider;
 import krasa.merge.backend.SvnException;
 import krasa.merge.backend.dao.SvnFolderDAO;
-import krasa.merge.backend.domain.Repository;
-import krasa.merge.backend.domain.SvnFolder;
+import krasa.merge.backend.domain.*;
 import krasa.merge.backend.service.conventions.ConventionsStrategyHolder;
-import krasa.merge.backend.svn.SvnFolderProvider;
-import krasa.merge.backend.svn.SvnFolderProviderImpl;
+import krasa.merge.backend.svn.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -24,7 +20,7 @@ import org.tmatesoft.svn.core.SVNDirEntry;
  * @author Vojtech Krasa
  */
 @Component
-@Transactional
+@Transactional(value = MainConfig.HSQLDB_TX_MANAGER)
 public class SvnFolderRefreshService {
 
 	@Autowired
@@ -117,8 +113,7 @@ public class SvnFolderRefreshService {
 	}
 
 	private void postProcessAfterRefresh(SvnFolder project) {
-		List<SvnFolder> svnFolders = ConventionsStrategyHolder.getStrategy().postProcessAllBranches(
-				project.getChildsAsMapByName());
+		ConventionsStrategyHolder.getStrategy().postProcessAllBranches(project.getChildsAsMapByName());
 		svnFolderDAO.save(project);
 	}
 

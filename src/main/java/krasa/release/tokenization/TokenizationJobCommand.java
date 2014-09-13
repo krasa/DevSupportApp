@@ -1,51 +1,49 @@
 package krasa.release.tokenization;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
+import java.io.*;
 
+import krasa.core.backend.LogNamePrefixes;
 import krasa.core.backend.utils.MdcUtils;
-import krasa.merge.backend.service.automerge.CommitCommand;
-import krasa.merge.backend.service.automerge.DiffCommand;
+import krasa.merge.backend.service.automerge.*;
 import krasa.release.utls.SvnBranchesCheckouter;
 
-import org.apache.commons.io.Charsets;
-import org.apache.commons.io.filefilter.DirectoryFileFilter;
-import org.apache.commons.io.filefilter.FileFilterUtils;
-import org.apache.commons.lang.text.StrSubstitutor;
+import org.apache.commons.io.filefilter.*;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.tmatesoft.svn.core.SVNCancelException;
-import org.tmatesoft.svn.core.SVNException;
-import org.tmatesoft.svn.core.wc.ISVNEventHandler;
-import org.tmatesoft.svn.core.wc.SVNClientManager;
-import org.tmatesoft.svn.core.wc.SVNEvent;
-import org.tmatesoft.svn.core.wc.SVNStatusType;
-
-import com.google.code.maven_replacer_plugin.Replacement;
-import com.google.code.maven_replacer_plugin.ReplacerMojo;
-import com.google.code.maven_replacer_plugin.file.FileUtils;
+import org.slf4j.*;
+import org.tmatesoft.svn.core.*;
+import org.tmatesoft.svn.core.wc.*;
 
 public class TokenizationJobCommand {
 
 	protected static final Logger log = LoggerFactory.getLogger(TokenizationJobCommand.class);
 	protected final File tempDir;
-	private final FileUtils fileUtils = new FileUtils();
+	private Integer id;
 	private final TokenizationJobParameters tokenizationJobParameters;
 	protected String branchNamePattern;
 	private String svnRepoUrl;
+	private boolean commit = false;
 
-	public TokenizationJobCommand(TokenizationJobParameters tokenizationJobParameters, String svnRepoUrl, File tempDir,
-			final String branchNamePattern) {
+	public TokenizationJobCommand(Integer id, TokenizationJobParameters tokenizationJobParameters, String svnRepoUrl,
+			File tempDir, final String branchNamePattern) {
+		this.id = id;
 		this.tokenizationJobParameters = tokenizationJobParameters;
 		this.svnRepoUrl = svnRepoUrl;
 		this.branchNamePattern = branchNamePattern;
 		this.tempDir = tempDir;
 	}
 
+	public void setCommit(boolean commit) {
+		this.commit = commit;
+	}
+
 	public void run() {
+		if (tempDir.exists()) {
+			throw new IllegalStateException("temp dir already used");
+		} else {
+			tempDir.mkdirs();
+		}
 		MdcUtils.putLogName(getLogName());
+		log.info("Runnning");
 		try {
 			checkout();
 			replace();
@@ -60,12 +58,20 @@ public class TokenizationJobCommand {
 		}
 	}
 
+	protected void replace() throws MojoExecutionException {
+		new ReplacementCommand().replace(tokenizationJobParameters.getReplacementDefinitions(),
+				tokenizationJobParameters.getPlaceholderReplace(), tempDir);
+	}
+
 	protected void diff() throws SVNException {
-		diff(getSvnClientManager(), tempDir);
+		File[] list = FileFilterUtils.filter(DirectoryFileFilter.DIRECTORY, tempDir.listFiles());
+		for (File workingCopy : list) {
+			new DiffCommand().diff(getSvnClientManager(), workingCopy);
+		}
 	}
 
 	public String getLogName() {
-		return "branchTokenizer_" + tempDir.getName();
+		return LogNamePrefixes.BRANCH_TOKENIZER + id;
 	}
 
 	private void checkout() throws SVNException {
@@ -85,57 +91,17 @@ public class TokenizationJobCommand {
 	}
 
 	private void commit() throws IOException, SVNException {
-		log.info("Commiting");
-		commit(getSvnClientManager(), tempDir);
-	}
-
-	protected void replace() throws MojoExecutionException {
-		for (ReplacementDefinition replacementDefinition : tokenizationJobParameters.getReplacementDefinitions()) {
-			StringBuilder sb = new StringBuilder();
-			sb.append("Includes:[\n");
-			for (int i = 0; i < replacementDefinition.getIncludes().size(); i++) {
-				String include = replacementDefinition.getIncludes().get(i);
-				sb.append("\t").append(include);
-				if (i != replacementDefinition.getIncludes().size() - 1) {
-					sb.append(", \n");
-				}
-			}
-			sb.append("\n]");
-			log.info(sb.toString());
-
-			ReplacerMojo replacerMojo = new ReplacerMojo();
-			replacerMojo.setLog(new ReplacerLog());
-			replacerMojo.setBasedir(tempDir.getAbsolutePath());
-			replacerMojo.getIncludes().addAll(replacementDefinition.getIncludes());
-			replacerMojo.setReplacements(getReplacements(replacementDefinition));
-			log.info("Executing replace");
-			replacerMojo.execute();
-		}
-	}
-
-	private ArrayList<Replacement> getReplacements(ReplacementDefinition replacementDefinition) {
-		ArrayList<Replacement> replacements = new ArrayList<>();
-		for (krasa.release.tokenization.Replacement replacement : replacementDefinition.getReplacements()) {
-			replacements.add(new Replacement(fileUtils, replacePlaceholders(replacement.getToken()),
-					replacePlaceholders(replacement.getValue()), false, null, Charsets.UTF_8.name()));
-		}
-		StringBuilder sb = new StringBuilder();
-		sb.append("Replacements:[\n");
-		for (int i = 0; i < replacements.size(); i++) {
-			Replacement replacement = replacements.get(i);
-			sb.append("\t").append(replacement.getToken()).append(" -> ").append(replacement.getValue());
-			if (i != replacements.size() - 1) {
-				sb.append(", \n ");
+		String commitMessage = "##config version";
+		File[] list = FileFilterUtils.filter(DirectoryFileFilter.DIRECTORY, tempDir.listFiles());
+		log.info("Commiting {} directories", list.length);
+		for (File workingCopy : list) {
+			if (commit) {
+				new CommitCommand().commit(getSvnClientManager(), workingCopy, commitMessage);
+				log.info("Commited {}", workingCopy.getName());
+			} else {
+				log.info("Commiting disabled, skipping {}", workingCopy.getName());
 			}
 		}
-		sb.append("\n]");
-		log.info(sb.toString());
-
-		return replacements;
-	}
-
-	private String replacePlaceholders(String value) {
-		return StrSubstitutor.replace(value, tokenizationJobParameters.getPlaceholderReplace());
 	}
 
 	private SVNClientManager getSvnClientManager() {
@@ -145,9 +111,7 @@ public class TokenizationJobCommand {
 			@Override
 			public void handleEvent(SVNEvent event, double progress) throws SVNException {
 				SVNStatusType contentsStatus = event.getContentsStatus();
-				event.getPropertiesStatus();
-				contentsStatus.getID();
-				if (SVNStatusType.CONFLICTED.getID() == contentsStatus.getID()) {
+				if (contentsStatus != null && SVNStatusType.CONFLICTED.getID() == contentsStatus.getID()) {
 					throw new RuntimeException("CONFLICT");
 				}
 				log.info(event.toString());
@@ -159,21 +123,6 @@ public class TokenizationJobCommand {
 			}
 		});
 		return svnClientManager;
-	}
-
-	private void diff(SVNClientManager svnClientManager, File baseDir) throws SVNException {
-		File[] list = FileFilterUtils.filter(DirectoryFileFilter.DIRECTORY, baseDir.listFiles());
-		for (File s : list) {
-			new DiffCommand().diff(svnClientManager, s);
-		}
-	}
-
-	private void commit(SVNClientManager svnClientManager, File baseDir) throws SVNException {
-		String commitMessage = "##config version";
-		File[] list = FileFilterUtils.filter(DirectoryFileFilter.DIRECTORY, baseDir.listFiles());
-		for (File s : list) {
-			new CommitCommand().commit(svnClientManager, s, commitMessage);
-		}
 	}
 
 }

@@ -9,8 +9,7 @@ import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.LoadableDetachableModel;
+import org.apache.wicket.model.*;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.tmatesoft.svn.core.SVNLogEntry;
 
@@ -23,12 +22,12 @@ public class DiffPanel extends BasePanel {
 	protected MergeService mergeService;
 	private ModalWindow modal;
 
-	public DiffPanel(String markupId, ModalWindow modal1, final IModel<SVNLogEntry> revision,
-			final IModel<MergeInfoResultItem> model) {
+	public DiffPanel(String markupId, ModalWindow modal1, final MergeInfoResultItem mergeInfoResultItem,
+			final SVNLogEntry revisionObject) {
 		super(markupId);
 		modal = modal1;
 
-		final Label diff = new Label("diff", getDiffModel(revision, model));
+		final Label diff = new Label("diff", getDiffModel(mergeInfoResultItem, revisionObject));
 		diff.setOutputMarkupPlaceholderTag(true);
 		add(diff);
 		Form form = new Form("form");
@@ -37,8 +36,8 @@ public class DiffPanel extends BasePanel {
 
 			@Override
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-				mergeService.merge(model.getObject(), revision.getObject());
-				onMerged(revision, target);
+				mergeService.merge(mergeInfoResultItem, revisionObject);
+				onMerged(revisionObject, target);
 				modal.close(target);
 			}
 		});
@@ -46,8 +45,8 @@ public class DiffPanel extends BasePanel {
 
 			@Override
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-				mergeService.mergeSvnMergeInfoOnly(model.getObject(), revision.getObject());
-				onMerged(revision, target);
+				mergeService.mergeSvnMergeInfoOnly(mergeInfoResultItem, revisionObject);
+				onMerged(revisionObject, target);
 				modal.close(target);
 			}
 		});
@@ -60,18 +59,18 @@ public class DiffPanel extends BasePanel {
 		});
 	}
 
-	protected IModel<String> getDiffModel(final IModel<SVNLogEntry> revision, final IModel<MergeInfoResultItem> model) {
+	protected IModel<String> getDiffModel(final MergeInfoResultItem mergeInfoResultItem, final SVNLogEntry svnLogEntry) {
 		IModel<String> diff = new LoadableDetachableModel<String>() {
 
 			@Override
 			protected String load() {
-				return mergeService.getDiff(model.getObject(), revision.getObject());
+				return mergeService.getDiff(mergeInfoResultItem, svnLogEntry);
 			}
 		};
 		return diff;
 	}
 
-	protected void onMerged(IModel<SVNLogEntry> revision, AjaxRequestTarget target) {
+	protected void onMerged(SVNLogEntry revision, AjaxRequestTarget target) {
 
 	}
 

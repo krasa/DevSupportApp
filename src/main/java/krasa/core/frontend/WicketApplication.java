@@ -1,20 +1,24 @@
 package krasa.core.frontend;
 
-import krasa.build.frontend.pages.BuildPage;
-import krasa.build.frontend.pages.LogPage;
+import java.io.File;
+
+import krasa.build.frontend.pages.*;
+import krasa.intellij.IntelliJEnterprisePluginRepositoryPage;
 import krasa.merge.frontend.pages.mergeinfo.MergeInfoPage;
 
-import org.apache.wicket.Component;
-import org.apache.wicket.Session;
+import org.apache.wicket.*;
 import org.apache.wicket.application.IComponentInstantiationListener;
-import org.apache.wicket.atmosphere.EventBus;
+import org.apache.wicket.core.util.file.WebApplicationPath;
 import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.FormComponent;
+import org.apache.wicket.markup.html.form.*;
+import org.apache.wicket.markup.resolver.IComponentResolver;
 import org.apache.wicket.protocol.http.WebApplication;
-import org.apache.wicket.request.Request;
-import org.apache.wicket.request.Response;
+import org.apache.wicket.request.*;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.request.resource.*;
 import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
+import org.apache.wicket.util.file.Folder;
+import org.apache.wicket.util.resource.FileResourceStream;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -27,9 +31,13 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 public class WicketApplication extends WebApplication {
 
-	private EventBus eventBus;
-
+	public static final String INTELLIJ_PLUGIN_REPO_RESOURCES = "intellijPluginRepoResources";
+	private Folder uploadFolder = null;
 	private BeanFactory beanFactory;
+
+	public static WicketApplication getWicketApplication() {
+		return ((WicketApplication) get());
+	}
 
 	/**
 	 * @see org.apache.wicket.Application#getHomePage()
@@ -45,16 +53,29 @@ public class WicketApplication extends WebApplication {
 	@Override
 	public void init() {
 		super.init();
+
+		uploadFolder = new Folder("intellijPluginRepo"); // Ensure folder exists
+		uploadFolder.mkdirs();
+
+		getApplicationSettings().setUploadProgressUpdatesEnabled(true);
 		getComponentInstantiationListeners().add(new SpringComponentInjector(this));
 		mountPage("build", BuildPage.class);
 		mountPage("buildLog", LogPage.class);
+		mountPage("IntelliJPluginRepository", IntelliJEnterprisePluginRepositoryPage.class);
+		getSharedResources().add("intellijPluginRepoResources",
+				new FolderContentResource(uploadFolder.getAbsoluteFile()));
+		mountResource("intellijPlugin", new SharedResourceReference(WicketApplication.INTELLIJ_PLUGIN_REPO_RESOURCES));
+
+		getResourceSettings().getResourceFinders().add(
+				new WebApplicationPath(getServletContext(), "intellijPluginRepoResources"));
 
 		// add your configuration here
-		eventBus = new EventBus(this);
 		getComponentInstantiationListeners().add(new IComponentInstantiationListener() {
 
 			public void onInstantiation(Component component) {
-				if (component instanceof Form)
+				if (component instanceof IComponentResolver) {
+					return;
+				} else if (component instanceof Form)
 					component.setOutputMarkupId(true);
 				else if (component instanceof FormComponent)
 					component.setOutputMarkupId(true);
@@ -63,6 +84,27 @@ public class WicketApplication extends WebApplication {
 				component.setOutputMarkupId(true);
 			}
 		});
+	}
+
+	static class FolderContentResource implements IResource {
+
+		private final File rootFolder;
+
+		public FolderContentResource(File rootFolder) {
+			this.rootFolder = rootFolder;
+		}
+
+		public void respond(Attributes attributes) {
+			PageParameters parameters = attributes.getParameters();
+			String fileName = parameters.get(0).toString();
+			if (fileName == null) {
+				throw new IllegalArgumentException("no file name");
+			}
+			File file = new File(rootFolder, fileName);
+			FileResourceStream fileResourceStream = new FileResourceStream(file);
+			ResourceStreamResource resource = new ResourceStreamResource(fileResourceStream);
+			resource.respond(attributes);
+		}
 	}
 
 	public ApplicationContext getSpringContext() {
@@ -74,7 +116,8 @@ public class WicketApplication extends WebApplication {
 		return (Session) getSpringContext().getBean("MySession", request);
 	}
 
-	public EventBus getEventBus() {
-		return eventBus;
+	public Folder getUploadFolder() {
+		return uploadFolder;
 	}
+
 }

@@ -19,6 +19,9 @@
 					<onMatch>DENY</onMatch>
 					<onMismatch>ACCEPT</onMismatch>
 				</filter>
+				<triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+					<maxFileSize>15MB</maxFileSize>
+				</triggeringPolicy>
 			</appender>
 		</sift>
 	</appender>
@@ -29,11 +32,14 @@
 				<Pattern>%d{HH:mm:ss} %5p %c{1} [%t]: - %m%n</Pattern>
 			</layout>
 		</encoder>
+		<triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+			<maxFileSize>5MB</maxFileSize>
+		</triggeringPolicy>
 	</appender>
 
 	<root level="info">
+		<appender-ref ref="STDOUT"/>
 		<appender-ref ref="${APPENDER}"/>
-		<appender-ref ref="${APPENDER2}"/>
 	</root>
 
 	<logger name="krasa" level="debug"/>

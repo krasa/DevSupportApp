@@ -1,19 +1,14 @@
 package krasa.build.backend.execution.adapter;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.Nullable;
 
-import krasa.build.backend.domain.BuildJob;
-import krasa.build.backend.domain.BuildableComponent;
+import krasa.build.backend.domain.*;
 import krasa.build.backend.exception.ProcessAlreadyRunning;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.*;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.EvictingQueue;

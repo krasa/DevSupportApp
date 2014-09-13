@@ -1,42 +1,42 @@
 package krasa.merge.backend.service.automerge;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
+import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
+
+import krasa.merge.backend.service.automerge.domain.MergeJob;
+
+import org.slf4j.*;
+import org.springframework.stereotype.Component;
 
 @Component
 public class AutoMergeQueue {
 
 	protected final Logger log = LoggerFactory.getLogger(getClass());
 
-	Queue<AutoMergeJob> queue = new ConcurrentLinkedQueue<>();
+	Queue<MergeJob> queue = new ConcurrentLinkedQueue<>();
 
 	@Nullable
-	public AutoMergeJob getAndRemove(AutoMergeJob request) {
-		List<AutoMergeJob> autoMergeJobs = new ArrayList<>();
-		for (AutoMergeJob autoMergeJob : queue) {
-			if (request.isSameDestination(autoMergeJob)) {
-				autoMergeJobs.add(autoMergeJob);
+	public MergeJob getAndRemove(MergeJob request) {
+		List<MergeJob> mergeJobs = new ArrayList<>();
+		for (MergeJob mergeJob : queue) {
+			if (request.isSameDestination(mergeJob)) {
+				mergeJobs.add(mergeJob);
 			}
 		}
-		AutoMergeJob.sort(autoMergeJobs);
-		final AutoMergeJob autoMergeJob;
-		if (autoMergeJobs.isEmpty()) {
-			autoMergeJob = null;
+		MergeJob.sort(mergeJobs);
+		final MergeJob mergeJob;
+		if (mergeJobs.isEmpty()) {
+			mergeJob = null;
 		} else {
-			autoMergeJob = autoMergeJobs.get(0);
-			queue.remove(autoMergeJob);
+			mergeJob = mergeJobs.get(0);
+			queue.remove(mergeJob);
 		}
-		return autoMergeJob;
+		return mergeJob;
 	}
 
-	public void put(AutoMergeJob job) {
+	public void put(MergeJob job) {
 		queue.add(job);
 	}
 

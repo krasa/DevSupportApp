@@ -1,21 +1,15 @@
 package krasa.merge.backend.service.conventions;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import krasa.merge.backend.domain.SvnFolder;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.*;
 import org.springframework.stereotype.Service;
 
 @Service(TMSvnConventionsStrategy.TMSVN_CONVENTIONS_STRATEGY)
 public class TMSvnConventionsStrategy extends SvnConventionsStrategy {
+
 	protected static final Logger log = LoggerFactory.getLogger(TMSvnConventionsStrategy.class);
 
 	public static final Comparator<String> TM_NAME_COMPARATOR_BY_VERSION_STRING = new Comparator<String>() {
@@ -27,6 +21,7 @@ public class TMSvnConventionsStrategy extends SvnConventionsStrategy {
 	};
 
 	public static final Comparator<SvnFolder> TM_NAME_COMPARATOR_BY_VERSION = new Comparator<SvnFolder>() {
+
 		@Override
 		public int compare(SvnFolder o1, SvnFolder o2) {
 			return getVersion(o1).compareTo(getVersion(o2.getName()));
@@ -115,31 +110,37 @@ public class TMSvnConventionsStrategy extends SvnConventionsStrategy {
 	}
 
 	@Override
-	public List<SvnFolder> postProcessAllBranches(Map<String, SvnFolder> childs) {
-		Set<Integer> versionsSet = new HashSet<>();
-		Set<String> strings = childs.keySet();
-		for (String string : strings) {
-			versionsSet.add(getVersion(string));
-		}
-		List<Integer> versions = new ArrayList<>(versionsSet);
-		Collections.sort(versions);
+	public void postProcessAllBranches(Map<String, SvnFolder> childs) {
+		SearchFromDTO searchFromDTO = new SearchFromDTO(childs).invoke();
+		Set<Integer> versionsSet = searchFromDTO.getVersionsSet();
+		List<Integer> versions = searchFromDTO.getVersions();
 
-		ArrayList<SvnFolder> svnFolders = new ArrayList<>();
 		for (SvnFolder child : childs.values()) {
 			if (child.getSearchFrom() == null) {
-				int searchFromVersion = getSearchFromVersion(child);
-
-				if (isTrunk(child)) {
-					Integer highestVersion = versions.get(versions.size() - 1);
-					child.setSearchFrom(getNameWithoutVersion(child) + highestVersion);
-					svnFolders.add(child);
-				} else if (versionsSet.contains(searchFromVersion)) {
-					child.setSearchFrom(getNameWithoutVersion(child) + searchFromVersion);
-					svnFolders.add(child);
-				}
+				setSearchFrom(versionsSet, versions, child);
 			}
 		}
-		return svnFolders;
+	}
+
+	@Override
+	public void replaceSearchFrom(SvnFolder selectedBranch) {
+		SvnFolder parent = selectedBranch.getParent();
+		Map<String, SvnFolder> childs = parent.getChildsAsMapByName();
+		SearchFromDTO searchFromDTO = new SearchFromDTO(childs).invoke();
+		Set<Integer> versionsSet = searchFromDTO.getVersionsSet();
+		List<Integer> versions = searchFromDTO.getVersions();
+		setSearchFrom(versionsSet, versions, selectedBranch);
+	}
+
+	protected void setSearchFrom(Set<Integer> versionsSet, List<Integer> versions, SvnFolder child) {
+		int searchFromVersion = getSearchFromVersion(child);
+
+		if (isTrunk(child)) {
+			Integer highestVersion = versions.get(versions.size() - 1);
+			child.setSearchFrom(getNameWithoutVersion(child) + highestVersion);
+		} else if (versionsSet.contains(searchFromVersion)) {
+			child.setSearchFrom(getNameWithoutVersion(child) + searchFromVersion);
+		}
 	}
 
 	private int getSearchFromVersion(SvnFolder child) {
@@ -159,5 +160,37 @@ public class TMSvnConventionsStrategy extends SvnConventionsStrategy {
 
 	private boolean isTrunk(String name) {
 		return getVersion(name) == 9999;
+	}
+
+	private class SearchFromDTO {
+		private Map<String, SvnFolder> childs;
+		private Set<Integer> versionsSet;
+		private List<Integer> versions;
+
+		public SearchFromDTO(Map<String, SvnFolder> childs) {
+			this.childs = childs;
+		}
+
+		public Set<Integer> getVersionsSet() {
+			return versionsSet;
+		}
+
+		public List<Integer> getVersions() {
+			return versions;
+		}
+
+		public SearchFromDTO invoke() {
+			versionsSet = new HashSet<>();
+			Set<String> strings = childs.keySet();
+			for (String string : strings) {
+				Integer version = getVersion(string);
+				if (version < 90000 && version % 100 == 0) {
+					versionsSet.add(version);
+				}
+			}
+			versions = new ArrayList<>(versionsSet);
+			Collections.sort(versions);
+			return this;
+		}
 	}
 }

@@ -1,18 +1,15 @@
 package krasa.release.tokenization;
 
-import static org.apache.commons.lang3.StringUtils.*;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 import krasa.core.backend.domain.AbstractEntity;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import org.apache.commons.lang3.builder.*;
+
+import com.google.gson.*;
 
 public class TokenizationJobParameters extends AbstractEntity {
+
 	private Map<String, String> placeholderReplace = new TreeMap<>();
 	private List<ReplacementDefinition> replacementDefinitions = new ArrayList<>();
 
@@ -23,26 +20,6 @@ public class TokenizationJobParameters extends AbstractEntity {
 			Map<String, String> placeholderReplace) {
 		this.replacementDefinitions = replacementDefinitions;
 		this.placeholderReplace = placeholderReplace;
-	}
-
-	protected static String toPomVersion(String fromVersion) {
-		StringBuilder sb = new StringBuilder();
-		sb.append(substring(fromVersion, 0, 2));
-		sb.append(".");
-		sb.append(substring(fromVersion, 2, 3));
-		sb.append(".");
-		sb.append(substring(fromVersion, 3, 4));
-
-		String substring = substring(fromVersion, 4, 5);
-		if (substring.length() > 0 && !substring.equals("0")) {
-			sb.append(".");
-			sb.append(substring);
-		}
-
-		if ("9999".equals(fromVersion)) {
-			sb.append("-SNAPSHOT");
-		}
-		return sb.toString();
 	}
 
 	public static String toJson(TokenizationJobParameters tokenizationJobParameters) {
@@ -73,17 +50,18 @@ public class TokenizationJobParameters extends AbstractEntity {
 		this.placeholderReplace = placeholderReplace;
 	}
 
-	public void generatePlaceholdersReplacements(Integer fromVersion, Integer toVersion) {
-		String fromVersionString = String.valueOf(fromVersion);
-		String toVersionString = String.valueOf(toVersion);
-
-		placeholderReplace.put("old.build.version", fromVersionString);
-		placeholderReplace.put("old.db.version", fromVersionString);
-		placeholderReplace.put("old.pom.version", toPomVersion(fromVersionString));
-
-		placeholderReplace.put("new.build.version", toVersionString);
-		placeholderReplace.put("new.db.version", toVersionString);
-		placeholderReplace.put("new.pom.version", toPomVersion(toVersionString));
+	@Override
+	public boolean equals(Object obj) {
+		return EqualsBuilder.reflectionEquals(this, obj);
 	}
 
+	@Override
+	public String toString() {
+		return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+	}
+
+	@Override
+	public int hashCode() {
+		return HashCodeBuilder.reflectionHashCode(this);
+	}
 }

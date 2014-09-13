@@ -1,13 +1,9 @@
 package krasa.build.backend.execution;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
-import krasa.build.backend.domain.BuildJob;
-import krasa.build.backend.domain.BuildableComponent;
-import krasa.build.backend.execution.process.AbstractProcess;
-import krasa.build.backend.execution.process.ProcessLog;
-import krasa.build.backend.execution.process.SshjBuildProcess;
+import krasa.build.backend.domain.*;
+import krasa.build.backend.execution.process.*;
 import krasa.build.backend.execution.strategy.BuildCommandBuilderStrategy;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,13 +19,16 @@ public class ProcessBuilder {
 	@Autowired
 	BuildCommandBuilderStrategy buildCommandBuilderStrategy;
 
-	public BuildJob create(BuildableComponent buildableComponent) {
+	public BuildJob create(BuildableComponent buildableComponent, String author) {
 		ProcessLog stringBufferTail = new ProcessLog();
 		List<String> command = buildableComponent.buildCommand(buildCommandBuilderStrategy);
 
-		AbstractProcess process = getBuildProcess(stringBufferTail, command);
-		BuildJob buildJob = new BuildJob(process, buildableComponent);
+		BuildJob buildJob = new BuildJob(buildableComponent);
 		buildJob.setCommand(Arrays.toString(command.toArray()));
+		buildJob.setCaller(author);
+
+		AbstractProcess process = getBuildProcess(stringBufferTail, command, buildJob);
+		buildJob.setProcess(process);
 
 		process.addListener(buildJob);
 
@@ -38,9 +37,9 @@ public class ProcessBuilder {
 		return buildJob;
 	}
 
-	protected AbstractProcess getBuildProcess(ProcessLog stringBufferTail, List<String> command) {
+	protected AbstractProcess getBuildProcess(ProcessLog stringBufferTail, List<String> command, BuildJob buildJob) {
 		// return new JschSshBuildProcess(stringBufferTail, command);
-		return new SshjBuildProcess(stringBufferTail, command);
+		return new SshjBuildProcess(stringBufferTail, command, buildJob);
 	}
 
 }

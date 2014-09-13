@@ -4,6 +4,7 @@ import krasa.core.frontend.Ajax;
 import krasa.core.frontend.commons.MyFeedbackPanel;
 import krasa.core.frontend.components.BasePanel;
 import krasa.merge.backend.facade.Facade;
+import krasa.merge.frontend.pages.config.ConfigurationPage;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
@@ -94,6 +95,8 @@ public abstract class AddBranchFormPanel extends BasePanel {
 		};
 		deleteAll.setDefaultFormProcessing(false);
 		form.add(deleteAll);
+		form.add(new ReplaceSearchFromButton());
+		form.add(new ConfigurationPage.RefreshBranchesButton(form));
 		return form;
 	}
 
@@ -110,6 +113,27 @@ public abstract class AddBranchFormPanel extends BasePanel {
 	}
 
 	protected void onUpdate(AjaxRequestTarget target) {
+	}
+
+	private class ReplaceSearchFromButton extends AjaxButton {
+
+		public ReplaceSearchFromButton() {
+			super("replaceSearchFrom");
+			setDefaultFormProcessing(false);
+		}
+
+		@Override
+		protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+			facade.replaceSearchFrom();
+			onUpdate(target);
+			autocomplete.resetFieldValue(target);
+		}
+
+		@Override
+		protected void onError(AjaxRequestTarget target, Form<?> form) {
+			super.onError(target, form);
+			target.add(feedback);
+		}
 	}
 
 	;

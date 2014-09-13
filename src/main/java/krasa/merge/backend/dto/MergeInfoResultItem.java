@@ -3,8 +3,7 @@ package krasa.merge.backend.dto;
 import java.io.Serializable;
 import java.util.List;
 
-import krasa.merge.backend.domain.Repository;
-import krasa.merge.backend.domain.SvnFolder;
+import krasa.merge.backend.domain.*;
 
 import org.tmatesoft.svn.core.SVNLogEntry;
 
@@ -27,6 +26,15 @@ public class MergeInfoResultItem implements Serializable {
 		this.merges = merges;
 		fromPath = from.getPath();
 		toPath = to.getPath();
+	}
+
+	public MergeInfoResultItem(MergeInfoResultItem from) {
+		this.repository = from.repository;
+		this.from = from.from;
+		this.to = from.to;
+		this.merges = from.merges;
+		this.fromPath = from.fromPath;
+		this.toPath = from.toPath;
 	}
 
 	public MergeInfoResultItem(SvnFolder to, SvnFolder from, Repository repository, String commonFolder,

@@ -1,25 +1,24 @@
 package krasa.release.domain;
 
-import java.io.File;
-import java.io.Serializable;
+import java.io.*;
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Transient;
+import javax.persistence.*;
 
 import krasa.build.backend.domain.Status;
+import krasa.core.backend.LogNamePrefixes;
 import krasa.core.backend.domain.AbstractEntity;
-import krasa.release.tokenization.TokenizationJobCommand;
-import krasa.release.tokenization.TokenizationJobParameters;
+import krasa.release.tokenization.*;
+
+import org.springframework.util.Assert;
 
 @Entity
 public class TokenizationJob extends AbstractEntity implements Serializable {
+
+	public static final int LENGTH = 5000;
 	@Transient
 	private TokenizationJobParameters jobParameters;
-	@Column(length = 1000)
+	@Column(length = LENGTH)
 	private String jobParametersAsString;
 	@Column
 	private String svnUrl;
@@ -31,25 +30,26 @@ public class TokenizationJob extends AbstractEntity implements Serializable {
 	@Column
 	private String branchNamePattern;
 	@Column
-	private String fromVersion;
-	@Column
-	private String toVersion;
-	@Column
 	private Date start;
 	@Column
 	private Date end;
+	@Column
+	private String caller;
 
 	public TokenizationJob() {
 	}
 
 	public TokenizationJob(TokenizationJobParameters jobParameters, String svnUrl, String branchNamePattern,
-			Integer fromVersion, Integer toVersion) {
+			String caller) {
 		this.jobParameters = jobParameters;
-		this.fromVersion = String.valueOf(fromVersion);
-		this.toVersion = String.valueOf(toVersion);
 		jobParametersAsString = TokenizationJobParameters.toUglyJson(jobParameters);
+		if (jobParametersAsString.length() > LENGTH) {
+			throw new IllegalStateException("json is too long " + jobParametersAsString.length());
+		}
 		this.svnUrl = svnUrl;
 		this.branchNamePattern = branchNamePattern;
+		start = new Date();
+		this.caller = caller;
 	}
 
 	public TokenizationJobParameters getJobParameters() {
@@ -77,22 +77,6 @@ public class TokenizationJob extends AbstractEntity implements Serializable {
 
 	public String getSvnUrl() {
 		return svnUrl;
-	}
-
-	public String getFromVersion() {
-		return fromVersion;
-	}
-
-	public void setFromVersion(String fromVersion) {
-		this.fromVersion = fromVersion;
-	}
-
-	public String getToVersion() {
-		return toVersion;
-	}
-
-	public void setToVersion(String toVersion) {
-		this.toVersion = toVersion;
 	}
 
 	public Date getStart() {
@@ -135,18 +119,24 @@ public class TokenizationJob extends AbstractEntity implements Serializable {
 		this.logName = logName;
 	}
 
-	public TokenizationJobCommand prepareCommand(File file) {
-		return new TokenizationJobCommand(jobParameters, svnUrl, getUniqueTempDir(file), branchNamePattern);
+	public TokenizationJobCommand prepareCommand(File tempDir, boolean commit) {
+		Assert.notNull(jobParameters);
+		Assert.notNull(svnUrl);
+		Assert.notNull(getId());
+		Assert.notNull(branchNamePattern);
+		TokenizationJobCommand tokenizationJobCommand = new TokenizationJobCommand(getId(), jobParameters, svnUrl,
+				getUniqueTempDir(tempDir), branchNamePattern);
+		tokenizationJobCommand.setCommit(commit);
+		return tokenizationJobCommand;
 	}
 
 	private File getUniqueTempDir(File tempDir) {
 		int i = 0;
-		File file = new File(tempDir.getAbsolutePath(), String.valueOf(id));
+		File file = new File(tempDir.getAbsolutePath(), LogNamePrefixes.BRANCH_TOKENIZER + id);
 		while (file.exists()) {
-			file = new File(tempDir.getAbsolutePath(), id + "_" + i);
+			file = new File(tempDir.getAbsolutePath(), LogNamePrefixes.BRANCH_TOKENIZER + id + "_" + i);
 			i++;
 		}
-		file.mkdirs();
 		return file;
 	}
 }

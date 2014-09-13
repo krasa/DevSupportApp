@@ -1,65 +1,42 @@
 package krasa.build.frontend.components;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import krasa.build.backend.domain.Environment;
 import krasa.build.backend.dto.BuildableComponentDto;
 import krasa.build.backend.exception.ProcessAlreadyRunning;
-import krasa.build.backend.facade.BuildFacade;
-import krasa.build.backend.facade.ComponentChangedEvent;
-import krasa.build.backend.facade.ComponentDeletedEvent;
+import krasa.build.backend.facade.*;
 import krasa.build.frontend.pages.LogPage;
 import krasa.core.frontend.StaticImage;
-import krasa.core.frontend.commons.EditablePanel;
-import krasa.core.frontend.commons.LabelPanel;
-import krasa.core.frontend.commons.LabeledBookmarkablePageLink;
-import krasa.core.frontend.commons.LinkPanel;
-import krasa.core.frontend.commons.MyFeedbackPanel;
-import krasa.core.frontend.commons.table.ButtonColumn;
-import krasa.core.frontend.commons.table.DateColumn;
-import krasa.core.frontend.commons.table.DummyModelDataProvider;
-import krasa.core.frontend.commons.table.PanelColumn;
-import krasa.core.frontend.commons.table.ProjectLinkColumn;
-import krasa.core.frontend.commons.table.PropertyEditableColumn;
-import krasa.core.frontend.components.BaseEmptyPanel;
-import krasa.core.frontend.components.BasePanel;
+import krasa.core.frontend.commons.*;
+import krasa.core.frontend.commons.table.*;
+import krasa.core.frontend.components.*;
 
-import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
-import org.apache.wicket.atmosphere.Subscribe;
-import org.apache.wicket.event.Broadcast;
-import org.apache.wicket.event.IEvent;
+import org.apache.wicket.behavior.AttributeAppender;
+import org.apache.wicket.event.*;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackDefaultDataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
-import org.apache.wicket.markup.ComponentTag;
-import org.apache.wicket.markup.MarkupStream;
-import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.*;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.link.Link;
-import org.apache.wicket.markup.html.panel.FeedbackPanel;
-import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.markup.repeater.IItemFactory;
-import org.apache.wicket.markup.repeater.Item;
-import org.apache.wicket.markup.repeater.RefreshingView;
-import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.LoadableDetachableModel;
-import org.apache.wicket.model.Model;
-import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.markup.html.panel.*;
+import org.apache.wicket.markup.repeater.*;
+import org.apache.wicket.model.*;
+import org.apache.wicket.protocol.ws.api.*;
+import org.apache.wicket.protocol.ws.api.message.IWebSocketPushMessage;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.azeckoski.reflectutils.ReflectUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.*;
 
 /**
  * @author Vojtech Krasa
  */
 public class BuildComponentsTablePanel extends BasePanel {
-
 	public static final String MODAL = "MODAL";
 	public static final String ROW_ID_PREFIX = "buildCompId";
 	protected final Logger log = LoggerFactory.getLogger(getClass());
@@ -76,11 +53,26 @@ public class BuildComponentsTablePanel extends BasePanel {
 		add(feedback = new MyFeedbackPanel("feedback"));
 		add(createTable());
 		add(new BaseEmptyPanel(MODAL));
+		add(new WebSocketBehavior() {
+
+			@Override
+			protected void onPush(WebSocketRequestHandler handler, IWebSocketPushMessage message) {
+				if (message instanceof ComponentChangedEvent) {
+					ComponentChangedEvent changedEvent = (ComponentChangedEvent) message;
+					if (changedEvent.getBuildableComponentDto().getEnvironmentId().equals(environmentId)) {
+						log.info("ComponentChangedEvent " + changedEvent.getBuildableComponentDto());
+						changedEvent.setTarget(handler);
+						send(table, Broadcast.DEPTH, message);
+					}
+				}
+			}
+		});
 	}
 
 	private AjaxFallbackDefaultDataTable<BuildableComponentDto, String> createTable() {
-		table = new AjaxFallbackDefaultDataTable<BuildableComponentDto, String>("components", getColumns(), getModel(),
-				100) {
+		table = new MyAjaxFallbackDefaultDataTable<BuildableComponentDto, String>("components", getColumns(),
+				getModel(), 100) {
+
 			@Override
 			protected Item<BuildableComponentDto> newRowItem(String id, int index, IModel<BuildableComponentDto> model) {
 				Item<BuildableComponentDto> item = new Item<BuildableComponentDto>(id, index, model) {
@@ -109,6 +101,10 @@ public class BuildComponentsTablePanel extends BasePanel {
 				};
 				item.setMarkupId(ROW_ID_PREFIX + model.getObject().getId());
 				item.setOutputMarkupId(true);
+				if (item.getModelObject().getIndex() >= 0) {
+					item.add(new AttributeAppender("class", Model.of("highlightIndex"
+							+ item.getModelObject().getIndex()), " "));
+				}
 				return item;
 			}
 		};
@@ -135,16 +131,10 @@ public class BuildComponentsTablePanel extends BasePanel {
 		}
 	}
 
-	@Subscribe
-	public void refreshRow(AjaxRequestTarget target, ComponentChangedEvent message) {
-		if (message.getBuildableComponentDto().getEnvironmentId().equals(environmentId)) {
-			message.setTarget(target);
-			send(table, Broadcast.DEPTH, message);
-		}
-	}
-
 	private void refreshRow(AjaxRequestTarget target, BuildableComponentDto buildableComponentDto) {
-		refreshRow(target, new ComponentChangedEvent(buildableComponentDto));
+		ComponentChangedEvent payload = new ComponentChangedEvent(buildableComponentDto);
+		payload.setTarget(target);
+		send(table, Broadcast.DEPTH, payload);
 	}
 
 	private DummyModelDataProvider<BuildableComponentDto> getModel() {
@@ -184,9 +174,7 @@ public class BuildComponentsTablePanel extends BasePanel {
 				return new LabelPanel(componentId, new PropertyModel<>(rowModel, "status")) {
 					@Override
 					protected Component getComponent(String id, IModel labelModel) {
-						Label label = new Label(id, labelModel);
-						label.add(new AttributeModifier("id", labelModel));
-						return label;
+						return new StyledLabel(id, labelModel);
 					}
 				};
 			}
@@ -231,8 +219,8 @@ public class BuildComponentsTablePanel extends BasePanel {
 			@Override
 			protected void onSubmit(IModel<BuildableComponentDto> model, AjaxRequestTarget target, Form<?> form) {
 				try {
-					BuildableComponentDto buildableComponentDto = buildFacade.buildComponent(model.getObject());
-					refreshRow(target, buildableComponentDto);
+					buildFacade.buildComponent(model.getObject());
+					target.add(table);
 				} catch (ProcessAlreadyRunning e) {
 					info("already building");
 					target.add(feedback);

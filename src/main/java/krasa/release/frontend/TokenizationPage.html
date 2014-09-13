@@ -13,10 +13,15 @@
     <form wicket:id="form">
         fromVersion: <input type="text" wicket:id="fromVersion"/><br/>
         toVersion: <input type="text" wicket:id="toVersion"/><br/>
+        newPortalDb: <input type="text" wicket:id="newPortalDb"/><br/>
+        newSacDb: <input type="text" wicket:id="newSacDb"/><br/>
+        newPitDb: <input type="text" wicket:id="newPitDb"/><br/>
         branchNamePattern: <input type="text" wicket:id="branchNamePattern"/><br/>
-        json: <textarea rows="50" cols="180" wicket:id="json"/><br/>
-        <input type="button" wicket:id="setAsDefault" value="Set as default"/>
-        <input type="button" wicket:id="reset" value="Reset as default"/>
+        <input type="button" wicket:id="generateJson" value="Generate Json"/>
+        <textarea rows="50" cols="180" wicket:id="json"/><br/>
+
+
+        <input type="button" wicket:id="reset" value="Reset from default"/>
         <input type="button" wicket:id="execute" wicket:message="value:execute"/>
         <input type="button" wicket:id="executeSynchronously" wicket:message="value:executeSynchronously"/>
     </form>

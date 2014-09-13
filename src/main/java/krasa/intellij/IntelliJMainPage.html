@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org">
+<body>
+<wicket:extend>
+
+    <br/>
+
+    <form wicket:id="progressUpload">
+        <fieldset>
+            <legend>Upload IntelliJ plugin</legend>
+            <p>
+                <label for="upload">File</label>
+                <input wicket:id="fileInput" type="file"/>
+            </p>
+            <input type="submit" value="Upload!"/>
+            <span wicket:id="progress">[[upload progressbar]]</span>
+        </fieldset>
+    </form>
+    <div>
+        <a wicket:id="repoUrl" href="#">IntelliJ Repository link</a>
+
+        <table class="dataview" cellspacing="0" wicket:id="table">[table]</table>
+    </div>
+
+    <wicket:child/>
+</wicket:extend>
+</body>
+</html>

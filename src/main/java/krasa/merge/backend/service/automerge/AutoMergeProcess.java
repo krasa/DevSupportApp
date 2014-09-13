@@ -1,40 +1,44 @@
 package krasa.merge.backend.service.automerge;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javax.validation.constraints.NotNull;
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
+
+import krasa.build.backend.domain.Status;
+import krasa.merge.backend.service.automerge.domain.MergeJob;
+
+import org.slf4j.*;
 
 public class AutoMergeProcess implements Runnable {
 
 	protected final Logger log = LoggerFactory.getLogger(getClass());
 
-	private AutoMergeJob autoMergeJob;
+	private MergeJob mergeJob;
 	private AutoMergeExecutor autoMergeExecutor;
 
-	public AutoMergeProcess(@NotNull AutoMergeJob autoMergeJob, AutoMergeExecutor autoMergeExecutor) {
-		this.autoMergeJob = autoMergeJob;
+	public AutoMergeProcess(@NotNull MergeJob mergeJob, AutoMergeExecutor autoMergeExecutor) {
+		this.mergeJob = mergeJob;
 		this.autoMergeExecutor = autoMergeExecutor;
 	}
 
-	public AutoMergeJob getAutoMergeJob() {
-		return autoMergeJob;
+	public MergeJob getMergeJob() {
+		return mergeJob;
 	}
 
 	@Override
 	public void run() {
 		try {
-			autoMergeJob.merge();
+			updateStatus(Status.RUNNING);
+			mergeJob.merge();
+			updateStatus(Status.SUCCESS);
 			autoMergeExecutor.jobFinished(this, null);
 		} catch (Throwable e) {
-			final ByteArrayOutputStream out = new ByteArrayOutputStream();
-			e.printStackTrace(new PrintStream(out));
-			final String str = out.toString();
-			autoMergeJob.append(str);
+			updateStatus(Status.EXCEPTION);
 			autoMergeExecutor.jobFinished(this, e);
 		}
+	}
+
+	private void updateStatus(Status running) {
+		mergeJob.setStatus(running);
+		autoMergeExecutor.statusUpdated(mergeJob);
 	}
 
 }

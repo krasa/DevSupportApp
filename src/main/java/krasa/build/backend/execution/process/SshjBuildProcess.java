@@ -1,10 +1,9 @@
 package krasa.build.backend.execution.process;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
-import krasa.build.backend.domain.Status;
+import krasa.build.backend.domain.*;
 import krasa.build.backend.execution.ProcessStatus;
 import krasa.build.backend.execution.ssh.SCPInfo;
 import net.schmizz.sshj.SSHClient;
@@ -26,10 +25,8 @@ public class SshjBuildProcess extends AbstractProcess {
 	private Session session;
 	private SSHClient ssh;
 
-	protected SshjBuildProcess() {
-	}
-
-	public SshjBuildProcess(ProcessLog stringBufferTail, List<String> command) {
+	public SshjBuildProcess(ProcessLog stringBufferTail, List<String> command, BuildJob buildJob) {
+		super(buildJob);
 		this.processLog = stringBufferTail;
 		this.command = command;
 	}
@@ -61,8 +58,10 @@ public class SshjBuildProcess extends AbstractProcess {
 		log.info("disconnecting channel");
 		session.close();
 
-		int exitStatus = cmd.getExitStatus();
-
+		Integer exitStatus = cmd.getExitStatus();
+		if (exitStatus == null) {
+			exitStatus = -1;
+		}
 		log.info("exit status: " + exitStatus);
 		exitStatus = getExitStatusFromLog(exitStatus, processLog.getContent());
 
@@ -101,7 +100,7 @@ public class SshjBuildProcess extends AbstractProcess {
 		session.allocateDefaultPTY();
 	}
 
-	protected int getExitStatusFromLog(int exitStatus, String logContent) {
+	protected int getExitStatusFromLog(Integer exitStatus, String logContent) {
 		int start1 = logContent.length() - 100;
 		String substring = StringUtils.substring(logContent, start1 > 0 ? start1 : 0);
 		if (substring.contains("returned code [")) {

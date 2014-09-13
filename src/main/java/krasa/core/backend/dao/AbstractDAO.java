@@ -4,22 +4,19 @@ import java.util.List;
 
 import krasa.core.backend.domain.AbstractEntity;
 
-import org.hibernate.Criteria;
-import org.hibernate.HibernateException;
-import org.hibernate.Query;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
+import org.hibernate.*;
 import org.hibernate.criterion.Restrictions;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.*;
+import org.springframework.beans.factory.annotation.*;
 import org.springframework.stereotype.Service;
 
 @Service
 public abstract class AbstractDAO<T extends AbstractEntity> implements DAO<T> {
+
 	protected final Logger log = LoggerFactory.getLogger(getClass());
 
 	@Autowired
+	@Qualifier("sessionFactory")
 	protected SessionFactory sf;
 
 	protected AbstractDAO() {

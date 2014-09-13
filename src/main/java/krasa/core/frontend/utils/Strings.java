@@ -49,4 +49,8 @@ public class Strings {
 		buffer.append("</span>");
 		return buffer;
 	}
+
+	public static String cutExtension(String name) {
+		return name.substring(0, name.indexOf("."));
+	}
 }

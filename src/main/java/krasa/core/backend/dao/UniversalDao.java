@@ -4,22 +4,17 @@ import java.util.List;
 
 import krasa.core.backend.domain.AbstractEntity;
 
-import org.hibernate.Criteria;
-import org.hibernate.HibernateException;
-import org.hibernate.Query;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
+import org.hibernate.*;
 import org.hibernate.criterion.Restrictions;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.*;
+import org.springframework.beans.factory.annotation.*;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public class UniversalDao {
+
 	protected final Logger log = LoggerFactory.getLogger(getClass());
 
-	@Autowired
 	protected SessionFactory sf;
 
 	public Session getSession() {
@@ -28,7 +23,7 @@ public class UniversalDao {
 
 	public <T extends AbstractEntity> List<T> findBy(Class clazz, Object... propertyAndValue) {
 		final Session session = getSession();
-		final Criteria crit = session.createCriteria(clazz.getSimpleName());
+		final Criteria crit = session.createCriteria(clazz.getCanonicalName());
 		for (int i = 0; i < propertyAndValue.length - 1; i = i + 2) {
 			crit.add(Restrictions.eq((String) propertyAndValue[i], propertyAndValue[i + 1]));
 		}
@@ -36,20 +31,20 @@ public class UniversalDao {
 	}
 
 	public void deleteAll(Class clazz) {
-		Query query = getSession().createQuery("delete from " + clazz.getSimpleName());
+		Query query = getSession().createQuery("delete from " + clazz.getCanonicalName());
 		query.executeUpdate();
 	}
 
 	public <T extends AbstractEntity> T findById(Class<T> clazz, Integer id) {
-		return (T) getSession().get(clazz.getSimpleName(), id);
+		return (T) getSession().get(clazz.getCanonicalName(), id);
 	}
 
 	public <T extends AbstractEntity> List<T> findAll(Class clazz) {
-		return getSession().createQuery("from " + clazz.getSimpleName()).list();
+		return getSession().createQuery("from " + clazz.getCanonicalName()).list();
 	}
 
 	public <T extends AbstractEntity> T findFirst(Class<T> clazz) {
-		Object o = getSession().createQuery("SELECT min(id) from " + clazz.getSimpleName()).uniqueResult();
+		Object o = getSession().createQuery("SELECT min(id) from " + clazz.getCanonicalName()).uniqueResult();
 		if (o == null) {
 			return null;
 		}
@@ -58,12 +53,18 @@ public class UniversalDao {
 	}
 
 	public <T extends AbstractEntity> T findLast(Class<T> clazz) {
-		Object o = getSession().createQuery("SELECT max(id) from " + clazz.getSimpleName()).uniqueResult();
+		Object o = getSession().createQuery("SELECT max(id) from " + clazz.getCanonicalName()).uniqueResult();
 		if (o == null) {
 			return null;
 		}
 		Integer id = Integer.valueOf(o.toString());
 		return findById(clazz, id);
+	}
+
+	public <T extends AbstractEntity> List<T> findLast(int n, Class<T> clazz) {
+		Query query = getSession().createQuery("from " + clazz.getCanonicalName() + " order by id desc");
+		query.setMaxResults(n);
+		return query.list();
 	}
 
 	public <T extends AbstractEntity> T save(T object) {
@@ -77,7 +78,7 @@ public class UniversalDao {
 	}
 
 	public int count(Class clazz) {
-		return Integer.valueOf(getSession().createQuery("SELECT COUNT(*) FROM " + clazz.getSimpleName()).uniqueResult().toString());
+		return Integer.valueOf(getSession().createQuery("SELECT COUNT(*) FROM " + clazz.getCanonicalName()).uniqueResult().toString());
 
 	}
 
@@ -96,7 +97,7 @@ public class UniversalDao {
 	/**
 	 * returns list of records for given query, ensures that result is not null (empty list returned when no record
 	 * found)
-	 * 
+	 *
 	 * @param query
 	 * @return
 	 */
@@ -112,6 +113,8 @@ public class UniversalDao {
 		}
 	}
 
+	@Autowired
+	@Qualifier("sessionFactory")
 	public void setSf(SessionFactory sf) {
 		this.sf = sf;
 	}

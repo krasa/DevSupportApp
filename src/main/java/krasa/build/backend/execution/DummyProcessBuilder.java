@@ -2,9 +2,8 @@ package krasa.build.backend.execution;
 
 import java.util.List;
 
-import krasa.build.backend.execution.process.AbstractProcess;
-import krasa.build.backend.execution.process.DummyProcess;
-import krasa.build.backend.execution.process.ProcessLog;
+import krasa.build.backend.domain.BuildJob;
+import krasa.build.backend.execution.process.*;
 
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -14,7 +13,7 @@ import org.springframework.stereotype.Service;
 public class DummyProcessBuilder extends ProcessBuilder {
 
 	@Override
-	protected AbstractProcess getBuildProcess(ProcessLog stringBufferTail, List<String> command) {
-		return new DummyProcess(stringBufferTail, command);
+	protected AbstractProcess getBuildProcess(ProcessLog stringBufferTail, List<String> command, BuildJob buildJob) {
+		return new DummyProcess(stringBufferTail, command, buildJob);
 	}
 }

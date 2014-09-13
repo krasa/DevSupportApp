@@ -2,13 +2,12 @@ package krasa.merge.backend.service.automerge;
 
 import java.io.File;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.tmatesoft.svn.core.SVNDepth;
-import org.tmatesoft.svn.core.SVNException;
-import org.tmatesoft.svn.core.wc.SVNClientManager;
-import org.tmatesoft.svn.core.wc.SVNCommitClient;
-import org.tmatesoft.svn.core.wc.SVNWCUtil;
+import krasa.core.backend.EnvironmentHolder;
+
+import org.slf4j.*;
+import org.tmatesoft.svn.core.*;
+import org.tmatesoft.svn.core.auth.BasicAuthenticationManager;
+import org.tmatesoft.svn.core.wc.*;
 
 public class CommitCommand {
 
@@ -19,6 +18,9 @@ public class CommitCommand {
 			throw new IllegalArgumentException("Not working copy root:" + workingCopy.getAbsolutePath());
 		}
 		SVNCommitClient commitClient = clientManager.getCommitClient();
+		String password = EnvironmentHolder.getEnvironment().getProperty("svn.password");
+		String client = EnvironmentHolder.getEnvironment().getProperty("svn.client", password);
+		clientManager.setAuthenticationManager(new BasicAuthenticationManager(client, password));
 		commitClient.doCommit(new File[] { workingCopy }, false, commitMessage, null, null, false, false,
 				SVNDepth.INFINITY);
 	}

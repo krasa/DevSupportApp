@@ -1,14 +1,13 @@
 package krasa.merge.backend.dto;
 
-import krasa.merge.backend.service.automerge.AutoMergeJob;
-import krasa.merge.backend.service.automerge.AutoMergeProcess;
-
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+
+import krasa.build.backend.DateUtils;
+import krasa.merge.backend.service.automerge.AutoMergeJobMode;
+import krasa.merge.backend.service.automerge.domain.MergeJob;
+
+import org.apache.commons.lang3.builder.*;
 
 /**
  * @author Vojtech Krasa
@@ -17,17 +16,28 @@ public class MergeJobDto implements Serializable, Comparable<MergeJobDto> {
 
 	public Date startTime;
 	public Date endTime;
+	private AutoMergeJobMode autoMergeJobMode;
+	private String caller;
 	private String from;
 	private String to;
 	private long revision;
 	private String status;
 	private Integer mergeJobId;
+	private Object logName;
 
-	public static List<MergeJobDto> translate(Collection<AutoMergeProcess> all) {
+	public AutoMergeJobMode getAutoMergeJobMode() {
+		return autoMergeJobMode;
+	}
+
+	public void setAutoMergeJobMode(AutoMergeJobMode autoMergeJobMode) {
+		this.autoMergeJobMode = autoMergeJobMode;
+	}
+
+	public static List<MergeJobDto> translate(Collection<MergeJob> all) {
 		List<MergeJobDto> mergebuildJobs = new ArrayList<>();
 
-		for (AutoMergeProcess autoMergeProcess : all) {
-			MergeJobDto e = AutoMergeJob.getMergeJobDto(autoMergeProcess);
+		for (MergeJob autoMergeProcess : all) {
+			MergeJobDto e = MergeJob.getMergeJobDto(autoMergeProcess);
 			mergebuildJobs.add(e);
 		}
 		Collections.sort(mergebuildJobs);
@@ -42,12 +52,28 @@ public class MergeJobDto implements Serializable, Comparable<MergeJobDto> {
 		return endTime;
 	}
 
+	public String getCaller() {
+		return caller;
+	}
+
+	public void setCaller(String caller) {
+		this.caller = caller;
+	}
+
 	public String getFrom() {
 		return from;
 	}
 
 	public void setFrom(String from) {
 		this.from = from;
+	}
+
+	public void setStartTime(Date startTime) {
+		this.startTime = startTime;
+	}
+
+	public void setEndTime(Date endTime) {
+		this.endTime = endTime;
 	}
 
 	public String getTo() {
@@ -84,18 +110,29 @@ public class MergeJobDto implements Serializable, Comparable<MergeJobDto> {
 
 	@Override
 	public int compareTo(MergeJobDto o) {
-		Date start = this.getStartTime();
-		Date start1 = o.getStartTime();
+		return DateUtils.compareDatesNullOnEnd(this.getStartTime(), o.getStartTime());
+	}
 
-		if (start == null && start1 == null) {
-			return 0;
-		}
-		if (start == null) {
-			return 1;
-		}
-		if (start1 == null) {
-			return -1;
-		}
-		return start.compareTo(start1);
+	@Override
+	public boolean equals(Object obj) {
+		return EqualsBuilder.reflectionEquals(this, obj);
+	}
+
+	@Override
+	public String toString() {
+		return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+	}
+
+	@Override
+	public int hashCode() {
+		return HashCodeBuilder.reflectionHashCode(this);
+	}
+
+	public Object getLogName() {
+		return logName;
+	}
+
+	public void setLogName(Object logName) {
+		this.logName = logName;
 	}
 }

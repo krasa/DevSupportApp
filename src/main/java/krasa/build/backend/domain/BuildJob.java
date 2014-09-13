@@ -2,26 +2,17 @@ package krasa.build.backend.domain;
 
 import java.util.Date;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Transient;
+import javax.persistence.*;
 
 import krasa.build.backend.dto.Result;
 import krasa.build.backend.execution.ProcessStatus;
+import krasa.build.backend.execution.process.*;
 import krasa.build.backend.execution.process.Process;
-import krasa.build.backend.execution.process.ProcessStatusListener;
 import krasa.build.backend.facade.BuildFacade;
 import krasa.core.backend.SpringApplicationContext;
 import krasa.core.backend.domain.AbstractEntity;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.*;
 
 import com.google.common.base.Objects;
 
@@ -34,6 +25,8 @@ public class BuildJob extends AbstractEntity implements ProcessStatusListener {
 	@Enumerated(EnumType.STRING)
 	public volatile Status status = Status.PENDING;
 	@Column
+	public Date scheduledTime;
+	@Column
 	public Date startTime;
 	@Column
 	public Date endTime;
@@ -41,16 +34,38 @@ public class BuildJob extends AbstractEntity implements ProcessStatusListener {
 	public String command;
 	@OneToOne(cascade = CascadeType.ALL, mappedBy = "buildJob")
 	private BuildLog buildLog;
-
+	@Column
+	private String caller;
 	@Transient
 	protected Process process;
 
-	public BuildJob() {
+	protected BuildJob() {
 	}
 
-	public BuildJob(Process process, BuildableComponent buildableComponent) {
+	public BuildJob(BuildableComponent buildableComponent) {
 		this.process = process;
 		this.buildableComponent = buildableComponent;
+		scheduledTime = new Date();
+	}
+
+	public String getLogFileName() {
+		return "build_" + id;
+	}
+
+	public Date getScheduledTime() {
+		return scheduledTime;
+	}
+
+	public void setScheduledTime(Date scheduledTime) {
+		this.scheduledTime = scheduledTime;
+	}
+
+	public String getCaller() {
+		return caller;
+	}
+
+	public void setCaller(String caller) {
+		this.caller = caller;
 	}
 
 	public BuildLog getBuildLog() {

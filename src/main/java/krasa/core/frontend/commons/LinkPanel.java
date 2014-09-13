@@ -1,6 +1,6 @@
 package krasa.core.frontend.commons;
 
-import org.apache.wicket.markup.html.link.Link;
+import org.apache.wicket.markup.html.link.AbstractLink;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 
@@ -13,5 +13,5 @@ public abstract class LinkPanel<T> extends Panel {
 		add(getComponent(LINK, labelModel, linkParameterModel));
 	}
 
-	protected abstract Link getComponent(String id, IModel<String> labelModel, IModel<T> linkParameterModel);
+	protected abstract AbstractLink getComponent(String id, IModel<String> labelModel, IModel<T> linkParameterModel);
 }

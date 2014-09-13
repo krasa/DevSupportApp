@@ -3,36 +3,30 @@ package krasa.release.utls;
 import java.io.File;
 import java.util.List;
 
-import krasa.merge.backend.domain.Repository;
-import krasa.merge.backend.domain.SvnFolder;
-import krasa.merge.backend.domain.Type;
-import krasa.merge.backend.svn.SvnFolderProvider;
-import krasa.merge.backend.svn.SvnFolderProviderImpl;
+import krasa.merge.backend.domain.*;
+import krasa.merge.backend.svn.*;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.tmatesoft.svn.core.SVNDepth;
-import org.tmatesoft.svn.core.SVNDirEntry;
-import org.tmatesoft.svn.core.SVNException;
-import org.tmatesoft.svn.core.SVNURL;
-import org.tmatesoft.svn.core.wc.SVNClientManager;
-import org.tmatesoft.svn.core.wc.SVNRevision;
-import org.tmatesoft.svn.core.wc.SVNUpdateClient;
+import org.slf4j.*;
+import org.tmatesoft.svn.core.*;
+import org.tmatesoft.svn.core.wc.*;
 
 public class SvnBranchesCheckouter {
 
 	protected static final Logger log = LoggerFactory.getLogger(SvnBranchesCheckouter.class);
 
-	public static final int INT = 14100;
 	public static final String SVN = "http://svn/sdp";
 	public static final String TARGET = "D:/workspace/_projekty/_T-Mobile/";
+	public static final int INT = 14500;
 
 	public static void main(String[] args) throws SVNException {
-		new SvnBranchesCheckouter().checkout(SVN, new File(TARGET + INT), String.valueOf(INT));
+		new SvnBranchesCheckouter().checkout(SVN, new File(TARGET + INT), ".*_" + INT);
 	}
 
 	public void checkout(String svnUrl, final File baseDir, final String branchNamePattern,
 			CheckoutCallback... checkoutCallback) throws SVNException {
+		log.info("Checkouting from {}, to {}, branches with patter {}", svnUrl, baseDir.getAbsolutePath(),
+				branchNamePattern);
+
 		SVNClientManager svnClientManager = SVNClientManager.newInstance();
 		SvnFolderProvider svnFolderProvider = new SvnFolderProviderImpl(new Repository(svnUrl));
 		List<SVNDirEntry> projects = svnFolderProvider.getProjects();
@@ -45,7 +39,6 @@ public class SvnBranchesCheckouter {
 					String pathname = baseDir + "/" + svnFolder.getName();
 					File destPath = new File(pathname);
 					if (!destPath.exists()) {
-						log.info("checking out: " + url + " into " + pathname);
 						checkoutSingleFolder(svnClientManager, url, destPath);
 						for (CheckoutCallback callback : checkoutCallback) {
 							callback.checkouted(url, destPath);

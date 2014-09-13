@@ -30,6 +30,25 @@ table.dataview tr:nth-child(even) {
     background-color: #ffebcd;
 }
 
+table.dataview tr.highlightIndex0 {
+    background-color: #32BEFF;
+}
+
+table.dataview tr.highlightIndex1 {
+    background-color: #5ECFFF;
+}
+
+table.dataview tr.highlightIndex2 {
+    background-color: #86D9FF;
+}
+
+table.dataview tr.highlightIndex3 {
+    background-color: #ABE4FF;
+}
+table.dataview tr.highlightIndex4 {
+    background-color: #CEEEFF;
+}
+
 table.dataview tr td {
     padding-left: 8px;
     padding-right: 30px;
@@ -799,5 +818,15 @@ div.table .select select {
 
 #SUCCESS {
     color: green;
+    font-weight: bold;
+}
+
+#Failed {
+    color: RED;
+    font-weight: bold;
+}
+
+#Excluded {
+    color: gray;
     font-weight: bold;
 }

@@ -2,13 +2,12 @@ package krasa.merge.backend.facade;
 
 import java.util.List;
 
+import krasa.core.backend.config.MainConfig;
 import krasa.core.backend.domain.GlobalSettings;
-import krasa.merge.backend.domain.Displayable;
-import krasa.merge.backend.domain.Profile;
-import krasa.merge.backend.domain.Repository;
-import krasa.merge.backend.domain.SvnFolder;
-import krasa.merge.backend.dto.MergeInfoResult;
-import krasa.merge.backend.dto.ReportResult;
+import krasa.merge.backend.domain.*;
+import krasa.merge.backend.dto.*;
+
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Vojtech Krasa
@@ -50,6 +49,9 @@ public interface Facade {
 	MergeInfoResult getMergeInfoForAllSelectedBranchesInProject(String path);
 
 	Profile getProfileByIdOrDefault(Integer id);
+
+	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER, readOnly = true)
+	Profile getCurrentProfile();
 
 	Profile createNewProfile();
 
@@ -98,4 +100,7 @@ public interface Facade {
 	void deleteAllSvnBranches();
 
 	void deleteAllBranchesFromProfile();
+
+	void replaceSearchFrom();
+
 }

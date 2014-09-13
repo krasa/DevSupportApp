@@ -1,22 +1,14 @@
 package krasa.merge.backend.domain;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
-import javax.persistence.Column;
+import javax.persistence.*;
 import javax.persistence.Entity;
-import javax.persistence.Enumerated;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 import krasa.core.backend.domain.AbstractEntity;
 
-import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.*;
 import org.hibernate.annotations.CascadeType;
 import org.tmatesoft.svn.core.SVNDirEntry;
 
@@ -24,6 +16,8 @@ import org.tmatesoft.svn.core.SVNDirEntry;
  * @author Vojtech Krasa
  */
 @Entity
+@Table(indexes = { @javax.persistence.Index(columnList = "name", unique = false),
+		@javax.persistence.Index(columnList = "type, name", unique = false) })
 public class SvnFolder extends AbstractEntity implements Displayable {
 
 	public static final Comparator<SvnFolder> NAME_COMPARATOR = new Comparator<SvnFolder>() {
@@ -33,7 +27,6 @@ public class SvnFolder extends AbstractEntity implements Displayable {
 			return o2.getName().compareTo(o1.getName());
 		}
 	};
-
 	@Column
 	private String name;
 	@Column

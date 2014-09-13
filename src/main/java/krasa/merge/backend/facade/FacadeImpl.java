@@ -1,38 +1,24 @@
 package krasa.merge.backend.facade;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.io.*;
+import java.util.*;
 
-import krasa.build.backend.domain.BuildableComponent;
-import krasa.build.backend.domain.Environment;
-import krasa.core.backend.dao.GenericDAO;
-import krasa.core.backend.dao.GenericDaoBuilder;
+import krasa.build.backend.domain.*;
+import krasa.core.backend.config.MainConfig;
+import krasa.core.backend.dao.*;
 import krasa.core.backend.domain.GlobalSettings;
 import krasa.core.backend.service.GlobalSettingsProvider;
 import krasa.core.frontend.MySession;
-import krasa.merge.backend.dao.ProfileDAO;
-import krasa.merge.backend.dao.SvnFolderDAO;
-import krasa.merge.backend.domain.Branch;
-import krasa.merge.backend.domain.Displayable;
-import krasa.merge.backend.domain.Profile;
-import krasa.merge.backend.domain.Repository;
-import krasa.merge.backend.domain.SvnFolder;
-import krasa.merge.backend.domain.Type;
-import krasa.merge.backend.dto.MergeInfoResult;
-import krasa.merge.backend.dto.ReportResult;
-import krasa.merge.backend.service.MergeInfoService;
-import krasa.merge.backend.service.ProfileProvider;
-import krasa.merge.backend.service.ReportService;
+import krasa.merge.backend.dao.*;
+import krasa.merge.backend.domain.*;
+import krasa.merge.backend.dto.*;
+import krasa.merge.backend.service.*;
+import krasa.merge.backend.service.conventions.ConventionsStrategyHolder;
 import krasa.merge.backend.svn.SvnReleaseProvider;
 
 import org.apache.wicket.util.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.slf4j.*;
+import org.springframework.beans.factory.annotation.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,7 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Vojtech Krasa
  */
 @Service
-@Transactional
+@Transactional(value = MainConfig.HSQLDB_TX_MANAGER)
 public class FacadeImpl implements Facade {
 
 	protected final Logger log = LoggerFactory.getLogger(getClass());
@@ -87,7 +73,7 @@ public class FacadeImpl implements Facade {
 		this.repositoryGenericDAO = genericDAO.build(Repository.class);
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER, readOnly = true)
 	@Override
 	public List<SvnFolder> getSubDirs(String name) {
 		return svnFolderDAO.getSubDirsByParentPath(name);
@@ -100,20 +86,20 @@ public class FacadeImpl implements Facade {
 		profileDAO.save(byId);
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER, readOnly = true)
 	@Override
 	public List<String> getSelectedBranchesNames() {
 		return profileProvider.getSelectedBranchesNames();
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER, readOnly = true)
 	@Override
 	public List<SvnFolder> getSelectedBranches() {
 		List<Branch> selectedBranches = profileProvider.getSelectedBranches();
 		return svnFolderDAO.findBranchesByNames(selectedBranches);
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER, readOnly = true)
 	@Override
 	public SvnFolder getSvnFolderById(Integer id) {
 		return svnFolderDAO.findById(id);
@@ -124,32 +110,32 @@ public class FacadeImpl implements Facade {
 		profileProvider.updateSelectionOfSvnFolder(object, aBoolean);
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER, readOnly = true)
 	@Override
 	public List<SvnFolder> findBranchesByNameLike(String name) {
 		return svnFolderDAO.findFoldersByNameLike(name, Type.BRANCH);
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER, readOnly = true)
 	@Override
 	public List<Displayable> findBranchesByNameLikeAsDisplayable(String name) {
 		return new ArrayList<Displayable>(findBranchesByNameLike(name));
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER, readOnly = true)
 	@Override
 	public List<Displayable> findTagsByNameLikeAsDisplayable(String input) {
 		return new ArrayList<Displayable>(svnFolderDAO.findFoldersByNameLike(input, Type.TAG));
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER, readOnly = true)
 	@Override
 	public SvnFolder findBranchByInCaseSensitiveName(String name) {
 		return svnFolderDAO.findBranchByInCaseSensitiveName(name);
 
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER, readOnly = true)
 	@Override
 	public MergeInfoResult getMergeInfoForAllSelectedBranches() {
 		List<Branch> selectedBranches = profileProvider.getSelectedBranches();
@@ -157,7 +143,7 @@ public class FacadeImpl implements Facade {
 		return mergeInfoService.findMerges(branchesByNames);
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER, readOnly = true)
 	@Override
 	public MergeInfoResult getMergeInfoForAllSelectedBranchesInProject(String projectPath) {
 		List<Branch> selectedBranches = profileProvider.getSelectedBranches();
@@ -166,13 +152,19 @@ public class FacadeImpl implements Facade {
 	}
 
 	@Override
-	@Transactional(readOnly = true)
+	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER, readOnly = true)
 	public Profile getProfileByIdOrDefault(Integer current) {
 		Profile byId = profileDAO.findById(current);
 		if (byId == null) {
 			return profileProvider.getFirstProfile();
 		}
 		return byId;
+	}
+
+	@Override
+	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER, readOnly = true)
+	public Profile getCurrentProfile() {
+		return profileDAO.findById(MySession.get().getCurrentProfileId());
 	}
 
 	@Override
@@ -187,13 +179,13 @@ public class FacadeImpl implements Facade {
 	}
 
 	@Override
-	@Transactional(readOnly = true)
+	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER, readOnly = true)
 	public Boolean isMergeOnSubFoldersForProject(String path) {
 		GlobalSettings first = globalSettingsProvider.getGlobalSettings();
 		return first.isMergeOnSubFoldersForProject(path);
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER, readOnly = true)
 	@Override
 	public GlobalSettings getGlobalSettings() {
 		return globalSettingsProvider.getGlobalSettings();
@@ -205,7 +197,7 @@ public class FacadeImpl implements Facade {
 	}
 
 	@Override
-	@Transactional(readOnly = true)
+	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER, readOnly = true)
 	public List<SvnFolder> getAllBranchesByProjectName(String name) {
 		return svnFolderDAO.findByParentName(name, Type.BRANCH);
 	}
@@ -225,7 +217,7 @@ public class FacadeImpl implements Facade {
 	}
 
 	@Override
-	@Transactional(readOnly = true)
+	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER, readOnly = true)
 	public String resolveProjectByPath(String path) {
 		int endIndex = path.indexOf("/");
 		if (endIndex > 0) {
@@ -244,7 +236,7 @@ public class FacadeImpl implements Facade {
 	}
 
 	@Override
-	@Transactional(readOnly = true)
+	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER, readOnly = true)
 	public Boolean isLoadTags(String path) {
 		return globalSettingsProvider.getGlobalSettings().isLoadTags(path);
 	}
@@ -287,13 +279,22 @@ public class FacadeImpl implements Facade {
 	}
 
 	@Override
+	public void replaceSearchFrom() {
+		List<SvnFolder> selectedBranches = getSelectedBranches();
+		for (SvnFolder selectedBranch : selectedBranches) {
+			ConventionsStrategyHolder.getStrategy().replaceSearchFrom(selectedBranch);
+			svnFolderDAO.save(selectedBranch);
+		}
+	}
+
+	@Override
 	public void setMergeOnSubFoldersForProject(String path, Boolean modelObject) {
 		GlobalSettings settings = globalSettingsProvider.getGlobalSettings();
 		settings.setProjectsWithSubfoldersMergeSearching(path, modelObject);
 		globalSettingsDAO.save(settings);
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER, readOnly = true)
 	@Override
 	public ReportResult getReport() {
 		return reportService.getReport(getDefaultRepository());
@@ -394,26 +395,26 @@ public class FacadeImpl implements Facade {
 		globalSettingsDAO.save(globalSettings);
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER, readOnly = true)
 	@Override
 	public List<SvnFolder> getProjects() {
 		return svnFolderDAO.findAllProjects();
 	}
 
 	@Override
-	@Transactional(readOnly = true)
+	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER, readOnly = true)
 	public List<Profile> getProfiles() {
 		return profileDAO.findAll();
 	}
 
 	@Override
-	@Transactional(readOnly = true)
+	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER, readOnly = true)
 	public Profile getDefaultProfile() {
 		return profileProvider.getFirstProfile();
 	}
 
 	@Override
-	@Transactional(readOnly = true)
+	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER, readOnly = true)
 	public List<SvnFolder> getBranches() {
 		return svnFolderDAO.findAll();
 	}

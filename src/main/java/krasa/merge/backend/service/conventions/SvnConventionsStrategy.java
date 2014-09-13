@@ -1,14 +1,10 @@
 package krasa.merge.backend.service.conventions;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import krasa.core.backend.service.GlobalSettingsProvider;
 import krasa.merge.backend.dao.SvnFolderDAO;
-import krasa.merge.backend.domain.SvnFolder;
-import krasa.merge.backend.domain.Type;
+import krasa.merge.backend.domain.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -85,7 +81,11 @@ public class SvnConventionsStrategy {
 		return siblings.get(0);
 	}
 
-	public List<SvnFolder> postProcessAllBranches(Map<String, SvnFolder> childs) {
-		return Collections.emptyList();
+	public void postProcessAllBranches(Map<String, SvnFolder> childs) {
 	}
+
+	public void replaceSearchFrom(SvnFolder selectedBranch) {
+
+	}
+
 }

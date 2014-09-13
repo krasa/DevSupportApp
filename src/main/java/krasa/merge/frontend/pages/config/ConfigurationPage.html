@@ -3,8 +3,8 @@
 
 <wicket:extend>
     <form wicket:id="form">
-        <input wicket:id="refreshProjectsAndBranches" type="submit"
-               wicket:message="value:refreshProjectsAndBranches"/>
+        <input wicket:id="refreshBranches" type="submit"
+               wicket:message="value:refreshBranches"/>
         <input wicket:id="refreshReleasesFormSvn" type="submit"
                wicket:message="value:refreshReleasesFormSvn"/>
         <input wicket:id="clearSvn" type="submit"
@@ -12,9 +12,8 @@
 
     </form>
     <div wicket:id="repositories"></div>
+
     <wicket:child/>
-
-
 </wicket:extend>
 </html>
 

@@ -1,15 +1,12 @@
 package krasa.build.backend.facade;
 
 import static org.junit.Assert.*;
+
 import krasa.build.backend.dao.CommonBuildDao;
-import krasa.build.backend.domain.BuildJob;
-import krasa.build.backend.domain.BuildableComponent;
-import krasa.build.backend.domain.Environment;
-import krasa.build.backend.domain.FullTest;
+import krasa.build.backend.domain.*;
 import krasa.build.backend.execution.ProcessStatus;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class BuildFacadeImplTest extends FullTest {
@@ -17,6 +14,7 @@ public class BuildFacadeImplTest extends FullTest {
 	public static final String ENV = "env";
 	@Autowired
 	BuildFacadeImpl buildFacade;
+
 	private Environment environment;
 	private BuildableComponent buildableComponent2;
 	private BuildableComponent buildableComponent;
@@ -34,7 +32,7 @@ public class BuildFacadeImplTest extends FullTest {
 	@Test
 	public void testCreateAndSaveBuildJob() throws Exception {
 		assertNotNull(buildableComponent.getId());
-		BuildJob build = buildFacade.createAndSaveBuildJob(buildableComponent);
+		BuildJob build = buildFacade.createAndSaveBuildJob(buildableComponent, "author");
 		assertNotNull(build.getBuildableComponent());
 		flush();
 
@@ -57,7 +55,7 @@ public class BuildFacadeImplTest extends FullTest {
 
 	@Test
 	public void testBuildLog() throws Exception {
-		BuildJob build = buildFacade.createAndSaveBuildJob(buildableComponent);
+		BuildJob build = buildFacade.createAndSaveBuildJob(buildableComponent, "author");
 		build.getProcess().getProcessLog().append("fooBar");
 		flush();
 
@@ -73,9 +71,9 @@ public class BuildFacadeImplTest extends FullTest {
 
 	@Test
 	public void testTwoBuilds() throws Exception {
-		BuildJob build = buildFacade.createAndSaveBuildJob(buildableComponent);
+		BuildJob build = buildFacade.createAndSaveBuildJob(buildableComponent, "author");
 		flush();
-		BuildJob lastBuild = buildFacade.createAndSaveBuildJob(buildableComponent);
+		BuildJob lastBuild = buildFacade.createAndSaveBuildJob(buildableComponent, "author");
 		flush();
 
 		refresh();
@@ -87,7 +85,7 @@ public class BuildFacadeImplTest extends FullTest {
 
 	@Test
 	public void testBuildDelete() throws Exception {
-		BuildJob build = buildFacade.createAndSaveBuildJob(buildableComponent);
+		BuildJob build = buildFacade.createAndSaveBuildJob(buildableComponent, "author");
 		flush();
 
 		buildFacade.deleteComponentById(buildableComponent.getId());

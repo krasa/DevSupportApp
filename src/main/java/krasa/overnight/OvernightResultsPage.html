@@ -9,13 +9,20 @@
 
 <wicket:extend>
     <wicket:child/>
-    <div wicket:id="info"></div>
-    <form wicket:id="form">
+    <form action="" wicket:id="form">
+        <input type="text" wicket:id="date"/>
 
+        <div>
+            Failed from : <input type="text" wicket:id="differenceFromDate"/>
+        </div>
+        <table class="dataview" cellspacing="0" wicket:id="differenceFromTable">[table]</table>
 
-        <div wicket:id="log"></div>
 
     </form>
+    <div>
+        All:
+    </div>
+    <table class="dataview" cellspacing="0" wicket:id="table">[table]</table>
 
 </wicket:extend>
 

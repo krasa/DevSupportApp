@@ -6,9 +6,7 @@ import krasa.merge.frontend.component.SvnProjectsLeftMenuPanel;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.WebPage;
-import org.apache.wicket.markup.html.panel.EmptyPanel;
-import org.apache.wicket.markup.html.panel.FeedbackPanel;
-import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.markup.html.panel.*;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
@@ -28,7 +26,7 @@ public abstract class BasePage extends WebPage {
 	// public abstract IModel getKeywords();
 
 	protected Component newTopMenuPanel(String id) {
-		return new MenuPanel(id, this);
+		return new MainMenuPanel(id, this);
 	}
 
 	protected Component newLeftColumnPanel(String id) {

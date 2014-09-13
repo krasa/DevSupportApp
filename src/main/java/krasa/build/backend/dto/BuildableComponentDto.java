@@ -1,17 +1,18 @@
 package krasa.build.backend.dto;
 
 import java.io.Serializable;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
-import krasa.build.backend.domain.BuildJob;
-import krasa.build.backend.domain.BuildableComponent;
-import krasa.build.backend.domain.Status;
+import krasa.build.backend.DateUtils;
+import krasa.build.backend.domain.*;
+import krasa.core.frontend.commons.table.CustomIdTableItem;
+
+import org.apache.commons.lang3.builder.*;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
-public class BuildableComponentDto implements Serializable {
+public class BuildableComponentDto implements Serializable, CustomIdTableItem {
 	private Integer id;
 	private String name;
 
@@ -21,7 +22,9 @@ public class BuildableComponentDto implements Serializable {
 	private Integer buildJobId;
 	private Date buildEndTime;
 	private Date buildStartTime;
+	private Date buildScheduledTime;
 	private Status status;
+	private int index = -1;
 
 	public BuildableComponentDto() {
 	}
@@ -36,17 +39,45 @@ public class BuildableComponentDto implements Serializable {
 			buildJobId = lastBuildJob.getId();
 			buildEndTime = lastBuildJob.getEndTime();
 			buildStartTime = lastBuildJob.getStartTime();
+			buildScheduledTime = lastBuildJob.getScheduledTime();
 			status = lastBuildJob.getStatus();
 		}
 	}
 
 	public static List<BuildableComponentDto> transform(List<BuildableComponent> components) {
-		return Lists.transform(components, new Function<BuildableComponent, BuildableComponentDto>() {
+		List<BuildableComponentDto> transform = Lists.transform(components,
+				new Function<BuildableComponent, BuildableComponentDto>() {
+					@Override
+					public BuildableComponentDto apply(BuildableComponent component) {
+						return new BuildableComponentDto(component);
+					}
+				});
+		transform = Lists.newArrayList(transform);
+
+		List<BuildableComponentDto> buildableComponentDtos = new ArrayList<>();
+		buildableComponentDtos.addAll(transform);
+		Collections.sort(buildableComponentDtos, new Comparator<BuildableComponentDto>() {
+
 			@Override
-			public BuildableComponentDto apply(BuildableComponent component) {
-				return new BuildableComponentDto(component);
+			public int compare(BuildableComponentDto o1, BuildableComponentDto o2) {
+				return DateUtils.compareDatesNullOnEnd(o1.buildScheduledTime, o2.buildScheduledTime);
 			}
 		});
+		for (int i = 0; i < buildableComponentDtos.size(); i++) {
+			if (buildableComponentDtos.get(i).buildScheduledTime != null) {
+				buildableComponentDtos.get(i).setIndex(i);
+			}
+		}
+
+		return transform;
+	}
+
+	private void setIndex(int i) {
+		index = i;
+	}
+
+	public int getIndex() {
+		return index;
 	}
 
 	public static BuildableComponentDto transform(BuildableComponent component) {
@@ -122,5 +153,25 @@ public class BuildableComponentDto implements Serializable {
 			return null;
 		}
 		return new Date(buildEndTime.getTime() - buildStartTime.getTime());
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return EqualsBuilder.reflectionEquals(this, obj);
+	}
+
+	@Override
+	public String toString() {
+		return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+	}
+
+	@Override
+	public int hashCode() {
+		return HashCodeBuilder.reflectionHashCode(this);
+	}
+
+	@Override
+	public String getRowId() {
+		return String.valueOf(id);
 	}
 }

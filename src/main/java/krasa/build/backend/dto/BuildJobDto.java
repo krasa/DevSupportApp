@@ -2,13 +2,9 @@ package krasa.build.backend.dto;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
+import krasa.build.backend.DateUtils;
 import krasa.build.backend.domain.BuildJob;
 
 public class BuildJobDto implements Serializable {
@@ -16,10 +12,14 @@ public class BuildJobDto implements Serializable {
 	private String environment;
 	private String status;
 	private String component;
+	private String caller;
 	private Date start;
 	private Date end;
 	private Date expected;
 	private Integer buildJobId;
+
+	private BuildJobDto() {
+	}
 
 	public static List<BuildJobDto> translate(Collection<BuildJob> all) {
 		List<BuildJobDto> buildJobs = new ArrayList<>();
@@ -32,6 +32,7 @@ public class BuildJobDto implements Serializable {
 			e.setEnvironment(buildJob.getBuildableComponent().getEnvironment().getName());
 			e.setStart(buildJob.getStartTime());
 			e.setEnd(buildJob.getEndTime());
+			e.setCaller(buildJob.getCaller());
 			e.setExpected(buildJob.getBuildableComponent().getLastSuccessBuildDuration());
 			buildJobs.add(e);
 		}
@@ -41,19 +42,18 @@ public class BuildJobDto implements Serializable {
 				Date start = o1.getStart();
 				Date start1 = o2.getStart();
 
-				if (start == null && start1 == null) {
-					return 0;
-				}
-				if (start == null) {
-					return 1;
-				}
-				if (start1 == null) {
-					return -1;
-				}
-				return start.compareTo(start1);
+				return DateUtils.compareDates(start, start1);
 			}
 		});
 		return buildJobs;
+	}
+
+	public String getCaller() {
+		return caller;
+	}
+
+	public void setCaller(String caller) {
+		this.caller = caller;
 	}
 
 	public Date getEnd() {

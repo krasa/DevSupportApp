@@ -25,21 +25,24 @@
 
 
 	<properties>
+		<bonecp.version>0.8.0.RELEASE</bonecp.version>
+		<mysql.version>5.1.25</mysql.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jrebel-maven-plugin.version>1.1.3</jrebel-maven-plugin.version>
 
-		<jetty.version>8.1.9.v20130131</jetty.version>
-		<jetty.plugin.version>8.1.9.v20130131</jetty.plugin.version>
+		<jetty.version>9.0.7.v20131107</jetty.version>
+		<jetty.plugin.version>9.0.7.v20131107</jetty.plugin.version>
 
-		<wicket.version>6.13.0</wicket.version>
-		<wicket.atmosphere.version>0.15</wicket.atmosphere.version>
+		<wicket.version>6.17.0</wicket.version>
+		<wicket.atmosphere.version>0.18</wicket.atmosphere.version>
+		<atmosphere.version>2.1.0</atmosphere.version>
 
 		<spring.version>4.0.0.RELEASE</spring.version>
 		<hibernate.version>4.3.0.Final</hibernate.version>
 		<hibernate-validator.version>5.0.2.Final</hibernate-validator.version>
 		<validation-api.version>1.1.0.Final</validation-api.version>
 
-		<svnkit.version>1.7.8</svnkit.version>
+		<svnkit.version>1.8.5</svnkit.version>
 		<guava.version>15.0</guava.version>
 		<hsqldb.version>2.2.9</hsqldb.version>
 		<aspectjweaver.version>1.7.4</aspectjweaver.version>
@@ -60,17 +63,70 @@
 		<restx.version>0.31.1</restx.version>
 	</properties>
 	<dependencies>
+		<!-- JPA - start -->
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>${mysql.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.lingala.zip4j</groupId>
+			<artifactId>zip4j</artifactId>
+			<version>1.3.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.jolbox</groupId>
+			<artifactId>bonecp</artifactId>
+			<version>${bonecp.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<artifactId>guava</artifactId>
+					<groupId>com.google.guava</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<!-- JPA - end -->
+
+		<!--<dependency>-->
+		<!--<groupId>org.atmosphere</groupId>-->
+		<!--<artifactId>atmosphere-runtime</artifactId>-->
+		<!--<version>${atmosphere.version}</version>-->
+		<!--<exclusions>-->
+		<!--<exclusion>-->
+		<!--<groupId>org.atmosphere</groupId>-->
+		<!--<artifactId>atmosphere-compat-jetty</artifactId>-->
+		<!--</exclusion>-->
+		<!--</exclusions>-->
+		<!--</dependency>-->
+
 		<dependency>
 			<groupId>org.glassfish.jersey.containers</groupId>
 			<!-- if your container implements Servlet API older than 3.0, use "jersey-container-servlet-core"  -->
 			<artifactId>jersey-container-servlet</artifactId>
 			<version>2.5.1</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>guava</artifactId>
+					<groupId>com.google.guava</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<!-- Required only when you are using JAX-RS Client -->
 		<dependency>
 			<groupId>org.glassfish.jersey.core</groupId>
 			<artifactId>jersey-client</artifactId>
 			<version>2.5.1</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>guava</artifactId>
+					<groupId>com.google.guava</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.ext</groupId>
@@ -210,6 +266,12 @@
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-entitymanager</artifactId>
 			<version>${hibernate.version}</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>xml-apis</artifactId>
+					<groupId>xml-apis</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
@@ -244,6 +306,16 @@
 			<groupId>org.tmatesoft.svnkit</groupId>
 			<artifactId>svnkit</artifactId>
 			<version>${svnkit.version}</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>platform</artifactId>
+					<groupId>net.java.dev.jna</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>jna</artifactId>
+					<groupId>net.java.dev.jna</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<dependency>
@@ -313,6 +385,11 @@
 			<artifactId>wicket-spring</artifactId>
 			<version>${wicket.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.wicket</groupId>
+			<artifactId>wicket-native-websocket-jetty9</artifactId>
+			<version>${wicket.version}</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.apache.wicket</groupId>
@@ -352,13 +429,11 @@
 					<artifactId>guava</artifactId>
 					<groupId>com.google.guava</groupId>
 				</exclusion>
+				<exclusion>
+					<artifactId>atmosphere-runtime</artifactId>
+					<groupId>org.atmosphere</groupId>
+				</exclusion>
 			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<version>${javax.servlet-api.version}</version>
-			<scope>provided</scope>
 		</dependency>
 		<!--<dependency>-->
 		<!--<groupId>org.wicketstuff</groupId>-->
@@ -426,23 +501,28 @@
 		</dependency>
 
 
-		<!--  JETTY DEPENDENCIES FOR TESTING  -->
+		<!-- Test Jetty support - start -->
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-plus</artifactId>
-			<version>${jetty.plugin.version}</version>
+			<version>${jetty.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-websocket</artifactId>
-			<version>${jetty.plugin.version}</version>
+			<artifactId>jetty-server</artifactId>
+			<version>${jetty.version}</version>
 		</dependency>
-		<!--<dependency>-->
-		<!--<groupId>org.mortbay.jetty</groupId>-->
-		<!--<artifactId>jetty</artifactId>-->
-		<!--<version>6.1.26</version>-->
-		<!--</dependency>-->
-		<!---->
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-webapp</artifactId>
+			<version>${jetty.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty.websocket</groupId>
+			<artifactId>websocket-server</artifactId>
+			<version>${jetty.version}</version>
+		</dependency>
+
 
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -463,11 +543,23 @@
 			<groupId>com.google.code.maven-replacer-plugin</groupId>
 			<artifactId>replacer</artifactId>
 			<version>1.5.2</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>commons-io</artifactId>
+					<groupId>commons-io</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
 			<version>2.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-all</artifactId>
+			<version>1.9.5</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 
@@ -533,7 +625,7 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<groupId>org.mortbay.jetty</groupId>
+				<groupId>org.eclipse.jetty</groupId>
 				<artifactId>jetty-maven-plugin</artifactId>
 				<version>${jetty.plugin.version}</version>
 				<configuration>
@@ -548,12 +640,9 @@
 					</webAppConfig>
 					<stopPort>8766</stopPort>
 					<stopKey>foo</stopKey>
-					<connectors>
-						<connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
-							<port>8765</port>
-							<maxIdleTime>3600000</maxIdleTime>
-						</connector>
-					</connectors>
+					<httpConnector>
+						<port>8765</port>
+					</httpConnector>
 				</configuration>
 			</plugin>
 

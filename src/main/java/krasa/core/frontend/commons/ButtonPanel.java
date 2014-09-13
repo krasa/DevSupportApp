@@ -24,6 +24,7 @@ public abstract class ButtonPanel extends Panel {
 		AjaxButton button = new AjaxButton("button") {
 			@Override
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+				target.add(this);
 				ButtonPanel.this.onSubmit(target, form);
 			}
 		};

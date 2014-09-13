@@ -1,19 +1,17 @@
 package krasa.merge.backend.service;
 
-import java.util.List;
+import java.util.*;
 
-import krasa.merge.backend.dto.MergeInfoResultItem;
-import krasa.merge.backend.dto.MergeJobDto;
-import krasa.merge.backend.service.automerge.AutoMergeExecutor;
-import krasa.merge.backend.service.automerge.AutoMergeJob;
-import krasa.merge.backend.service.automerge.AutoMergeJobMode;
-import krasa.merge.backend.service.automerge.AutoMergeProcess;
-import krasa.merge.backend.service.automerge.MergeJobsHolder;
+import krasa.core.backend.config.MainConfig;
+import krasa.core.backend.dao.UniversalDao;
+import krasa.merge.backend.dto.*;
+import krasa.merge.backend.service.automerge.*;
+import krasa.merge.backend.service.automerge.domain.MergeJob;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.*;
 import org.springframework.stereotype.Service;
-import org.tmatesoft.svn.core.SVNException;
-import org.tmatesoft.svn.core.SVNLogEntry;
+import org.springframework.transaction.annotation.Transactional;
+import org.tmatesoft.svn.core.*;
 
 @Service
 public class MergeService {
@@ -22,38 +20,52 @@ public class MergeService {
 	MergeJobsHolder runningTasks;
 	@Autowired
 	AutoMergeExecutor autoMergeExecutor;
+	@Autowired
+	@Qualifier("universalDao")
+	UniversalDao universalDao;
 
+	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER)
 	public void merge(MergeInfoResultItem mergeInfoResultItem, SVNLogEntry svnLogEntry) {
-		AutoMergeJob autoMergeJob = AutoMergeJob.create(mergeInfoResultItem, svnLogEntry, AutoMergeJobMode.ALL);
-		autoMergeExecutor.schedule(autoMergeJob);
+		MergeJob mergeJob = MergeJob.create(mergeInfoResultItem, svnLogEntry, AutoMergeJobMode.ALL);
+		universalDao.save(mergeJob);
+		autoMergeExecutor.schedule(mergeJob);
 	}
 
+	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER)
 	public void mergeSvnMergeInfoOnly(MergeInfoResultItem mergeInfoResultItem, SVNLogEntry svnLogEntry) {
-		AutoMergeJob autoMergeJob = AutoMergeJob.create(mergeInfoResultItem, svnLogEntry,
-				AutoMergeJobMode.ONLY_MERGE_INFO);
-		autoMergeExecutor.schedule(autoMergeJob);
+		MergeJob mergeJob = MergeJob.create(mergeInfoResultItem, svnLogEntry, AutoMergeJobMode.ONLY_MERGE_INFO);
+		universalDao.save(mergeJob);
+		autoMergeExecutor.schedule(mergeJob);
 	}
 
 	public List<MergeJobDto> getRunningMergeJobs() {
 		return autoMergeExecutor.getRunningMergeJobs();
 	}
 
+	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER, readOnly = true)
 	public MergeJobDto getMergeJobById(Integer buildJobId) {
-		return null;
+		MergeJob byId = universalDao.findById(MergeJob.class, buildJobId);
+		return MergeJob.getMergeJobDto(byId);
 	}
 
-	public List<MergeJobDto> getLastFinishedJobs() {
-		final List<AutoMergeProcess> lastFinished = runningTasks.getLastFinished();
-		return MergeJobDto.translate(lastFinished);
-
+	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER, readOnly = true)
+	public List<MergeJobDto> getLastMergeJobs() {
+		Set<MergeJob> mergeJobs = new HashSet<>();
+		mergeJobs.addAll(universalDao.findLast(10, MergeJob.class));
+		return MergeJobDto.translate(mergeJobs);
 	}
 
 	public String getDiff(MergeInfoResultItem mergeInfoResultItem, SVNLogEntry svnLogEntry) {
-		AutoMergeJob autoMergeJob = AutoMergeJob.create(mergeInfoResultItem, svnLogEntry, AutoMergeJobMode.DIFF);
+		MergeJob mergeJob = MergeJob.create(mergeInfoResultItem, svnLogEntry, AutoMergeJobMode.DIFF);
 		try {
-			return autoMergeJob.getRevisionDiff();
+			return mergeJob.getRevisionDiff();
 		} catch (SVNException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER)
+	public void update(MergeJob mergeJob) {
+		universalDao.save(mergeJob);
 	}
 }

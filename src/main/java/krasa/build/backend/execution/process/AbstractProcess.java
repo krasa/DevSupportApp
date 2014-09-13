@@ -1,13 +1,12 @@
 package krasa.build.backend.execution.process;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
-import krasa.build.backend.domain.Status;
+import krasa.build.backend.domain.*;
 import krasa.build.backend.execution.ProcessStatus;
+import krasa.core.backend.utils.MdcUtils;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.*;
 
 import com.google.common.base.Objects;
 
@@ -18,6 +17,11 @@ public abstract class AbstractProcess implements Process {
 	protected ProcessStatus processStatus = new ProcessStatus(Status.PENDING);
 	protected List<ProcessStatusListener> processStatusListeners = new ArrayList<>();
 	protected ProcessLog processLog;
+	private BuildJob buildJob;
+
+	public AbstractProcess(BuildJob buildJob) {
+		this.buildJob = buildJob;
+	}
 
 	@Override
 	public ProcessLog getProcessLog() {
@@ -34,11 +38,13 @@ public abstract class AbstractProcess implements Process {
 
 	@Override
 	public void run() {
+		MdcUtils.putLogName(buildJob.getLogFileName());
 		onStart();
 		try {
 			runInternal();
 		} catch (Exception e) {
 			e.printStackTrace();
+			log.error("process failed", e);
 			processStatus.setException(e);
 			processStatus.setStatus(Status.EXCEPTION);
 		} finally {
@@ -46,6 +52,7 @@ public abstract class AbstractProcess implements Process {
 				onFinally();
 			} catch (Exception e) {
 				e.printStackTrace();
+				log.error("process #finally failed", e);
 				processStatus.setException(e);
 				processStatus.setStatus(Status.EXCEPTION);
 			}

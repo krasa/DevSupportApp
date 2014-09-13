@@ -1,13 +1,9 @@
 package krasa.core.backend.domain;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import javax.annotation.Nullable;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 import krasa.merge.backend.domain.Repository;
 

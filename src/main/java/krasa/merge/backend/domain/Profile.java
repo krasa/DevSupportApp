@@ -2,19 +2,15 @@ package krasa.merge.backend.domain;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
-import javax.persistence.Column;
+import javax.persistence.*;
 import javax.persistence.Entity;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.ManyToMany;
 
 import krasa.core.backend.domain.AbstractEntity;
+import krasa.release.domain.TokenizationPageModel;
 
-import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.*;
 import org.hibernate.annotations.CascadeType;
 import org.tmatesoft.svn.core.SVNDirEntry;
 
@@ -35,6 +31,17 @@ public class Profile extends AbstractEntity<Profile> implements Serializable {
 	private List<Branch> branches = new ArrayList<>();
 	@Enumerated
 	private Type type = Type.USER;
+	@OneToOne
+	@Cascade({ CascadeType.DELETE, CascadeType.SAVE_UPDATE, CascadeType.ALL, CascadeType.MERGE })
+	TokenizationPageModel tokenizationPageModel;
+
+	public TokenizationPageModel getTokenizationPageModel() {
+		return tokenizationPageModel;
+	}
+
+	public void setTokenizationPageModel(TokenizationPageModel tokenizationPageModel) {
+		this.tokenizationPageModel = tokenizationPageModel;
+	}
 
 	public void removeBranch(String name) {
 		for (int i = 0; i < branches.size(); i++) {
