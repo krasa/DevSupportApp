@@ -1,12 +1,13 @@
 package krasa.intellij;
 
+import static krasa.intellij.IntelliJUtils.unmarshal;
 import static org.apache.commons.io.FileUtils.listFiles;
 import static org.apache.commons.io.filefilter.FileFilterUtils.trueFileFilter;
 
 import java.io.*;
 import java.util.*;
 
-import javax.xml.bind.*;
+import javax.xml.bind.JAXBException;
 
 import krasa.core.frontend.WicketApplication;
 import krasa.core.frontend.utils.Strings;
@@ -60,18 +61,15 @@ public class PluginUploadForm extends Form<Void> {
 					}
 
 					updateIndex(newFile, pluginDefinition);
-
 					info("saved file: " + upload.getClientFileName());
 				} catch (Exception e) {
-					throw new IllegalStateException("Unable to write file", e);
+					throw new IllegalStateException(e.getMessage(), e);
 				}
 			}
 		}
 	}
 
 	private PluginDefinition getPluginDefinition(File newFile) throws ZipException, JAXBException {
-		Unmarshaller unmarshaller = IntelliJUtils.getUnmarshaller();
-
 		PluginDefinition pluginDefinition = null;
 		ZipFile zipFile = new ZipFile(newFile);
 		File tmpDir = new File(getUploadFolder().getAbsolutePath() + "/tmp" + Strings.cutExtension(newFile.getName()));
@@ -88,7 +86,7 @@ public class PluginUploadForm extends Form<Void> {
 			jarFile.extractAll(tmpJarDir.getAbsolutePath());
 			Collection<File> pluginXml = listFiles(tmpJarDir, new NameFileFilter("plugin.xml"), trueFileFilter());
 			for (File file1 : pluginXml) {
-				pluginDefinition = (PluginDefinition) unmarshaller.unmarshal(file1);
+				pluginDefinition = unmarshal(file1, IntelliJUtils.JAXB_CONTEXT);
 				log.info("Found {}", pluginDefinition);
 			}
 		}

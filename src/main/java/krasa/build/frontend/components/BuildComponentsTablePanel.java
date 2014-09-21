@@ -20,17 +20,18 @@ import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.event.*;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackDefaultDataTable;
+import org.apache.wicket.extensions.markup.html.repeater.data.grid.DataGridView;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.*;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.*;
 import org.apache.wicket.markup.repeater.*;
+import org.apache.wicket.markup.repeater.data.IDataProvider;
 import org.apache.wicket.model.*;
 import org.apache.wicket.protocol.ws.api.*;
 import org.apache.wicket.protocol.ws.api.message.IWebSocketPushMessage;
 import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.azeckoski.reflectutils.ReflectUtils;
 import org.slf4j.*;
 
 /**
@@ -45,7 +46,7 @@ public class BuildComponentsTablePanel extends BasePanel {
 	protected final FeedbackPanel feedback;
 	@SpringBean
 	private BuildFacade buildFacade;
-	private AjaxFallbackDefaultDataTable<BuildableComponentDto, String> table;
+	MyAjaxFallbackDefaultDataTable table;
 
 	public BuildComponentsTablePanel(String id, final IModel<Environment> environmentIModel) {
 		super(id);
@@ -70,65 +71,8 @@ public class BuildComponentsTablePanel extends BasePanel {
 	}
 
 	private AjaxFallbackDefaultDataTable<BuildableComponentDto, String> createTable() {
-		table = new MyAjaxFallbackDefaultDataTable<BuildableComponentDto, String>("components", getColumns(),
-				getModel(), 100) {
-
-			@Override
-			protected Item<BuildableComponentDto> newRowItem(String id, int index, IModel<BuildableComponentDto> model) {
-				Item<BuildableComponentDto> item = new Item<BuildableComponentDto>(id, index, model) {
-					@Override
-					public void onEvent(IEvent<?> event) {
-						super.onEvent(event);
-						if (event.getPayload() instanceof ComponentChangedEvent) {
-							ComponentChangedEvent payload = (ComponentChangedEvent) event.getPayload();
-							BuildableComponentDto buildableComponentDto = payload.getBuildableComponentDto();
-							if (buildableComponentDto.getId().equals(getModelObject().getId())) {
-								setModelObject(payload.getBuildableComponentDto());
-								payload.getTarget().add(this);
-								event.stop();
-							}
-						} else if (event.getPayload() instanceof ComponentDeletedEvent) {
-							ComponentDeletedEvent payload = (ComponentDeletedEvent) event.getPayload();
-							BuildableComponentDto buildableComponentDto = payload.getBuildableComponentDto();
-							AjaxRequestTarget target = payload.getTarget();
-							if (buildableComponentDto.getId().equals(getModelObject().getId())) {
-								this.setVisible(false);
-								target.add(this);
-								event.stop();
-							}
-						}
-					}
-				};
-				item.setMarkupId(ROW_ID_PREFIX + model.getObject().getId());
-				item.setOutputMarkupId(true);
-				if (item.getModelObject().getIndex() >= 0) {
-					item.add(new AttributeAppender("class", Model.of("highlightIndex"
-							+ item.getModelObject().getIndex()), " "));
-				}
-				return item;
-			}
-		};
+		table = new MyAjaxFallbackDefaultDataTable();
 		return table;
-
-	}
-
-	public void addItem(AjaxRequestTarget target, BuildableComponentDto buildableComponentDto) {
-		try {
-			RefreshingView datagrid = (RefreshingView) ReflectUtils.getInstance().getFieldValue(table, "datagrid");
-			Method method = RefreshingView.class.getDeclaredMethod("newItemFactory");
-			method.setAccessible(true);
-
-			IItemFactory factory = (IItemFactory) method.invoke(datagrid);
-
-			Item item = factory.newItem(buildableComponentDto.getId(), new Model(buildableComponentDto));
-			datagrid.add(item);
-			target.prependJavaScript(String.format("var item=document.createElement('%s');item.id='%s';"
-					+ "Wicket.$('%s').getElementsByTagName(\"tbody\")[0].appendChild(item);", "tr", item.getMarkupId(),
-					table.getMarkupId()));
-			target.add(item);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
 	}
 
 	private void refreshRow(AjaxRequestTarget target, BuildableComponentDto buildableComponentDto) {
@@ -266,4 +210,78 @@ public class BuildComponentsTablePanel extends BasePanel {
 		componentDeletedEvent.setTarget(target);
 		send(table, Broadcast.DEPTH, componentDeletedEvent);
 	}
+
+	public class MyAjaxFallbackDefaultDataTable extends
+			krasa.core.frontend.commons.table.MyAjaxFallbackDefaultDataTable<BuildableComponentDto, String> {
+
+		private DataGridView<BuildableComponentDto> dataGridView;
+
+		public MyAjaxFallbackDefaultDataTable() {
+			super("components", BuildComponentsTablePanel.this.getColumns(), BuildComponentsTablePanel.this.getModel(),
+					100);
+		}
+
+		@Override
+		protected DataGridView<BuildableComponentDto> newDataGridView(String id,
+				List<? extends IColumn<BuildableComponentDto, String>> iColumns,
+				IDataProvider<BuildableComponentDto> dataProvider) {
+			dataGridView = super.newDataGridView(id, iColumns, dataProvider);
+			return dataGridView;
+		}
+
+		@Override
+		protected Item<BuildableComponentDto> newRowItem(String id, int index, IModel<BuildableComponentDto> model) {
+			Item<BuildableComponentDto> item = new Item<BuildableComponentDto>(id, index, model) {
+				@Override
+				public void onEvent(IEvent<?> event) {
+					super.onEvent(event);
+					if (event.getPayload() instanceof ComponentChangedEvent) {
+						ComponentChangedEvent payload = (ComponentChangedEvent) event.getPayload();
+						BuildableComponentDto buildableComponentDto = payload.getBuildableComponentDto();
+						if (buildableComponentDto.getId().equals(getModelObject().getId())) {
+							setModelObject(payload.getBuildableComponentDto());
+							payload.getTarget().add(this);
+							event.stop();
+						}
+					} else if (event.getPayload() instanceof ComponentDeletedEvent) {
+						ComponentDeletedEvent payload = (ComponentDeletedEvent) event.getPayload();
+						BuildableComponentDto buildableComponentDto = payload.getBuildableComponentDto();
+						AjaxRequestTarget target = payload.getTarget();
+						if (buildableComponentDto.getId().equals(getModelObject().getId())) {
+							this.setVisible(false);
+							target.add(this);
+							event.stop();
+						}
+					}
+				}
+			};
+			item.setMarkupId(ROW_ID_PREFIX + model.getObject().getId());
+			item.setOutputMarkupId(true);
+			if (item.getModelObject().getIndex() >= 0) {
+				item.add(new AttributeAppender("class", Model.of("highlightIndex" + item.getModelObject().getIndex()),
+						" "));
+			}
+			return item;
+		}
+
+		public void addItem(AjaxRequestTarget target, BuildableComponentDto buildableComponentDto) {
+			try {
+				Method method = RefreshingView.class.getDeclaredMethod("newItemFactory");
+				method.setAccessible(true);
+
+				IItemFactory factory = (IItemFactory) method.invoke(dataGridView);
+
+				Item item = factory.newItem(buildableComponentDto.getId(), new Model(buildableComponentDto));
+				dataGridView.add(item);
+				target.prependJavaScript(String.format("var item=document.createElement('%s');item.id='%s';"
+						+ "Wicket.$('%s').getElementsByTagName(\"tbody\")[0].appendChild(item);", "tr",
+						item.getMarkupId(), getMarkupId()));
+				target.add(item);
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		}
+
+	}
+
 }

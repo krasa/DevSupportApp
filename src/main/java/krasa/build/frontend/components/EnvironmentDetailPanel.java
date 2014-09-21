@@ -1,7 +1,6 @@
 package krasa.build.frontend.components;
 
-import krasa.build.backend.domain.BuildableComponent;
-import krasa.build.backend.domain.Environment;
+import krasa.build.backend.domain.*;
 import krasa.build.backend.dto.BuildableComponentDto;
 import krasa.build.backend.exception.AlreadyExistsException;
 import krasa.build.backend.facade.BuildFacade;
@@ -13,9 +12,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.model.*;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
 public class EnvironmentDetailPanel extends BasePanel {
@@ -77,7 +74,7 @@ public class EnvironmentDetailPanel extends BasePanel {
 					BuildableComponent buildableComponent = buildFacade.createBuildableComponent(
 							environmentEntityModelWrapper.getObject(), fieldValue);
 					if (buildableComponent != null) {
-						builds.addItem(Ajax.getAjaxRequestTarget(), new BuildableComponentDto(buildableComponent));
+						builds.table.addItem(Ajax.getAjaxRequestTarget(), new BuildableComponentDto(buildableComponent));
 					}
 				} catch (AlreadyExistsException e) {
 					error(e.toString());

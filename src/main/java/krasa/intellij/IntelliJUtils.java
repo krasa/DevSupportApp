@@ -4,6 +4,7 @@ import java.io.File;
 
 import javax.xml.bind.*;
 
+import krasa.core.backend.utils.JaxbUtils;
 import krasa.core.frontend.WicketApplication;
 
 import org.slf4j.*;
@@ -12,14 +13,16 @@ import org.slf4j.*;
  * @author Vojtech Krasa
  */
 public class IntelliJUtils {
+
 	private static final Logger log = LoggerFactory.getLogger(IntelliJUtils.class);
 
-	public static final JAXBContext JAXB_CONTEXT = IntelliJUtils.getJaxbContext();
+	public static final JAXBContext JAXB_CONTEXT = JaxbUtils.getJaxbContext(PluginDefinition.class, PluginsIndex.class);
 
-	private static JAXBContext getJaxbContext() {
+	@SuppressWarnings("unchecked")
+	public static <T> T unmarshal(File newFile, JAXBContext jaxbContext) {
 		try {
-			return JAXBContext.newInstance(PluginDefinition.class, PluginsIndex.class);
-		} catch (JAXBException e) {
+			return JaxbUtils.unmarshal(newFile, jaxbContext.createUnmarshaller());
+		} catch (Exception e) {
 			throw new RuntimeException(e.getMessage(), e);
 		}
 	}

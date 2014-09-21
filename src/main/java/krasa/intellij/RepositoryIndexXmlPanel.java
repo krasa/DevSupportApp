@@ -11,7 +11,7 @@ import org.apache.wicket.markup.html.list.*;
 import org.apache.wicket.request.resource.SharedResourceReference;
 
 /**
- * @author Vojtech Krasa
+ * @author V1ojtech Krasa
  */
 public class RepositoryIndexXmlPanel extends BasePanel {
 	public RepositoryIndexXmlPanel(String id) {
@@ -33,6 +33,7 @@ public class RepositoryIndexXmlPanel extends BasePanel {
 				String name = modelObject.getFileName();
 				plugin.add(new AttributeModifier("id", Strings.cutExtension(name)));
 				plugin.add(new AttributeModifier("url", absoluteUrl + "/" + modelObject.getFileName()));
+				plugin.add(new AttributeModifier("version", modelObject.getVersion()));
 				item.add(plugin);
 			}
 		};
