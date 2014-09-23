@@ -4,7 +4,7 @@ Web application with following features:
 - replacing text(versions and stuff) in new branches
 - finding not tagged commits
 - custom build tool (connects via ssh and sends commands)
-
+- IntelliJ Enterprise repository
 
 ![Finding merges](https://raw.github.com/krasa/SVNMergeInfo/master/screenshot.png)
 
