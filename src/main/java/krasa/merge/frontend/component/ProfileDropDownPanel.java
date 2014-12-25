@@ -1,8 +1,7 @@
 package krasa.merge.frontend.component;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import krasa.core.frontend.MySession;
 import krasa.merge.backend.domain.Profile;
@@ -11,9 +10,7 @@ import krasa.merge.backend.facade.Facade;
 import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
-import org.apache.wicket.markup.html.form.ChoiceRenderer;
-import org.apache.wicket.markup.html.form.DropDownChoice;
-import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.*;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.spring.injection.annot.SpringBean;
@@ -22,6 +19,7 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
  * @author Vojtech Krasa
  */
 public class ProfileDropDownPanel extends Panel {
+
 	@SpringBean
 	private Facade facade;
 
@@ -31,10 +29,10 @@ public class ProfileDropDownPanel extends Panel {
 		Form form = new Form("form");
 		add(form);
 
-		form.add(getPhoneVendorDDC(form));
+		form.add(dropDownChoice());
 	}
 
-	private DropDownChoice getPhoneVendorDDC(final Form form) {
+	private DropDownChoice dropDownChoice() {
 		List<Profile> profiles = facade.getProfiles();
 		Model<ProfileDropDownChoiceItem> selected = new Model<>();
 		List<ProfileDropDownChoiceItem> choiceItems = convert(profiles, selected, getMySession().getCurrentProfileId());
@@ -42,7 +40,8 @@ public class ProfileDropDownPanel extends Panel {
 		final DropDownChoice<ProfileDropDownChoiceItem> profilesDDC = new DropDownChoice<>("profiles", selected,
 				choiceItems, new ChoiceRenderer<ProfileDropDownChoiceItem>("name", "id"));
 		// Add Ajax Behaviour...
-		profilesDDC.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+		profilesDDC.add(new AjaxFormComponentUpdatingBehavior("change") {
+
 			@Override
 			protected void onUpdate(AjaxRequestTarget target) {
 				ProfileDropDownChoiceItem modelValue1 = profilesDDC.getModelObject();
@@ -76,6 +75,7 @@ public class ProfileDropDownPanel extends Panel {
 	}
 
 	class ProfileDropDownChoiceItem implements Serializable {
+
 		String name;
 		Integer id;
 

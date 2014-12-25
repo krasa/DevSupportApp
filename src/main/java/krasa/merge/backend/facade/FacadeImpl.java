@@ -61,6 +61,7 @@ public class FacadeImpl implements Facade {
 	private GenericDaoBuilder genericDAO;
 
 	public FacadeImpl() {
+
 	}
 
 	@Autowired
@@ -383,6 +384,7 @@ public class FacadeImpl implements Facade {
 			Process p = pb.start();
 			String x = IOUtils.toString(p.getInputStream());
 			String xs = IOUtils.toString(p.getErrorStream());
+			System.err.println(xs);
 			p.destroy();
 			return x;
 		} catch (IOException e) {

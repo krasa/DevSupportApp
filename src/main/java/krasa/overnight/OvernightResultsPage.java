@@ -16,7 +16,6 @@ import org.apache.wicket.extensions.markup.html.form.DateTextField;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.*;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.extensions.yui.calendar.DatePicker;
-import org.apache.wicket.markup.*;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.link.*;
 import org.apache.wicket.markup.html.panel.*;
@@ -175,24 +174,7 @@ public class OvernightResultsPage extends BasePage {
 					href = getAutotestUrl(result, date, environment, component, name);
 				}
 
-				return new ExternalLink(id, href) {
-
-					@Override
-					public void onComponentTagBody(final MarkupStream markupStream, final ComponentTag openTag) {
-						// Draw anything before the body?
-						if (!isLinkEnabled() && getBeforeDisabledLink() != null) {
-							getResponse().write(getBeforeDisabledLink());
-						}
-
-						// Render the body of the link
-						replaceComponentTagBody(markupStream, openTag, testNameName);
-
-						// Draw anything after the body?
-						if (!isLinkEnabled() && getAfterDisabledLink() != null) {
-							getResponse().write(getAfterDisabledLink());
-						}
-					}
-				};
+				return new ExternalLink(id, href, testNameName);
 			}
 
 		});

@@ -135,7 +135,7 @@ public class TMSvnConventionsStrategy extends SvnConventionsStrategy {
 	protected void setSearchFrom(Set<Integer> versionsSet, List<Integer> versions, SvnFolder child) {
 		int searchFromVersion = getSearchFromVersion(child);
 
-		if (isTrunk(child)) {
+		if (isTrunk(child) && versions.size() > 0) {
 			Integer highestVersion = versions.get(versions.size() - 1);
 			child.setSearchFrom(getNameWithoutVersion(child) + highestVersion);
 		} else if (versionsSet.contains(searchFromVersion)) {
@@ -163,6 +163,7 @@ public class TMSvnConventionsStrategy extends SvnConventionsStrategy {
 	}
 
 	private class SearchFromDTO {
+
 		private Map<String, SvnFolder> childs;
 		private Set<Integer> versionsSet;
 		private List<Integer> versions;

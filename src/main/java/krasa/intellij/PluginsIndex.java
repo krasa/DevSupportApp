@@ -11,6 +11,7 @@ import org.apache.commons.lang3.builder.*;
  */
 @XmlRootElement(name = "plugins")
 public class PluginsIndex {
+
 	private List<PluginDefinition> pluginDefinitions = new ArrayList<>();
 
 	public List<PluginDefinition> getPluginDefinitions() {
@@ -39,7 +40,8 @@ public class PluginsIndex {
 	public void add(PluginDefinition pluginDefinition) {
 		for (Iterator<PluginDefinition> iterator = pluginDefinitions.iterator(); iterator.hasNext();) {
 			PluginDefinition definition = iterator.next();
-			if (definition.getId().equals(pluginDefinition.getId())) {
+			if (definition.getId().equals(pluginDefinition.getId())
+					&& definition.getVersion().equals(pluginDefinition.getVersion())) {
 				iterator.remove();
 			}
 		}

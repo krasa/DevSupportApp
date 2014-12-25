@@ -519,6 +519,15 @@ a.logo {
 }
 
 /* center column */
+#center-column-wide {
+    float: left;
+    width: 1400px;
+    /*background: url(../img/bg-center-column2.jpg) no-repeat left top;*/
+    min-height: 584px;
+    padding: 12px 16px 0 13px;
+}
+
+/* center column */
 #center-column {
     float: left;
     width: 1020px;
@@ -816,14 +825,31 @@ div.table .select select {
     font-weight: bold;
 }
 
-#SUCCESS {
+#SUCCESS, #BOUND {
     color: green;
     font-weight: bold;
 }
 
-#Failed {
+#Failed, #CLOSED {
     color: RED;
     font-weight: bold;
+}
+
+#outbound {
+    color: blue;
+    font-weight: bold;
+}
+
+#inbound {
+    color: sienna;
+}
+
+#TRANSCEIVER {
+    color: green;
+}
+
+#TRANSMITTER, #RECEIVER {
+    color: blue;
 }
 
 #Excluded {

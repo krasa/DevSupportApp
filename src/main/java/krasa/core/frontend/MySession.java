@@ -5,24 +5,16 @@ import javax.servlet.http.Cookie;
 import krasa.merge.backend.domain.Profile;
 import krasa.merge.backend.facade.Facade;
 
-import org.apache.wicket.Application;
-import org.apache.wicket.ThreadContext;
+import org.apache.wicket.*;
 import org.apache.wicket.protocol.http.WebSession;
 import org.apache.wicket.request.Request;
 import org.apache.wicket.request.cycle.RequestCycle;
-import org.apache.wicket.request.http.WebRequest;
-import org.apache.wicket.request.http.WebResponse;
-import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
+import org.apache.wicket.request.http.*;
+import org.apache.wicket.spring.injection.annot.*;
 
 /**
  * @author Vojtech Krasa
  */
-@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-@Component("MySession")
 public class MySession extends WebSession {
 
 	public static final String PROFILE_ID = "profileId";
@@ -35,8 +27,7 @@ public class MySession extends WebSession {
 	 * Constructor. Note that {@link org.apache.wicket.request.cycle.RequestCycle} is not available until this
 	 * constructor returns.
 	 * 
-	 * @param request
-	 *            The current request
+	 * @param request The current request
 	 */
 	public MySession(Request request) {
 		super(request);

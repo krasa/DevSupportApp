@@ -1,11 +1,11 @@
 package krasa.core.frontend.pages;
 
 import krasa.core.frontend.commons.MyFeedbackPanel;
-import krasa.merge.backend.facade.Facade;
+import krasa.merge.backend.facade.FacadeImpl;
 import krasa.merge.frontend.component.SvnProjectsLeftMenuPanel;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.markup.html.WebPage;
+import org.apache.wicket.markup.html.*;
 import org.apache.wicket.markup.html.panel.*;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
@@ -16,8 +16,8 @@ public abstract class BasePage extends WebPage {
 	public static final String FEEDBACK = "feedback";
 	public static final String LEFT = "left";
 	@SpringBean
-	protected Facade facade;
-	public static final String CURRENT = "current";
+	protected FacadeImpl facade;
+	protected WebMarkupContainer centerColumn = new TransparentWebMarkupContainer("center-column");
 
 	// public abstract IModel getPageTitle();
 
@@ -49,6 +49,7 @@ public abstract class BasePage extends WebPage {
 		// Label keywords = new Label("keywords", "");
 		// keywords.add(new AttributeAppender("content", getKeywords(), " "));
 		// addOrReplace(keywords);
+		add(centerColumn);
 
 		if (get("top") == null) {
 			// subclass-driven components not yet initilized

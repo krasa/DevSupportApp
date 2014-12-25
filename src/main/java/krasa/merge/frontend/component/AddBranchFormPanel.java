@@ -57,8 +57,7 @@ public abstract class AddBranchFormPanel extends BasePanel {
 				target.add(feedback);
 			}
 		};
-		form.add(new AjaxFormSubmitBehavior(form, "onsubmit") {
-		});
+		form.add(new AjaxFormSubmitBehavior(form, "submit") {});
 		form.add(createLabel(labelModel));
 		form.add(autocomplete = createAutoCompletePanel());
 		form.add(feedback = new MyFeedbackPanel("feedback"));

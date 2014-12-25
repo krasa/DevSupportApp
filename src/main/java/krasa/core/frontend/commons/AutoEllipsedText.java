@@ -4,8 +4,7 @@ import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.model.Model;
-import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.model.*;
 
 public class AutoEllipsedText extends Panel {
 
@@ -57,10 +56,11 @@ public class AutoEllipsedText extends Panel {
 
 		};
 		showMore.setOutputMarkupId(true);
-		showMore.add(new AttributeModifier("onclick", true, new Model<>("document.getElementById('"
+		AttributeModifier onclick = new AttributeModifier("onclick", new Model<>("document.getElementById('"
 				+ initialText.getMarkupId() + "').style.display = 'none'; document.getElementById('"
 				+ fullText.getMarkupId() + "').style.display = 'block'; document.getElementById('"
-				+ showMore.getMarkupId() + "').style.display = 'none'")));
+				+ showMore.getMarkupId() + "').style.display = 'none'"));
+		showMore.add(onclick);
 		add(showMore);
 	}
 

@@ -2,8 +2,7 @@ package krasa.core.frontend.commons;
 
 import krasa.merge.frontend.pages.svn.SvnFolderBrowsePage;
 
-import org.apache.wicket.markup.ComponentTag;
-import org.apache.wicket.markup.MarkupStream;
+import org.apache.wicket.markup.*;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
@@ -25,9 +24,10 @@ public class ProjectLink extends BookmarkablePageLink<String> {
 	public PageParameters getPageParameters() {
 		PageParameters pageParameters = new PageParameters();
 		String object = linkParameter.getObject();
-		if (object != null) {
-			pageParameters.add(SvnFolderBrowsePage.PATH_PARAMETER, object);
+		if (object == null) {
+			throw new IllegalStateException("parameter is null");
 		}
+		pageParameters.add(SvnFolderBrowsePage.PATH_PARAMETER, object);
 		return pageParameters;
 	}
 

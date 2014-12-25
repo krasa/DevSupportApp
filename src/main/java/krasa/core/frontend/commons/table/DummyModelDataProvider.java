@@ -1,16 +1,12 @@
 package krasa.core.frontend.commons.table;
 
 import java.io.Serializable;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
-import org.apache.wicket.extensions.markup.html.repeater.data.sort.ISortState;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.ISortableDataProvider;
-import org.apache.wicket.extensions.markup.html.repeater.util.SingleSortState;
-import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
+import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
+import org.apache.wicket.model.*;
 
-public class DummyModelDataProvider<T extends Serializable> implements ISortableDataProvider<T, String> {
+public class DummyModelDataProvider<T extends Serializable> extends SortableDataProvider<T, String> {
 
 	private IModel<List<T>> ts;
 
@@ -41,8 +37,4 @@ public class DummyModelDataProvider<T extends Serializable> implements ISortable
 		return new Model<>(object);
 	}
 
-	@Override
-	public ISortState getSortState() {
-		return new SingleSortState();
-	}
 }

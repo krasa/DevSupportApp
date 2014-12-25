@@ -1,7 +1,7 @@
 package krasa.intellij;
 
 import static krasa.intellij.IntelliJUtils.unmarshal;
-import static org.apache.commons.io.FileUtils.listFiles;
+import static org.apache.commons.io.FileUtils.*;
 import static org.apache.commons.io.filefilter.FileFilterUtils.trueFileFilter;
 
 import java.io.*;
@@ -27,6 +27,7 @@ import org.springframework.util.Assert;
  * @author Vojtech Krasa
  */
 public class PluginUploadForm extends Form<Void> {
+
 	private static final Logger log = LoggerFactory.getLogger(PluginUploadForm.class);
 
 	FileUploadField fileUploadField;
@@ -59,8 +60,8 @@ public class PluginUploadForm extends Form<Void> {
 					if (pluginDefinition == null) {
 						throw new IllegalStateException("could not find plugin.xml");
 					}
-
-					updateIndex(newFile, pluginDefinition);
+					saveFile(newFile, pluginDefinition);
+					updateIndex(pluginDefinition);
 					info("saved file: " + upload.getClientFileName());
 				} catch (Exception e) {
 					throw new IllegalStateException(e.getMessage(), e);
@@ -69,16 +70,32 @@ public class PluginUploadForm extends Form<Void> {
 		}
 	}
 
-	private PluginDefinition getPluginDefinition(File newFile) throws ZipException, JAXBException {
+	private void saveFile(File tempFile, PluginDefinition pluginDefinition) throws IOException {
+		File pluginsFolder = WicketApplication.getWicketApplication().getPluginsFolder();
+		String extension = tempFile.getName().substring(tempFile.getName().indexOf("."));
+		File destFile = new File(pluginsFolder, pluginDefinition.getId() + "_" + pluginDefinition.getVersion()
+				+ extension);
+		pluginDefinition.setFileName(destFile.getName());
+		destFile.delete();
+		moveFile(tempFile, destFile);
+	}
+
+	private PluginDefinition getPluginDefinition(File newFile) throws ZipException, JAXBException, IOException {
 		PluginDefinition pluginDefinition = null;
-		ZipFile zipFile = new ZipFile(newFile);
 		File tmpDir = new File(getUploadFolder().getAbsolutePath() + "/tmp" + Strings.cutExtension(newFile.getName()));
-		try {
-			FileUtils.deleteDirectory(tmpDir);
-		} catch (IOException e) {
-			throw new RuntimeException(e.getMessage(), e);
+		if (newFile.getName().endsWith("zip")) {
+			ZipFile zipFile = new ZipFile(newFile);
+			try {
+				FileUtils.deleteDirectory(tmpDir);
+			} catch (IOException e) {
+				throw new RuntimeException(e.getMessage(), e);
+			}
+			zipFile.extractAll(tmpDir.getAbsolutePath());
+		} else {
+			File destFile = new File(tmpDir, newFile.getName());
+			destFile.delete();
+			copyFile(newFile, destFile);
 		}
-		zipFile.extractAll(tmpDir.getAbsolutePath());
 		Collection<File> files = listFiles(tmpDir, new String[] { "jar" }, true);
 		for (File file : files) {
 			ZipFile jarFile = new ZipFile(file);
@@ -93,9 +110,8 @@ public class PluginUploadForm extends Form<Void> {
 		return pluginDefinition;
 	}
 
-	private void updateIndex(File newFile, PluginDefinition pluginDefinition) {
+	private void updateIndex(PluginDefinition pluginDefinition) {
 		PluginsIndex pluginsIndex = IntelliJUtils.getPluginsIndex();
-		pluginDefinition.setFileName(newFile.getName());
 		pluginsIndex.add(pluginDefinition);
 		IntelliJUtils.saveIndex(pluginsIndex);
 	}

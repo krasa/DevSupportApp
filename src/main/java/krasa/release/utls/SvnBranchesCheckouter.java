@@ -16,7 +16,7 @@ public class SvnBranchesCheckouter {
 
 	public static final String SVN = "http://svn/sdp";
 	public static final String TARGET = "D:/workspace/_projekty/_T-Mobile/";
-	public static final int INT = 14500;
+	public static final int INT = 14700;
 
 	public static void main(String[] args) throws SVNException {
 		new SvnBranchesCheckouter().checkout(SVN, new File(TARGET + INT), ".*_" + INT);

@@ -4,6 +4,8 @@ import static org.apache.commons.lang3.StringUtils.substring;
 
 import java.util.*;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.google.gson.Gson;
 
 public class Default {
@@ -16,6 +18,7 @@ public class Default {
 		List<ReplacementDefinition> replacementDefinitions = new ArrayList<>();
 		addPom(replacementDefinitions);
 		addProperties(replacementDefinitions);
+		addEclipse(replacementDefinitions);
 
 		Map<String, String> stringStringHashMap = new TreeMap<>();
 		//
@@ -40,6 +43,7 @@ public class Default {
 		List<ReplacementDefinition> replacementDefinitions = new ArrayList<>();
 		addPom(replacementDefinitions);
 		addProperties(replacementDefinitions);
+		addEclipse(replacementDefinitions);
 
 		Map<String, String> stringStringHashMap = new TreeMap<>();
 		//
@@ -62,16 +66,9 @@ public class Default {
 	protected static String toPomVersion(String fromVersion) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(substring(fromVersion, 0, 2));
-		sb.append(".");
-		sb.append(substring(fromVersion, 2, 3));
-		sb.append(".");
-		sb.append(substring(fromVersion, 3, 4));
-
-		String substring = substring(fromVersion, 4, 5);
-		if (substring.length() > 0 && !substring.equals("0")) {
-			sb.append(".");
-			sb.append(substring);
-		}
+		appendVersion(fromVersion, sb, 2, 3);
+		appendVersion(fromVersion, sb, 3, 4);
+		appendVersion(fromVersion, sb, 4, 5);
 
 		if ("9999".equals(fromVersion)) {
 			sb.append("-SNAPSHOT");
@@ -79,8 +76,27 @@ public class Default {
 		return sb.toString();
 	}
 
+	private static void appendVersion(String fromVersion, StringBuilder sb, int start, int end) {
+		String substring = substring(fromVersion, start, end);
+		if (StringUtils.isNotEmpty(substring)) {
+			sb.append(".");
+			sb.append(substring);
+		}
+	}
+
 	protected static TokenizationJobParameters loadFromJson(String s1) {
 		return new Gson().fromJson(s1, TokenizationJobParameters.class);
+	}
+
+	private static void addEclipse(List<ReplacementDefinition> replacementDefinitions) {
+		ReplacementDefinition definition = new ReplacementDefinition();
+		replacementDefinitions.add(definition);
+
+		final List<String> includes = definition.getIncludes();
+		includes.add("**/.project");
+
+		final List<Replacement> replacements = definition.getReplacements();
+		replacements.add(new Replacement("<name>portal-{old.version}</name>", "<name>portal-{new.version}</name>"));
 	}
 
 	private static void addProperties(List<ReplacementDefinition> replacementDefinitions) {
@@ -89,12 +105,15 @@ public class Default {
 
 		final List<String> includes = definition.getIncludes();
 		includes.add("**/*.properties");
+		// eclipse
+		includes.add("**/.project");
 		/* spi-pai */
 		includes.add("**/*.sql");
 		includes.add("**/PartnerContractDataProviderTest.java");
 
 		final List<Replacement> replacements = definition.getReplacements();
 		replacements.add(new Replacement("build.number=${old.version}", "build.number=" + "${new.build.version}"));
+		replacements.add(new Replacement("<name>portal-{old.version}</name>", "<name>portal-{new.version}</name>"));
 		replacements.add(new Replacement("pit${old.version}", "pit" + "${new.pit.db.version}"));
 		replacements.add(new Replacement("pai${old.version}", "pai" + "${new.portal.db.version}"));
 		replacements.add(new Replacement("sac${old.version}", "sac" + "${new.sac.db.version}"));
@@ -113,4 +132,11 @@ public class Default {
 		src.getReplacements().add(new Replacement("${old.pom.version}", "${new.pom.version}"));
 	}
 
+	public static void main(String[] args) throws InterruptedException {
+		while (true) {
+			Thread.sleep(10);
+
+			new RuntimeException().printStackTrace();
+		}
+	}
 }

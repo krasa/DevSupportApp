@@ -5,10 +5,11 @@ import java.util.Collection;
 import krasa.build.backend.config.ExecutorConfig;
 import krasa.build.backend.domain.*;
 import krasa.build.backend.dto.BuildableComponentDto;
+import krasa.core.frontend.WebInitializer;
 
 import org.apache.wicket.Application;
 import org.apache.wicket.protocol.http.WicketFilter;
-import org.apache.wicket.protocol.ws.IWebSocketSettings;
+import org.apache.wicket.protocol.ws.WebSocketSettings;
 import org.apache.wicket.protocol.ws.api.IWebSocketConnection;
 import org.apache.wicket.protocol.ws.api.message.IWebSocketPushMessage;
 import org.apache.wicket.protocol.ws.api.registry.IWebSocketConnectionRegistry;
@@ -41,9 +42,9 @@ public class EventService {
 	}
 
 	public void sendEvent(IWebSocketPushMessage event) {
-		Application application = Application.get("wicket.websocket");
-		IWebSocketSettings iWebSocketSettings = IWebSocketSettings.Holder.get(application);
-		IWebSocketConnectionRegistry connectionRegistry = iWebSocketSettings.getConnectionRegistry();
+		Application application = Application.get(WebInitializer.WICKET_WEBSOCKET);
+		WebSocketSettings webSocketSettings = WebSocketSettings.Holder.get(application);
+		IWebSocketConnectionRegistry connectionRegistry = webSocketSettings.getConnectionRegistry();
 		Collection<IWebSocketConnection> connections = connectionRegistry.getConnections(application);
 		for (IWebSocketConnection connection : connections) {
 			connection.sendMessage(event);

@@ -14,8 +14,7 @@ import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.EmptyPanel;
-import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.LoadableDetachableModel;
+import org.apache.wicket.model.*;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.util.string.StringValue;
@@ -24,6 +23,7 @@ import org.apache.wicket.util.string.StringValue;
  * @author Vojtech Krasa
  */
 public class SvnFolderBrowsePage extends BasePage {
+
 	@SpringBean
 	private SvnFolderRefreshService svnFolderResfreshService;
 
@@ -36,7 +36,11 @@ public class SvnFolderBrowsePage extends BasePage {
 	public SvnFolderBrowsePage(PageParameters parameters) {
 		super(parameters);
 		StringValue name = parameters.get(PATH_PARAMETER);
-		path = facade.resolveProjectByPath(name.toString());
+		String path1 = name.toString();
+		if (path1 == null || path1.isEmpty()) {
+			throw new IllegalStateException(PATH_PARAMETER + " parameter is empty");
+		}
+		path = facade.resolveProjectByPath(path1);
 		createForm();
 		add(createResultPanel());
 		add(branchesTablePanel = createTable());
@@ -59,6 +63,7 @@ public class SvnFolderBrowsePage extends BasePage {
 
 		form.setOutputMarkupId(true);
 		form.add(new IndicatingAjaxButton("refreshProjectBraches") {
+
 			@Override
 			protected void onSubmit(AjaxRequestTarget ajaxRequestTarget, Form<?> components) {
 				svnFolderResfreshService.refreshProjectByName(path);
@@ -75,10 +80,12 @@ public class SvnFolderBrowsePage extends BasePage {
 		form.add(createMergeOnSubfoldersCheckbox());
 		form.add(createLoadTagsCheckbox());
 		add(new IndicatingAjaxButton("findMerges", form) {
+
 			@Override
 			protected void onSubmit(AjaxRequestTarget ajaxRequestTarget, Form<?> components) {
 				MergeInfoResultPanel mergeInfo1 = new MergeInfoResultPanel(MERGE_INFO,
 						new LoadableDetachableModel<MergeInfoResult>() {
+
 							@Override
 							protected MergeInfoResult load() {
 								return facade.getMergeInfoForAllSelectedBranchesInProject(path);
@@ -100,6 +107,7 @@ public class SvnFolderBrowsePage extends BasePage {
 
 	private StandaloneAjaxCheckBox createLoadTagsCheckbox() {
 		return new StandaloneAjaxCheckBox("loadTags") {
+
 			@Override
 			protected Boolean load() {
 				return facade.isLoadTags(path);
@@ -116,6 +124,7 @@ public class SvnFolderBrowsePage extends BasePage {
 
 	private AjaxCheckBox createMergeOnSubfoldersCheckbox() {
 		return new StandaloneAjaxCheckBox("mergeOnSubfolders") {
+
 			@Override
 			protected Boolean load() {
 				return facade.isMergeOnSubFoldersForProject(path);

@@ -1,18 +1,14 @@
-package krasa.laboratory.properties;
+package krasa.core.backend.common;
 
 import java.io.IOException;
 import java.util.Properties;
 
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.config.*;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.PriorityOrdered;
-import org.springframework.core.env.AbstractEnvironment;
-import org.springframework.core.env.Environment;
-import org.springframework.core.env.PropertiesPropertySource;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
+import org.springframework.core.env.*;
+import org.springframework.core.io.*;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 
 public class PropertiesByActiveProfileLoader implements BeanFactoryPostProcessor, PriorityOrdered, EnvironmentAware {

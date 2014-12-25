@@ -35,7 +35,6 @@ public class OvernightMysqlConfig extends CommonConfig {
 		ds.setPartitionCount(getInteger("bonecp.partitionCount"));
 		ds.setAcquireIncrement(getInteger("bonecp.acquireIncrement"));
 		ds.setStatementsCacheSize(getInteger("bonecp.statementsCacheSize"));
-		ds.setReleaseHelperThreads(getInteger("bonecp.releaseHelperThreads"));
 
 		ds.setConnectionTestStatement(get("bonecp.connectionTestStatement"));
 		ds.setConnectionTimeout(getLong("bonecp.connectionTimeout.millis"), TimeUnit.MILLISECONDS);

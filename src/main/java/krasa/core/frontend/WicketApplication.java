@@ -9,6 +9,7 @@ import krasa.merge.frontend.pages.mergeinfo.MergeInfoPage;
 import org.apache.wicket.*;
 import org.apache.wicket.application.IComponentInstantiationListener;
 import org.apache.wicket.core.util.file.WebApplicationPath;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.*;
 import org.apache.wicket.markup.resolver.IComponentResolver;
@@ -32,8 +33,10 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class WicketApplication extends WebApplication {
 
 	public static final String INTELLIJ_PLUGIN_REPO_RESOURCES = "intellijPluginRepoResources";
+	public static final String INTELLIJ_PLUGIN_REPO_PLUGINS = "intellijPluginRepo/plugins";
 	private Folder uploadFolder = null;
 	private BeanFactory beanFactory;
+	private File pluginsFolder;
 
 	public static WicketApplication getWicketApplication() {
 		return ((WicketApplication) get());
@@ -53,7 +56,9 @@ public class WicketApplication extends WebApplication {
 	@Override
 	public void init() {
 		super.init();
-
+		getResourceSettings().getPropertiesFactory().load(this.getClass(),
+				this.getClass().getCanonicalName().replace(".", "/"));
+		getResourceSettings().getPropertiesFactory().load(krasa.StartVojtitko.class, "org/apache/wicket/Application_cs");
 		uploadFolder = new Folder("intellijPluginRepo"); // Ensure folder exists
 		uploadFolder.mkdirs();
 
@@ -62,8 +67,13 @@ public class WicketApplication extends WebApplication {
 		mountPage("build", BuildPage.class);
 		mountPage("buildLog", LogPage.class);
 		mountPage("IntelliJPluginRepository", IntelliJEnterprisePluginRepositoryPage.class);
+
+		pluginsFolder = new File(INTELLIJ_PLUGIN_REPO_PLUGINS);
+		pluginsFolder.mkdir();
+
 		getSharedResources().add("intellijPluginRepoResources",
-				new FolderContentResource(uploadFolder.getAbsoluteFile()));
+				new FolderContentResource(pluginsFolder.getAbsoluteFile()));
+
 		mountResource("intellijPlugin", new SharedResourceReference(WicketApplication.INTELLIJ_PLUGIN_REPO_RESOURCES));
 
 		getResourceSettings().getResourceFinders().add(
@@ -74,6 +84,8 @@ public class WicketApplication extends WebApplication {
 
 			public void onInstantiation(Component component) {
 				if (component instanceof IComponentResolver) {
+					return;
+				} else if (component instanceof DataTable.Caption) {
 					return;
 				} else if (component instanceof Form)
 					component.setOutputMarkupId(true);
@@ -113,11 +125,14 @@ public class WicketApplication extends WebApplication {
 
 	@Override
 	public Session newSession(Request request, Response response) {
-		return (Session) getSpringContext().getBean("MySession", request);
+		return new MySession(request);
 	}
 
 	public Folder getUploadFolder() {
 		return uploadFolder;
 	}
 
+	public File getPluginsFolder() {
+		return pluginsFolder;
+	}
 }

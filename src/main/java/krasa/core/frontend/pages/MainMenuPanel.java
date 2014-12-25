@@ -10,6 +10,7 @@ import krasa.merge.frontend.pages.mergeinfo.MergeInfoPage;
 import krasa.merge.frontend.pages.report.ReportPage;
 import krasa.overnight.OvernightResultsPage;
 import krasa.release.frontend.TokenizationPage;
+import krasa.smrt.SmrtMainPage;
 
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -31,6 +32,7 @@ public final class MainMenuPanel extends Panel {
 		add(new BookmarkablePageLink("ReleasesPage", ProfilesPage.class));
 		add(new BookmarkablePageLink("config", ConfigurationPage.class));
 		add(new BookmarkablePageLink("intellij", IntelliJMainPage.class));
+		add(new BookmarkablePageLink("Smrt", SmrtMainPage.class));
 		add(new ProfileDropDownPanel("profile"));
 
 	}

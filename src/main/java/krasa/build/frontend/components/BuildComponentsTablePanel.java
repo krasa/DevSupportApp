@@ -13,7 +13,6 @@ import krasa.core.frontend.commons.*;
 import krasa.core.frontend.commons.table.*;
 import krasa.core.frontend.components.*;
 
-import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.behavior.AttributeAppender;
@@ -38,6 +37,7 @@ import org.slf4j.*;
  * @author Vojtech Krasa
  */
 public class BuildComponentsTablePanel extends BasePanel {
+
 	public static final String MODAL = "MODAL";
 	public static final String ROW_ID_PREFIX = "buildCompId";
 	protected final Logger log = LoggerFactory.getLogger(getClass());
@@ -83,6 +83,7 @@ public class BuildComponentsTablePanel extends BasePanel {
 
 	private DummyModelDataProvider<BuildableComponentDto> getModel() {
 		return new DummyModelDataProvider<>(new LoadableDetachableModel<List<BuildableComponentDto>>() {
+
 			@Override
 			protected List<BuildableComponentDto> load() {
 				return BuildableComponentDto.transform(buildFacade.getComponentsByEnvironment(environmentId));
@@ -95,10 +96,12 @@ public class BuildComponentsTablePanel extends BasePanel {
 		columns.add(new ProjectLinkColumn<BuildableComponentDto, String>(new Model<>("name"), "name", "name"));
 		columns.add(new PropertyEditableColumn<BuildableComponentDto, String>(new Model<>("buildMode"), "buildMode",
 				"buildMode", 60) {
+
 			@Override
 			protected void decoratePanel(final EditablePanel<BuildableComponentDto> panel) {
 				super.decoratePanel(panel);
 				panel.getTextfield().add(new OnChangeAjaxBehavior() {
+
 					@Override
 					protected void onUpdate(AjaxRequestTarget target) {
 						BuildableComponentDto defaultModelObject = (BuildableComponentDto) panel.getDefaultModelObject();
@@ -112,17 +115,7 @@ public class BuildComponentsTablePanel extends BasePanel {
 		columns.add(new DateColumn<BuildableComponentDto>(new Model<>("total time"), "totalTime", "totalTime", "mm:ss"));
 		columns.add(buildColumn());
 		columns.add(logColumn());
-		columns.add(new PanelColumn<BuildableComponentDto>(new Model<>(""), "status") {
-			@Override
-			protected Panel getPanel(String componentId, IModel<BuildableComponentDto> rowModel) {
-				return new LabelPanel(componentId, new PropertyModel<>(rowModel, "status")) {
-					@Override
-					protected Component getComponent(String id, IModel labelModel) {
-						return new StyledLabel(id, labelModel);
-					}
-				};
-			}
-		});
+		columns.add(new StyledLabelColumn(new Model<>(""), "status"));
 		columns.add(editColumn());
 		columns.add(deleteColumn());
 		return columns;
@@ -130,9 +123,11 @@ public class BuildComponentsTablePanel extends BasePanel {
 
 	private PanelColumn<BuildableComponentDto> logColumn() {
 		return new PanelColumn<BuildableComponentDto>(new Model<>("")) {
+
 			@Override
 			protected Panel getPanel(String componentId, IModel<BuildableComponentDto> rowModel) {
 				return new LinkPanel<BuildableComponentDto>(componentId, getDisplayModel(), rowModel) {
+
 					@Override
 					protected Link getComponent(String id, IModel<String> labelModel,
 							final IModel<BuildableComponentDto> rowModel) {
@@ -160,6 +155,7 @@ public class BuildComponentsTablePanel extends BasePanel {
 
 	private ButtonColumn<BuildableComponentDto> buildColumn() {
 		return new ButtonColumn<BuildableComponentDto>(new Model<>(""), null, StaticImage.BUILD) {
+
 			@Override
 			protected void onSubmit(IModel<BuildableComponentDto> model, AjaxRequestTarget target, Form<?> form) {
 				try {
@@ -175,10 +171,12 @@ public class BuildComponentsTablePanel extends BasePanel {
 
 	private IColumn<BuildableComponentDto, String> editColumn() {
 		return new ButtonColumn<BuildableComponentDto>(new Model<>(""), null, StaticImage.EDIT) {
+
 			@Override
 			protected void onSubmit(IModel<BuildableComponentDto> model, AjaxRequestTarget target, Form<?> form) {
 				final ModalWindow modalWindow = new ModalWindow(MODAL);
 				modalWindow.setContent(new ComponentEditPanel(modalWindow.getContentId(), model) {
+
 					@Override
 					public void onSubmit(AjaxRequestTarget target, BuildableComponentDto buildableComponentDto) {
 						modalWindow.close(target);
@@ -195,6 +193,7 @@ public class BuildComponentsTablePanel extends BasePanel {
 
 	private IColumn<BuildableComponentDto, String> deleteColumn() {
 		return new ButtonColumn<BuildableComponentDto>(new Model<>(""), null, StaticImage.DELETE) {
+
 			@Override
 			protected void onSubmit(IModel<BuildableComponentDto> model, AjaxRequestTarget target, Form<?> form) {
 				buildFacade.deleteComponentById(model.getObject().getId());
@@ -232,6 +231,7 @@ public class BuildComponentsTablePanel extends BasePanel {
 		@Override
 		protected Item<BuildableComponentDto> newRowItem(String id, int index, IModel<BuildableComponentDto> model) {
 			Item<BuildableComponentDto> item = new Item<BuildableComponentDto>(id, index, model) {
+
 				@Override
 				public void onEvent(IEvent<?> event) {
 					super.onEvent(event);

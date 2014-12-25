@@ -1,6 +1,7 @@
 package krasa.intellij;
 
 import org.apache.wicket.Application;
+import org.apache.wicket.markup.MarkupType;
 import org.apache.wicket.markup.html.WebPage;
 
 public class IntelliJEnterprisePluginRepositoryPage extends WebPage {
@@ -22,6 +23,11 @@ public class IntelliJEnterprisePluginRepositoryPage extends WebPage {
 	protected void onAfterRender() {
 		super.onAfterRender();
 		Application.get().getMarkupSettings().setStripWicketTags(stripTags);
+	}
+
+	@Override
+	public MarkupType getMarkupType() {
+		return new MarkupType("xml", "text/xml");
 	}
 
 }
