@@ -8,7 +8,6 @@ import javax.persistence.*;
 import javax.persistence.Entity;
 
 import krasa.core.backend.domain.AbstractEntity;
-import krasa.release.domain.TokenizationPageModel;
 
 import org.hibernate.annotations.*;
 import org.hibernate.annotations.CascadeType;
@@ -31,17 +30,6 @@ public class Profile extends AbstractEntity<Profile> implements Serializable {
 	private List<Branch> branches = new ArrayList<>();
 	@Enumerated
 	private Type type = Type.USER;
-	@OneToOne
-	@Cascade({ CascadeType.DELETE, CascadeType.SAVE_UPDATE, CascadeType.ALL, CascadeType.MERGE })
-	TokenizationPageModel tokenizationPageModel;
-
-	public TokenizationPageModel getTokenizationPageModel() {
-		return tokenizationPageModel;
-	}
-
-	public void setTokenizationPageModel(TokenizationPageModel tokenizationPageModel) {
-		this.tokenizationPageModel = tokenizationPageModel;
-	}
 
 	public void removeBranch(String name) {
 		for (int i = 0; i < branches.size(); i++) {

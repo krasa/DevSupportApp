@@ -11,17 +11,17 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 /**
  * @author Vojtech Krasa
  */
-public class BuildableComponentAutoCompletePanel extends BranchAutoCompletePanel {
+public class BranchesAndTagsAutoCompletePanel extends BranchAutoCompletePanel {
 
 	@SpringBean
 	protected BuildFacade buildFacade;
 
-	public BuildableComponentAutoCompletePanel(String id) {
+	public BranchesAndTagsAutoCompletePanel(String id) {
 		super(id);
 	}
 
 	@Override
 	protected List<Displayable> getMatching(String input) {
-		return buildFacade.getMatchingComponents(input);
+		return buildFacade.getMatchingBranchesAndTags(input);
 	}
 }

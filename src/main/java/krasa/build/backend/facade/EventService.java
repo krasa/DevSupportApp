@@ -28,7 +28,7 @@ public class EventService {
 		BuildableComponent buildableComponent = buildJob.getBuildableComponent();
 		log.debug("sending event REFRESH, component={}, status={}", buildableComponent.getName(), buildJob.getStatus());
 		try {
-			sendEvent(new ComponentChangedEvent(new BuildableComponentDto(buildableComponent)));
+			sendEvent(new ComponentChangedEvent(new BuildableComponentDto(buildableComponent, buildJob)));
 		} catch (IllegalArgumentException e) {
 			// TODO wicket bug?
 			if (e.getMessage().equals("Argument 'page' may not be null.")) {

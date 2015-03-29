@@ -1,32 +1,22 @@
 package krasa.build.frontend.pages;
 
 import krasa.build.backend.domain.BuildJob;
-import krasa.build.backend.dto.BuildJobDto;
-import krasa.build.backend.dto.BuildableComponentDto;
-import krasa.build.backend.dto.Result;
+import krasa.build.backend.dto.*;
 import krasa.build.backend.facade.BuildFacade;
-import krasa.build.frontend.components.BuildLeftPanel;
-import krasa.build.frontend.components.LogModel;
-import krasa.build.frontend.components.LogPanel;
-import krasa.build.frontend.components.PocessKillButton;
-import krasa.build.frontend.components.PocessRerunButton;
+import krasa.build.frontend.components.*;
 import krasa.core.frontend.pages.BasePage;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.behavior.Behavior;
-import org.apache.wicket.markup.head.IHeaderResponse;
-import org.apache.wicket.markup.head.JavaScriptContentHeaderItem;
+import org.apache.wicket.markup.head.*;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.model.AbstractReadOnlyModel;
-import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.LoadableDetachableModel;
+import org.apache.wicket.model.*;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.util.string.StringValue;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.*;
 
 public class LogPage extends BasePage {
 
@@ -49,6 +39,7 @@ public class LogPage extends BasePage {
 		initializeJobId();
 
 		this.model = new LoadableDetachableModel<BuildJob>() {
+
 			@Override
 			protected BuildJob load() {
 				return facade.getBuildJobById(buildJobId);
@@ -57,6 +48,7 @@ public class LogPage extends BasePage {
 		init();
 
 		add(new Behavior() {
+
 			@Override
 			public void renderHead(Component component, IHeaderResponse response) {
 				super.renderHead(component, response);
@@ -69,7 +61,7 @@ public class LogPage extends BasePage {
 
 	public static PageParameters params(BuildableComponentDto component) {
 		PageParameters pageParameters = new PageParameters();
-		pageParameters.add(COMPONENT_ID, component.getId());
+		pageParameters.add(COMPONENT_ID, component.getComponentId());
 		return pageParameters;
 	}
 
@@ -95,6 +87,7 @@ public class LogPage extends BasePage {
 			getFeedbackPanel().error("Process not found");
 		}
 		add(new Label("info", new AbstractReadOnlyModel<Object>() {
+
 			@Override
 			public Object getObject() {
 				BuildJob object = model.getObject();
@@ -118,6 +111,7 @@ public class LogPage extends BasePage {
 
 	private LogPanel getLogPanel() {
 		return new LogPanel("log", new LogModel() {
+
 			@Override
 			public boolean isAlive() {
 				return model.getObject().isProcessAlive();
@@ -138,6 +132,7 @@ public class LogPage extends BasePage {
 				return model.getObject() != null;
 			}
 		}) {
+
 			@Override
 			protected void onUpdate(AjaxRequestTarget target) {
 				target.add(rerun1);

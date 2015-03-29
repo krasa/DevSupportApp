@@ -5,8 +5,11 @@ public enum StaticImage {
 	DELETE("5_content_discard.png"),
 	EDIT("5_content_edit.png"),
 	BUILD("9-av-play-over-video.png"),
+	RERUN("rerun.png"),
+	RERUN2("rerun@2x.png"),
 
 	;
+
 	String path;
 	Integer height;
 

@@ -125,6 +125,12 @@ public class FacadeImpl implements Facade {
 
 	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER, readOnly = true)
 	@Override
+	public SvnFolder findBranchByName(String name) {
+		return svnFolderDAO.findBranchByName(name);
+	}
+
+	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER, readOnly = true)
+	@Override
 	public List<Displayable> findTagsByNameLikeAsDisplayable(String input) {
 		return new ArrayList<Displayable>(svnFolderDAO.findFoldersByNameLike(input, Type.TAG));
 	}
@@ -286,6 +292,11 @@ public class FacadeImpl implements Facade {
 			ConventionsStrategyHolder.getStrategy().replaceSearchFrom(selectedBranch);
 			svnFolderDAO.save(selectedBranch);
 		}
+	}
+
+	@Override
+	public void deleteProfile(Profile modelObject) {
+		profileDAO.delete(modelObject);
 	}
 
 	@Override

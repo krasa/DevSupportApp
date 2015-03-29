@@ -2,11 +2,8 @@ package krasa.build.backend.facade;
 
 import java.util.List;
 
-import krasa.build.backend.domain.BuildJob;
-import krasa.build.backend.domain.BuildableComponent;
-import krasa.build.backend.domain.Environment;
-import krasa.build.backend.dto.BuildJobDto;
-import krasa.build.backend.dto.BuildableComponentDto;
+import krasa.build.backend.domain.*;
+import krasa.build.backend.dto.*;
 import krasa.build.backend.exception.AlreadyExistsException;
 import krasa.build.backend.execution.ProcessStatus;
 import krasa.merge.backend.domain.Displayable;
@@ -30,7 +27,7 @@ public interface BuildFacade {
 
 	void createBuildableComponentForAllMatchingComponents(Environment object, String fieldValue);
 
-	List<Displayable> getMatchingComponents(String input);
+	List<Displayable> getMatchingBranchesAndTags(String input);
 
 	Environment getEnvironmentByName(String s);
 
@@ -47,4 +44,6 @@ public interface BuildFacade {
 	BuildableComponentDto editBuildableComponent(BuildableComponentDto object);
 
 	List<BuildJobDto> getLastFinishedBuildJobs();
+
+	void deleteAllBuildableComponents(Environment object);
 }

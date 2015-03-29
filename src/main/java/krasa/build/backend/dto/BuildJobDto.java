@@ -17,6 +17,7 @@ public class BuildJobDto implements Serializable {
 	private Date end;
 	private Date expected;
 	private Integer buildJobId;
+	private Integer componentId;
 
 	private BuildJobDto() {
 	}
@@ -28,6 +29,7 @@ public class BuildJobDto implements Serializable {
 			BuildJobDto e = new BuildJobDto();
 			e.setBuildJobId(buildJob.getId());
 			e.setComponent(buildJob.getBuildableComponent().getName());
+			e.setComponentId(buildJob.getBuildableComponent().getId());
 			e.setStatus(buildJob.getStatus().name());
 			e.setEnvironment(buildJob.getBuildableComponent().getEnvironment().getName());
 			e.setStart(buildJob.getStartTime());
@@ -37,6 +39,7 @@ public class BuildJobDto implements Serializable {
 			buildJobs.add(e);
 		}
 		Collections.sort(buildJobs, new Comparator<BuildJobDto>() {
+
 			@Override
 			public int compare(BuildJobDto o1, BuildJobDto o2) {
 				Date start = o1.getStart();
@@ -130,5 +133,13 @@ public class BuildJobDto implements Serializable {
 
 	public void setBuildJobId(Integer buildJobId) {
 		this.buildJobId = buildJobId;
+	}
+
+	public void setComponentId(Integer componentId) {
+		this.componentId = componentId;
+	}
+
+	public Integer getComponentId() {
+		return componentId;
 	}
 }

@@ -1,4 +1,4 @@
-/.idea
+.idea
 ### Java template
 *.class
 
@@ -15,3 +15,6 @@ hs_err_pid*
 
 
 *.tmp
+logs/
+intellijPluginRepo/
+.settings/

@@ -1,35 +1,44 @@
 package krasa.release.domain;
 
 import java.io.Serializable;
+import java.util.*;
 
-import javax.persistence.*;
-
-import krasa.core.backend.domain.AbstractEntity;
 import krasa.release.tokenization.Default;
 
-@Entity
-public class TokenizationPageModel extends AbstractEntity implements Serializable {
-	@Column
-	private String branchNamePattern;
-	@Column(length = TokenizationJob.LENGTH)
-	private String json;
-	@Column
-	private String fromVersion = "9999";
-	@Column
-	private String toVersion;
-	@Column
-	private String newPortalDb;
-	@Column
-	private String newSacDb;
-	@Column
-	private String newPitDb;
+public class TokenizationPageModel implements Serializable {
 
-	public String getBranchNamePattern() {
-		return branchNamePattern;
+	private List<String> branchesPatterns = new ArrayList<String>();
+	private String branchNamePatternTemplate;
+	private String json;
+	private String fromVersion = "9999";
+	private String toVersion;
+	private String newPortalDb;
+	private String newSacDb;
+	private String newPitDb;
+	private String commitMessage = "##config version";
+
+	public String getCommitMessage() {
+		return commitMessage;
 	}
 
-	public void setBranchNamePattern(String branchNamePattern) {
-		this.branchNamePattern = branchNamePattern;
+	public void setCommitMessage(String commitMessage) {
+		this.commitMessage = commitMessage;
+	}
+
+	public List<String> getBranchesPatterns() {
+		return branchesPatterns;
+	}
+
+	public void setBranchesPatterns(List<String> branchesPatterns) {
+		this.branchesPatterns = branchesPatterns;
+	}
+
+	public String getBranchNamePatternTemplate() {
+		return branchNamePatternTemplate;
+	}
+
+	public void setBranchNamePatternTemplate(String branchNamePatternTemplate) {
+		this.branchNamePatternTemplate = branchNamePatternTemplate;
 	}
 
 	public String getJson() {
@@ -81,12 +90,16 @@ public class TokenizationPageModel extends AbstractEntity implements Serializabl
 	}
 
 	public void updateFields() {
-		if (branchNamePattern == null || branchNamePattern.startsWith(".*_")) {
-			branchNamePattern = ".*_" + toVersion;
+		if (branchNamePatternTemplate == null || branchNamePatternTemplate.startsWith(".*_")) {
+			branchNamePatternTemplate = ".*_" + toVersion;
 		}
 		String dbVersion;
 		try {
-			dbVersion = String.valueOf((Integer.valueOf(toVersion) / 10) * 10);
+			if (Integer.valueOf(toVersion) != 9999) {
+				dbVersion = String.valueOf((Integer.valueOf(toVersion) / 10) * 10);
+			} else {
+				dbVersion = toVersion;
+			}
 		} catch (NumberFormatException e) {
 			dbVersion = toVersion;
 		}
@@ -101,7 +114,7 @@ public class TokenizationPageModel extends AbstractEntity implements Serializabl
 	}
 
 	public void importFrom(TokenizationPageModel currentProfile) {
-		branchNamePattern = currentProfile.branchNamePattern;
+		branchNamePatternTemplate = currentProfile.branchNamePatternTemplate;
 		json = currentProfile.json;
 		fromVersion = currentProfile.fromVersion;
 		toVersion = currentProfile.toVersion;

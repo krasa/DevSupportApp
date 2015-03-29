@@ -4,28 +4,28 @@ import org.apache.commons.lang3.builder.*;
 
 public class Replacement {
 
-	private String token;
-	private String value;
+	private String from;
+	private String to;
 
-	public Replacement(String token, String value) {
-		this.token = token;
-		this.value = value;
+	public Replacement(String from, String to) {
+		this.from = from;
+		this.to = to;
 	}
 
-	public String getToken() {
-		return token;
+	public String getFrom() {
+		return from;
 	}
 
-	public void setToken(String token) {
-		this.token = token;
+	public void setFrom(String from) {
+		this.from = from;
 	}
 
-	public String getValue() {
-		return value;
+	public String getTo() {
+		return to;
 	}
 
-	public void setValue(String value) {
-		this.value = value;
+	public void setTo(String to) {
+		this.to = to;
 	}
 
 	@Override

@@ -10,7 +10,7 @@ import krasa.core.backend.config.MainConfig;
 import krasa.core.backend.dao.*;
 import krasa.merge.backend.domain.Repository;
 import krasa.merge.backend.facade.Facade;
-import krasa.release.domain.TokenizationJob;
+import krasa.release.domain.*;
 import krasa.release.tokenization.*;
 
 import org.slf4j.*;
@@ -46,8 +46,8 @@ public class TokenizationService {
 		tokenizationJobGenericDAO = genericDAO.build(TokenizationJob.class);
 	}
 
-	public TokenizationResult tokenizeSynchronously(String branchNamePattern, String json) {
-		final TokenizationJob tokenizationJob = createJob(branchNamePattern, json);
+	public TokenizationResult tokenizeSynchronously(TokenizationPageModel json) {
+		final TokenizationJob tokenizationJob = createJob(json);
 
 		final TokenizationJobCommand jobCommand = tokenizationJob.prepareCommand(new File(tempDir), commit);
 		String logName = jobCommand.getLogName();
@@ -76,8 +76,8 @@ public class TokenizationService {
 		return tokenizationJobGenericDAO.save(tokenizationJob);
 	}
 
-	public File tokenizeAsync(String branchNamePattern, String json) {
-		final TokenizationJob tokenizationJob = createJob(branchNamePattern, json);
+	public File tokenizeAsync(TokenizationPageModel json) {
+		final TokenizationJob tokenizationJob = createJob(json);
 
 		final TokenizationJobCommand jobCommand = tokenizationJob.prepareCommand(new File(tempDir), commit);
 		String logName = jobCommand.getLogName();
@@ -90,11 +90,12 @@ public class TokenizationService {
 		return TokenizationFileUtils.getLogFileByName(logName);
 	}
 
-	protected TokenizationJob createJob(String branchNamePattern, String json) {
+	protected TokenizationJob createJob(TokenizationPageModel json) {
 		final String svnUrl = getSvnUrl();
-		final TokenizationJobParameters jobParameters = new Gson().fromJson(json, TokenizationJobParameters.class);
+		final TokenizationJobParameters jobParameters = new Gson().fromJson(json.getJson(),
+				TokenizationJobParameters.class);
 		final TokenizationJob tokenizationJobCommand = new TokenizationJob(jobParameters, svnUrl,
-				branchNamePattern.toUpperCase(), RemoteHostUtils.getRemoteHost());
+				json.getBranchesPatterns(), RemoteHostUtils.getRemoteHost(), json.getCommitMessage());
 		save(tokenizationJobCommand);
 		return tokenizationJobCommand;
 	}

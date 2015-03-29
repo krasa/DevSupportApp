@@ -1,11 +1,15 @@
 package krasa.release.frontend;
 
 import java.io.*;
+import java.util.*;
 
+import krasa.core.frontend.StaticImage;
 import krasa.core.frontend.commons.LabelPanel;
+import krasa.core.frontend.commons.table.*;
 import krasa.core.frontend.pages.*;
-import krasa.merge.backend.domain.Profile;
+import krasa.merge.backend.domain.*;
 import krasa.merge.backend.facade.Facade;
+import krasa.merge.frontend.component.BranchAutocompleteFormPanel;
 import krasa.merge.frontend.component.table.FixedModalWindow;
 import krasa.release.domain.TokenizationPageModel;
 import krasa.release.service.TokenizationService;
@@ -17,6 +21,9 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.extensions.ajax.markup.html.AjaxLazyLoadPanel;
+import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTextField;
+import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackDefaultDataTable;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.markup.html.form.*;
 import org.apache.wicket.model.*;
@@ -28,9 +35,6 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
  */
 public class TokenizationPage extends BasePage {
 
-	protected final RequiredTextField<Object> branchNamePatternField;
-	private final TextArea<Object> jsonTextArea;
-	private final RequiredTextField<Object> fromVersionField;
 	@SpringBean
 	TokenizationService tokenizationService;
 	@SpringBean
@@ -38,21 +42,23 @@ public class TokenizationPage extends BasePage {
 
 	private FixedModalWindow modalWindow;
 
-	private final RequiredTextField<Object> toVersionField;
-	private final RequiredTextField newPortalDbField;
-	private final RequiredTextField newSacDbField;
-	private final RequiredTextField newPitDbField;
+	private TextArea<Object> jsonTextArea;
+	private RequiredTextField<Object> fromVersionField;
+	private RequiredTextField<Object> toVersionField;
+	private RequiredTextField newPortalDbField;
+	private RequiredTextField newSacDbField;
+	private RequiredTextField commitMessage;
+	private RequiredTextField newPitDbField;
 
-	private final TokenizationPageModel tokenizationPageModel = new TokenizationPageModel();
+	private TokenizationPageModel tokenizationPageModel = new TokenizationPageModel();
+	private AjaxFallbackDefaultDataTable<String, String> branchesTable;
+	private Form<TokenizationPageModel> form;
+	private AutoCompleteTextField<String> branchNamePatternField;
 
 	public TokenizationPage() throws IOException {
-		final Form<TokenizationPageModel> form = new Form<>("form", new CompoundPropertyModel<>(tokenizationPageModel));
-		reset();
 		add(modalWindow = new FixedModalWindow("modalWindow"));
-		add(form);
-
-		fromVersionField = new RequiredTextField<>("fromVersion");
-		form.add(fromVersionField);
+		add(form = new Form<>("form", new CompoundPropertyModel<>(tokenizationPageModel)));
+		form.add(fromVersionField = new RequiredTextField<>("fromVersion"));
 
 		toVersionField = new RequiredTextField<>("toVersion");
 		toVersionField.add(new OnChangeAjaxBehavior() {
@@ -61,6 +67,12 @@ public class TokenizationPage extends BasePage {
 			protected void onUpdate(AjaxRequestTarget target) {
 				tokenizationPageModel.updateFields();
 				modelChanged();
+				newPortalDbField.clearInput();
+				newSacDbField.clearInput();
+				newPitDbField.clearInput();
+				branchNamePatternField.clearInput();
+				branchNamePatternField.getModel().setObject(tokenizationPageModel.getBranchNamePatternTemplate());
+
 				target.add(newPortalDbField);
 				target.add(newSacDbField);
 				target.add(newPitDbField);
@@ -68,26 +80,17 @@ public class TokenizationPage extends BasePage {
 			}
 		});
 		form.add(toVersionField);
-
-		newPortalDbField = new RequiredTextField<>("newPortalDb");
-		form.add(newPortalDbField);
-
-		newSacDbField = new RequiredTextField<>("newSacDb");
-		form.add(newSacDbField);
-
-		newPitDbField = new RequiredTextField<>("newPitDb");
-		form.add(newPitDbField);
-
-		branchNamePatternField = new RequiredTextField<>("branchNamePattern");
-		form.add(branchNamePatternField);
-
-		jsonTextArea = new TextArea<>("json");
-		form.add(jsonTextArea);
+		form.add(newPortalDbField = new RequiredTextField<>("newPortalDb"));
+		form.add(newSacDbField = new RequiredTextField<>("newSacDb"));
+		form.add(newPitDbField = new RequiredTextField<>("newPitDb"));
+		form.add(commitMessage = new RequiredTextField<>("commitMessage"));
+		form.add(jsonTextArea = new TextArea<>("json"));
 		form.add(resetButton());
 		form.add(generateJsonButton());
 		form.add(executeButton());
 		form.add(executeSynchronouslyButton());
-
+		form.add(createBranchesTable());
+		form.add(branchAutoComplete());
 	}
 
 	protected AjaxButton executeSynchronouslyButton() {
@@ -109,8 +112,7 @@ public class TokenizationPage extends BasePage {
 					public Component getLazyLoadComponent(String markupId) {
 						if (result == null) {
 							setAsDefault();
-							result = tokenizationService.tokenizeSynchronously(
-									tokenizationPageModel.getBranchNamePattern(), tokenizationPageModel.getJson());
+							result = tokenizationService.tokenizeSynchronously(tokenizationPageModel);
 						}
 						LoadableDetachableModel<String> labelModel = new LoadableDetachableModel<String>() {
 
@@ -141,8 +143,76 @@ public class TokenizationPage extends BasePage {
 		};
 	}
 
+	private AjaxFallbackDefaultDataTable<String, String> createBranchesTable() {
+		ArrayList<IColumn<String, String>> iColumns = new ArrayList<IColumn<String, String>>();
+		iColumns.add(nameColumn());
+		iColumns.add(deleteColumn());
+		SortableModelDataProvider<String> dataProvider = new SortableModelDataProvider<String>(
+				new AbstractReadOnlyModel<List<String>>() {
+
+					@Override
+					public List<String> getObject() {
+						return tokenizationPageModel.getBranchesPatterns();
+					}
+				});
+		return branchesTable = new AjaxFallbackDefaultDataTable<>("branchesTable", iColumns, dataProvider, 50);
+	}
+
+	private LabelColumn<String> nameColumn() {
+		return new LabelColumn<String>(Model.of("name")) {
+
+			@Override
+			protected Object getModel(IModel<String> rowModel) {
+				return rowModel.getObject();
+			}
+		};
+	}
+
+	private IColumn<String, String> deleteColumn() {
+		return new ButtonColumn<String>(new Model<>(""), null, StaticImage.DELETE) {
+
+			@Override
+			protected void onSubmit(IModel<String> model, AjaxRequestTarget target, Form<?> form) {
+				tokenizationPageModel.getBranchesPatterns().remove(model.getObject());
+				{
+					target.add(branchesTable);
+				}
+			}
+		};
+	}
+
+	private BranchAutocompleteFormPanel branchAutoComplete() {
+		BranchAutocompleteFormPanel branchAutocompleteFormPanel = new BranchAutocompleteFormPanel("addBranchPanel") {
+
+			@Override
+			protected void deleteAllBranches(AjaxRequestTarget target) {
+				tokenizationPageModel.getBranchesPatterns().clear();
+			}
+
+			@Override
+			protected void addAllMatchingBranches(String fieldValue, AjaxRequestTarget target) {
+				List<SvnFolder> branchesByNameLikeAsDisplayable = facade.findBranchesByNameLike(fieldValue);
+				for (Displayable displayable : branchesByNameLikeAsDisplayable) {
+					tokenizationPageModel.getBranchesPatterns().add(displayable.getDisplayableText());
+				}
+			}
+
+			@Override
+			protected void addBranch(String fieldValue, AjaxRequestTarget target) {
+				tokenizationPageModel.getBranchesPatterns().add(fieldValue);
+			}
+
+			@Override
+			protected void onUpdate(AjaxRequestTarget target) {
+				target.add(branchesTable);
+			}
+		};
+		branchNamePatternField = branchAutocompleteFormPanel.getField();
+		return branchAutocompleteFormPanel;
+	}
+
 	protected AjaxButton executeButton() {
-		return new AjaxButton("execute") {
+		AjaxButton button = new AjaxButton("execute") {
 
 			@Override
 			protected void onError(AjaxRequestTarget target, Form<?> form) {
@@ -153,30 +223,32 @@ public class TokenizationPage extends BasePage {
 			@Override
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
 				setAsDefault();
-				File logFile = tokenizationService.tokenizeAsync(
-						tokenizationPageModel.getBranchNamePattern().toUpperCase(), tokenizationPageModel.getJson());
+				File logFile = tokenizationService.tokenizeAsync(tokenizationPageModel);
 				final String tokenize = logFile.getName();
 				final PageParameters parameters = FileSystemLogPage.getTokenizationPageParameters(tokenize);
 				setResponsePage(FileSystemLogPage.class, parameters);
 			}
 		};
+		button.setDefaultFormProcessing(false);
+		return button;
 	}
 
 	protected AjaxButton resetButton() {
-		final AjaxButton components = new AjaxButton("reset") {
+		final AjaxButton reset = new AjaxButton("reset") {
 
 			@Override
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-				reset();
+				form.clearInput();
+				tokenizationPageModel.importFrom(new TokenizationPageModel());
 				target.add(TokenizationPage.this);
 			}
 		};
-		components.setDefaultFormProcessing(false);
-		return components;
+		reset.setDefaultFormProcessing(false);
+		return reset;
 	}
 
 	protected AjaxButton generateJsonButton() {
-		final AjaxButton components = new AjaxButton("generateJson") {
+		final AjaxButton generateJson = new AjaxButton("generateJson") {
 
 			@Override
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
@@ -190,20 +262,14 @@ public class TokenizationPage extends BasePage {
 				target.add(getFeedbackPanel());
 			}
 		};
-		return components;
+		// TODO fixes Stackoverflow
+		generateJson.setDefaultFormProcessing(false);
+		return generateJson;
 	}
 
 	private void setAsDefault() {
 		Profile currentProfile = facade.getCurrentProfile();
-		currentProfile.setTokenizationPageModel(tokenizationPageModel);
 		facade.updateProfile(currentProfile);
-	}
-
-	private void reset() {
-		TokenizationPageModel model = facade.getCurrentProfile().getTokenizationPageModel();
-		if (model != null) {
-			tokenizationPageModel.importFrom(model);
-		}
 	}
 
 	@Override

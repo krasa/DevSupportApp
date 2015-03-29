@@ -1,7 +1,7 @@
 package krasa.release.utls;
 
 import java.io.File;
-import java.util.List;
+import java.util.*;
 
 import krasa.merge.backend.domain.*;
 import krasa.merge.backend.svn.*;
@@ -16,13 +16,13 @@ public class SvnBranchesCheckouter {
 
 	public static final String SVN = "http://svn/sdp";
 	public static final String TARGET = "D:/workspace/_projekty/_T-Mobile/";
-	public static final int INT = 14700;
+	public static final int INT = 15100;
 
 	public static void main(String[] args) throws SVNException {
-		new SvnBranchesCheckouter().checkout(SVN, new File(TARGET + INT), ".*_" + INT);
+		new SvnBranchesCheckouter().checkout(SVN, new File(TARGET + INT), Arrays.asList(".*_" + INT));
 	}
 
-	public void checkout(String svnUrl, final File baseDir, final String branchNamePattern,
+	public void checkout(String svnUrl, final File baseDir, final List<String> branchNamePattern,
 			CheckoutCallback... checkoutCallback) throws SVNException {
 		log.info("Checkouting from {}, to {}, branches with patter {}", svnUrl, baseDir.getAbsolutePath(),
 				branchNamePattern);

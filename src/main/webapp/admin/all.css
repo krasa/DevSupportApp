@@ -602,6 +602,18 @@ ul.nav li.last {
     color: #60635A;
 }
 
+#left-column .link:hover {
+    display: block;
+    width: 142px;
+    height: 25px;
+    /*background: url(../img/bg-left-link.gif);*/
+    margin: 0 0 4px 0;
+    font-weight: bold;
+    padding: 0 0 0 9px;
+    line-height: 25px;
+    color: #60635A;
+}
+
 /* center column styles */
 .top-bar {
     float: left;
@@ -855,5 +867,9 @@ div.table .select select {
 
 #Excluded {
     color: gray;
+    font-weight: bold;
+}
+
+#ONLY_MERGE_INFO {
     font-weight: bold;
 }

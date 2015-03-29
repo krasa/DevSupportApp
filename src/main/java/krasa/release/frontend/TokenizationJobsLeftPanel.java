@@ -33,6 +33,7 @@ public class TokenizationJobsLeftPanel extends BasePanel {
 		jobsModel = getJobsModel();
 		initList();
 		add(new WebSocketBehavior() {
+
 			@Override
 			protected void onPush(WebSocketRequestHandler handler, IWebSocketPushMessage message) {
 				if (message instanceof TokenizationEvent) {
@@ -62,6 +63,7 @@ public class TokenizationJobsLeftPanel extends BasePanel {
 						FileSystemLogPage.params(listItem.getModelObject()));
 				link.add(new StyledLabel("status", new PropertyModel(listItem.getModel(), "status")));
 				link.add(new Label("text", new RunningJobLabelModel(listItem)));
+				link.add(new Label("commitMessage", new PropertyModel(listItem.getModel(), "commitMessage")));
 				link.add(new Label("caller", new PropertyModel(listItem.getModel(), "caller")));
 				link.add(new Label("branchNamePattern", new PropertyModel<>(listItem.getModel(), "branchNamePattern")));
 				listItem.add(link);
@@ -101,7 +103,7 @@ public class TokenizationJobsLeftPanel extends BasePanel {
 			if (start == null) {
 				return null;
 			}
-			return DateFormatUtils.ISO_TIME_NO_T_FORMAT.format(start);
+			return DateFormatUtils.ISO_DATETIME_FORMAT.format(start);
 		}
 
 	}

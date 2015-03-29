@@ -4,9 +4,9 @@ import krasa.build.backend.domain.*;
 import krasa.build.backend.dto.BuildableComponentDto;
 import krasa.build.backend.exception.AlreadyExistsException;
 import krasa.build.backend.facade.BuildFacade;
-import krasa.core.frontend.Ajax;
 import krasa.core.frontend.commons.EntityModelWrapper;
 import krasa.core.frontend.components.BasePanel;
+import krasa.merge.frontend.component.*;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
@@ -49,6 +49,7 @@ public class EnvironmentDetailPanel extends BasePanel {
 
 	private AjaxButton createDeleteEnvironmentButton() {
 		return new AjaxButton("delete") {
+
 			@Override
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
 				EnvironmentDetailPanel panel = EnvironmentDetailPanel.this;
@@ -64,9 +65,15 @@ public class EnvironmentDetailPanel extends BasePanel {
 		return new BuildComponentsTablePanel("builds", environmentEntityModelWrapper);
 	}
 
-	private AddComponentFormPanel createAddComponentFormPanel() {
-		final AddComponentFormPanel autocomplete = new AddComponentFormPanel("addComponent", new ResourceModel(
-				"componentName")) {
+	private BranchAutocompleteFormPanel createAddComponentFormPanel() {
+		final BranchAutocompleteFormPanel autocomplete = new BranchAutocompleteFormPanel("addComponent",
+				new ResourceModel(
+						"componentName")) {
+
+			@Override
+			protected BranchAutoCompletePanel createAutoCompletePanel(String id) {
+				return new BranchesAndTagsAutoCompletePanel(id);
+			}
 
 			@Override
 			protected void addBranch(String fieldValue, AjaxRequestTarget target) {
@@ -74,11 +81,11 @@ public class EnvironmentDetailPanel extends BasePanel {
 					BuildableComponent buildableComponent = buildFacade.createBuildableComponent(
 							environmentEntityModelWrapper.getObject(), fieldValue);
 					if (buildableComponent != null) {
-						builds.table.addItem(Ajax.getAjaxRequestTarget(), new BuildableComponentDto(buildableComponent));
+						builds.table.addItem(target, new BuildableComponentDto(buildableComponent));
 					}
 				} catch (AlreadyExistsException e) {
 					error(e.toString());
-					Ajax.getAjaxRequestTarget().add(feedback);
+					target.add(feedback);
 				}
 			}
 
@@ -86,6 +93,12 @@ public class EnvironmentDetailPanel extends BasePanel {
 			protected void addAllMatchingBranches(String fieldValue, AjaxRequestTarget target) {
 				buildFacade.createBuildableComponentForAllMatchingComponents(environmentEntityModelWrapper.getObject(),
 						fieldValue);
+				target.add(builds);
+			}
+
+			@Override
+			protected void deleteAllBranches(AjaxRequestTarget target) {
+				buildFacade.deleteAllBuildableComponents(environmentEntityModelWrapper.getObject());
 				target.add(builds);
 			}
 		};

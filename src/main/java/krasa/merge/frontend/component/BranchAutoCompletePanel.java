@@ -1,17 +1,13 @@
 package krasa.merge.frontend.component;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Logger;
 
 import krasa.merge.backend.domain.Displayable;
 import krasa.merge.backend.facade.Facade;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteSettings;
-import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTextField;
+import org.apache.wicket.extensions.ajax.markup.html.autocomplete.*;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.spring.injection.annot.SpringBean;
@@ -39,6 +35,7 @@ public class BranchAutoCompletePanel extends Panel {
 	private AutoCompleteTextField<String> createAutoCompleteTextField() {
 		AutoCompleteTextField<String> components = new AutoCompleteTextField<String>("field", new Model<>(""),
 				createSettings()) {
+
 			@Override
 			protected Iterator<String> getChoices(String input) {
 				if (Strings.isEmpty(input)) {
@@ -74,4 +71,7 @@ public class BranchAutoCompletePanel extends Panel {
 		return field.getDefaultModelObjectAsString();
 	}
 
+	public AutoCompleteTextField<String> getField() {
+		return field;
+	}
 }

@@ -173,7 +173,12 @@ public class SvnFolder extends AbstractEntity implements Displayable {
 		return getName();
 	}
 
-	public boolean nameMatches(final String regex) {
-		return getName().matches(regex);
+	public boolean nameMatches(final List<String> regex) {
+		for (String s : regex) {
+			if (getName().matches(s)) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

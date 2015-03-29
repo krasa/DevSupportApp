@@ -38,7 +38,7 @@ public class ConfigurationPage extends BasePage {
 		add(new RepositoryConfigurationPanel("repositories"));
 		final Form<Profile> form = new Form<>("form");
 
-		form.add(new RefreshBranchesButton(form));
+		form.add(new RefreshBranchesButton(form, "refreshBranchesButton"));
 		form.add(new IndicatingAjaxButton("refreshReleasesFormSvn") {
 
 			@Override
@@ -90,8 +90,8 @@ public class ConfigurationPage extends BasePage {
 
 		private final Form form;
 
-		public RefreshBranchesButton(Form form) {
-			super("refreshBranches");
+		public RefreshBranchesButton(Form form, String id) {
+			super(id);
 			this.form = form;
 			setDefaultFormProcessing(false);
 		}

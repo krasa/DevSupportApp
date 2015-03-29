@@ -22,6 +22,7 @@ public abstract class ButtonPanel extends Panel {
 
 	private void addButton(final String label, StaticImage image) {
 		AjaxButton button = new AjaxButton("button") {
+
 			@Override
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
 				target.add(this);
@@ -35,6 +36,7 @@ public abstract class ButtonPanel extends Panel {
 			button.add(new AttributeModifier("src", image.getPath()));
 			button.add(new AttributeModifier("type", "image"));
 		}
+		button.setDefaultFormProcessing(false);
 		add(button);
 	}
 

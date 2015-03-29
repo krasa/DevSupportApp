@@ -9,24 +9,28 @@ import krasa.merge.frontend.pages.config.ConfigurationPage;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTextField;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.slf4j.*;
 
-public abstract class AddBranchFormPanel extends BasePanel {
+public abstract class BranchAutocompleteFormPanel extends BasePanel {
+
+	private static final Logger log = LoggerFactory.getLogger(BranchAutocompleteFormPanel.class);
 
 	@SpringBean
 	protected Facade facade;
 	protected BranchAutoCompletePanel autocomplete;
 	protected FeedbackPanel feedback;
 
-	public AddBranchFormPanel(String id) {
+	public BranchAutocompleteFormPanel(String id) {
 		this(id, null);
 	}
 
-	public AddBranchFormPanel(String addBranch, ResourceModel labelModel) {
+	public BranchAutocompleteFormPanel(String addBranch, ResourceModel labelModel) {
 		super(addBranch);
 		add(createAddBranchForm(labelModel));
 	}
@@ -38,29 +42,40 @@ public abstract class AddBranchFormPanel extends BasePanel {
 		return new Label("label", labelModel);
 	}
 
-	private Form createAddBranchForm(ResourceModel labelModel) {
+	protected Form createAddBranchForm(ResourceModel labelModel) {
 		Form form = new Form("addBranchForm") {
-
-			@Override
-			protected void onSubmit() {
-				AjaxRequestTarget target = Ajax.getAjaxRequestTarget();
-				String fieldValue = autocomplete.getFieldValue();
-				AddBranchFormPanel.this.addBranch(fieldValue, target);
-				onUpdate(target);
-				autocomplete.resetFieldValue(target);
-			}
 
 			@Override
 			protected void onError() {
 				AjaxRequestTarget target = Ajax.getAjaxRequestTarget();
 				super.onError();
-				target.add(feedback);
+				if (target != null && feedback != null) {
+					target.add(feedback);
+				} else {
+					log.warn("target is null, autocomplete={}", autocomplete.getFieldValue());
+				}
 			}
 		};
 		form.add(new AjaxFormSubmitBehavior(form, "submit") {});
 		form.add(createLabel(labelModel));
-		form.add(autocomplete = createAutoCompletePanel());
+		form.add(autocomplete = createAutoCompletePanel("autocomplete"));
 		form.add(feedback = new MyFeedbackPanel("feedback"));
+		form.add(new AjaxButton("add") {
+
+			@Override
+			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+				String fieldValue = autocomplete.getFieldValue();
+				addBranch(fieldValue, target);
+				onUpdate(target);
+				autocomplete.resetFieldValue(target);
+			}
+
+			@Override
+			protected void onError(AjaxRequestTarget target, Form<?> form) {
+				super.onError(target, form);
+				target.add(feedback);
+			}
+		});
 		form.add(new AjaxButton("addAll") {
 
 			@Override
@@ -81,7 +96,7 @@ public abstract class AddBranchFormPanel extends BasePanel {
 
 			@Override
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-				facade.deleteAllBranchesFromProfile();
+				deleteAllBranches(target);
 				onUpdate(target);
 				autocomplete.resetFieldValue(target);
 			}
@@ -94,47 +109,24 @@ public abstract class AddBranchFormPanel extends BasePanel {
 		};
 		deleteAll.setDefaultFormProcessing(false);
 		form.add(deleteAll);
-		form.add(new ReplaceSearchFromButton());
-		form.add(new ConfigurationPage.RefreshBranchesButton(form));
+		form.add(new ConfigurationPage.RefreshBranchesButton(form, "refreshBranchesButton"));
 		return form;
 	}
 
-	protected BranchAutoCompletePanel createAutoCompletePanel() {
-		return new BranchAutoCompletePanel("autocomplete");
+	protected BranchAutoCompletePanel createAutoCompletePanel(String id) {
+		return new BranchAutoCompletePanel(id);
 	}
 
-	protected void addAllMatchingBranches(String fieldValue, AjaxRequestTarget target) {
-		facade.addAllMatchingBranchesIntoProfile(fieldValue);
-	}
+	protected abstract void deleteAllBranches(AjaxRequestTarget target);
 
-	protected void addBranch(String fieldValue, AjaxRequestTarget target) {
-		facade.addBranchIntoProfile(fieldValue);
-	}
+	protected abstract void addAllMatchingBranches(String fieldValue, AjaxRequestTarget target);
+
+	protected abstract void addBranch(String fieldValue, AjaxRequestTarget target);
 
 	protected void onUpdate(AjaxRequestTarget target) {
 	}
 
-	private class ReplaceSearchFromButton extends AjaxButton {
-
-		public ReplaceSearchFromButton() {
-			super("replaceSearchFrom");
-			setDefaultFormProcessing(false);
-		}
-
-		@Override
-		protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-			facade.replaceSearchFrom();
-			onUpdate(target);
-			autocomplete.resetFieldValue(target);
-		}
-
-		@Override
-		protected void onError(AjaxRequestTarget target, Form<?> form) {
-			super.onError(target, form);
-			target.add(feedback);
-		}
+	public AutoCompleteTextField<String> getField() {
+		return autocomplete.getField();
 	}
-
-	;
-
 }

@@ -136,6 +136,9 @@ public class MergeJob extends AbstractEntity implements ProcessStatusListener {
 		} catch (SVNException e) {
 			log.error("merge failed", e);
 			throw new RuntimeException(e);
+		} catch (Throwable e) {
+			log.error(String.valueOf(e), e);
+			throw e;
 		} finally {
 			log.info("end");
 			MdcUtils.removeLogName();
@@ -247,7 +250,7 @@ public class MergeJob extends AbstractEntity implements ProcessStatusListener {
 			public void handleEvent(SVNEvent event, double progress) throws SVNException {
 				SVNStatusType contentsStatus = event.getContentsStatus();
 				if (contentsStatus != null && SVNStatusType.CONFLICTED.getID() == contentsStatus.getID()) {
-					throw new RuntimeException("CONFLICT");
+					throw new RuntimeException("CONFLICT, " + event);
 				}
 				log.info(event.toString());
 			}

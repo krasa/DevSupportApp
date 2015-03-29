@@ -16,8 +16,11 @@
         newPortalDb: <input type="text" wicket:id="newPortalDb"/><br/>
         newSacDb: <input type="text" wicket:id="newSacDb"/><br/>
         newPitDb: <input type="text" wicket:id="newPitDb"/><br/>
-        branchNamePattern: <input type="text" wicket:id="branchNamePattern"/><br/>
-        <input type="button" wicket:id="generateJson" value="Generate Json"/>
+        commitMessage: <input type="text" wicket:id="commitMessage"/><br/>
+        <input type="button" wicket:id="generateJson" value="Generate Release json"/>
+
+        <span wicket:id="addBranchPanel"></span>
+        <table class="dataview" cellspacing="0" wicket:id="branchesTable">[table]</table>
         <textarea rows="50" cols="180" wicket:id="json"/><br/>
 
 

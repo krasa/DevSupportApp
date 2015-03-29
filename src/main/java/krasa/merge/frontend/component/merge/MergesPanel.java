@@ -62,6 +62,7 @@ public class MergesPanel extends BasePanel {
 						FileSystemLogPage.params(listItem.getModelObject()));
 				PropertyModel<Object> status = new PropertyModel<>(listItem.getModel(), "status");
 				link.add(new StyledLabel("status", status));
+				link.add(new StyledLabel("mode", new PropertyModel<>(listItem.getModel(), "autoMergeJobMode")));
 				link.add(new Label("to", new PropertyModel<>(listItem.getModel(), "to")));
 				link.add(new Label("from", new PropertyModel<>(listItem.getModel(), "from")));
 				link.add(new Label("startTime", new DateModel<>(new PropertyModel<Date>(listItem.getModel(),

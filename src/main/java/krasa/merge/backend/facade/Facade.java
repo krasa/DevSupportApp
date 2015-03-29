@@ -38,6 +38,8 @@ public interface Facade {
 
 	List<Displayable> findBranchesByNameLikeAsDisplayable(String name);
 
+	SvnFolder findBranchByName(String name);
+
 	List<Displayable> findTagsByNameLikeAsDisplayable(String input);
 
 	SvnFolder findBranchByInCaseSensitiveName(String objectAsString);
@@ -103,4 +105,5 @@ public interface Facade {
 
 	void replaceSearchFrom();
 
+	void deleteProfile(Profile modelObject);
 }

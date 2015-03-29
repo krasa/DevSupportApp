@@ -6,7 +6,7 @@ import krasa.core.frontend.MySession;
 import krasa.core.frontend.pages.BasePage;
 import krasa.merge.backend.domain.Profile;
 import krasa.merge.backend.dto.ReportResult;
-import krasa.merge.frontend.component.AddBranchFormPanel;
+import krasa.merge.frontend.component.BranchAutocompleteFormPanel;
 import krasa.merge.frontend.component.table.SelectedBranchesTablePanel;
 
 import org.apache.wicket.Component;
@@ -21,6 +21,7 @@ import org.apache.wicket.model.Model;
  * @author Vojtech Krasa
  */
 public class ReportPage extends BasePage {
+
 	public static final String RESULT = "result";
 	protected SelectedBranchesTablePanel branchesTable;
 	protected MultiLineLabel resultLabel;
@@ -52,6 +53,7 @@ public class ReportPage extends BasePage {
 	private Form createForm() {
 		Form form = new Form("form");
 		form.add(new IndicatingAjaxButton("getReport") {
+
 			@Override
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
 				ReportResult report = facade.getReport();
@@ -65,6 +67,7 @@ public class ReportPage extends BasePage {
 			}
 		});
 		form.add(new IndicatingAjaxButton("findNotTagged") {
+
 			@Override
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
 				ReportResult report = facade.getReport();
@@ -78,6 +81,7 @@ public class ReportPage extends BasePage {
 			}
 		});
 		form.add(new IndicatingAjaxButton("runRNS") {
+
 			@Override
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
 				Profile current = MySession.get().getCurrent();
@@ -100,6 +104,7 @@ public class ReportPage extends BasePage {
 			}
 		});
 		form.add(new IndicatingAjaxButton("runVersionsOnPrgens") {
+
 			@Override
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
 				String result = facade.runVersionsOnPrgens();
@@ -114,6 +119,7 @@ public class ReportPage extends BasePage {
 			}
 		});
 		form.add(new IndicatingAjaxButton("runSvnHeadVsLastTag") {
+
 			@Override
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
 				Profile current = MySession.get().getCurrent();
@@ -158,8 +164,24 @@ public class ReportPage extends BasePage {
 		return form;
 	}
 
-	private AddBranchFormPanel createAddBranchIntoProfileFormPanel() {
-		return new AddBranchFormPanel("addBranchPanel") {
+	private BranchAutocompleteFormPanel createAddBranchIntoProfileFormPanel() {
+		return new BranchAutocompleteFormPanel("addBranchPanel") {
+
+			@Override
+			protected void deleteAllBranches(AjaxRequestTarget target) {
+				facade.deleteAllBranchesFromProfile();
+			}
+
+			@Override
+			protected void addAllMatchingBranches(String fieldValue, AjaxRequestTarget target) {
+				facade.addAllMatchingBranchesIntoProfile(fieldValue);
+			}
+
+			@Override
+			protected void addBranch(String fieldValue, AjaxRequestTarget target) {
+				facade.addBranchIntoProfile(fieldValue);
+			}
+
 			@Override
 			protected void onUpdate(AjaxRequestTarget target) {
 				target.add(branchesTable);

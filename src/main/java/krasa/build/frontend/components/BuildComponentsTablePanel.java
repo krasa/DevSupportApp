@@ -105,7 +105,8 @@ public class BuildComponentsTablePanel extends BasePanel {
 					@Override
 					protected void onUpdate(AjaxRequestTarget target) {
 						BuildableComponentDto defaultModelObject = (BuildableComponentDto) panel.getDefaultModelObject();
-						buildFacade.saveBuildMode(defaultModelObject.getId(), defaultModelObject.getBuildMode());
+						buildFacade.saveBuildMode(defaultModelObject.getComponentId(),
+								defaultModelObject.getBuildMode());
 					}
 				});
 			}
@@ -196,7 +197,7 @@ public class BuildComponentsTablePanel extends BasePanel {
 
 			@Override
 			protected void onSubmit(IModel<BuildableComponentDto> model, AjaxRequestTarget target, Form<?> form) {
-				buildFacade.deleteComponentById(model.getObject().getId());
+				buildFacade.deleteComponentById(model.getObject().getComponentId());
 				sendDeletedRowEvent(model, target);
 			}
 		};
@@ -204,7 +205,7 @@ public class BuildComponentsTablePanel extends BasePanel {
 
 	private void sendDeletedRowEvent(IModel<BuildableComponentDto> model, AjaxRequestTarget target) {
 		BuildableComponentDto buildableComponentDto = new BuildableComponentDto();
-		buildableComponentDto.setId(model.getObject().getId());
+		buildableComponentDto.setComponentId(model.getObject().getComponentId());
 		ComponentDeletedEvent componentDeletedEvent = new ComponentDeletedEvent(buildableComponentDto);
 		componentDeletedEvent.setTarget(target);
 		send(table, Broadcast.DEPTH, componentDeletedEvent);
@@ -238,7 +239,7 @@ public class BuildComponentsTablePanel extends BasePanel {
 					if (event.getPayload() instanceof ComponentChangedEvent) {
 						ComponentChangedEvent payload = (ComponentChangedEvent) event.getPayload();
 						BuildableComponentDto buildableComponentDto = payload.getBuildableComponentDto();
-						if (buildableComponentDto.getId().equals(getModelObject().getId())) {
+						if (buildableComponentDto.getComponentId().equals(getModelObject().getComponentId())) {
 							setModelObject(payload.getBuildableComponentDto());
 							payload.getTarget().add(this);
 							event.stop();
@@ -247,7 +248,7 @@ public class BuildComponentsTablePanel extends BasePanel {
 						ComponentDeletedEvent payload = (ComponentDeletedEvent) event.getPayload();
 						BuildableComponentDto buildableComponentDto = payload.getBuildableComponentDto();
 						AjaxRequestTarget target = payload.getTarget();
-						if (buildableComponentDto.getId().equals(getModelObject().getId())) {
+						if (buildableComponentDto.getComponentId().equals(getModelObject().getComponentId())) {
 							this.setVisible(false);
 							target.add(this);
 							event.stop();
@@ -255,7 +256,7 @@ public class BuildComponentsTablePanel extends BasePanel {
 					}
 				}
 			};
-			item.setMarkupId(ROW_ID_PREFIX + model.getObject().getId());
+			item.setMarkupId(ROW_ID_PREFIX + model.getObject().getComponentId());
 			item.setOutputMarkupId(true);
 			if (item.getModelObject().getIndex() >= 0) {
 				item.add(new AttributeAppender("class", Model.of("highlightIndex" + item.getModelObject().getIndex()),
@@ -271,7 +272,7 @@ public class BuildComponentsTablePanel extends BasePanel {
 
 				IItemFactory factory = (IItemFactory) method.invoke(dataGridView);
 
-				Item item = factory.newItem(buildableComponentDto.getId(), new Model(buildableComponentDto));
+				Item item = factory.newItem(buildableComponentDto.getComponentId(), new Model(buildableComponentDto));
 				dataGridView.add(item);
 				target.prependJavaScript(String.format("var item=document.createElement('%s');item.id='%s';"
 						+ "Wicket.$('%s').getElementsByTagName(\"tbody\")[0].appendChild(item);", "tr",

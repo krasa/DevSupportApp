@@ -6,12 +6,11 @@
     <form wicket:id="addBranchForm">
         <span wicket:id="label"></span>
         <span wicket:id="autocomplete"></span>
-        <button type="submit">Add</button>
+        <button type="button" wicket:id="add">Add</button>
         <button type="button" wicket:id="addAll">Add All Matching</button>
         <button type="button" wicket:id="deleteAll">Delete All</button>
-        <button type="button" wicket:id="replaceSearchFrom">Replace Search From</button>
-        <button type="button" wicket:id="refreshBranches">
-            <wicket:message key="refreshBranches"></wicket:message>
+        <wicket:child/>
+        <button type="button" wicket:id="refreshBranchesButton">Refresh Branches
         </button>
         <span wicket:id="feedback"></span>
     </form>

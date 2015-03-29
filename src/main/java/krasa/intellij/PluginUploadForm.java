@@ -36,7 +36,7 @@ public class PluginUploadForm extends Form<Void> {
 		super(id);
 		setMultiPart(true);
 		add(fileUploadField = new FileUploadField("fileInput"));
-		setMaxSize(Bytes.kilobytes(5000));
+		setMaxSize(Bytes.kilobytes(20000));
 	}
 
 	public FileUploadField getFileUploadField() {
@@ -46,26 +46,27 @@ public class PluginUploadForm extends Form<Void> {
 	@Override
 	protected void onSubmit() {
 		final List<FileUpload> uploads = fileUploadField.getFileUploads();
-		if (uploads != null) {
-			for (FileUpload upload : uploads) {
-				File newFile = new File(getUploadFolder(), upload.getClientFileName());
-				try {
-					if (newFile.exists()) {
-						Assert.isTrue(newFile.delete());
-					}
-					Assert.isTrue(newFile.createNewFile());
-					upload.writeTo(newFile);
-					PluginDefinition pluginDefinition = getPluginDefinition(newFile);
-
-					if (pluginDefinition == null) {
-						throw new IllegalStateException("could not find plugin.xml");
-					}
-					saveFile(newFile, pluginDefinition);
-					updateIndex(pluginDefinition);
-					info("saved file: " + upload.getClientFileName());
-				} catch (Exception e) {
-					throw new IllegalStateException(e.getMessage(), e);
+		if (uploads.isEmpty()) {
+			error("No file uploaded");
+		}
+		for (FileUpload upload : uploads) {
+			File newFile = new File(getUploadFolder(), upload.getClientFileName());
+			try {
+				if (newFile.exists()) {
+					Assert.isTrue(newFile.delete());
 				}
+				Assert.isTrue(newFile.createNewFile());
+				upload.writeTo(newFile);
+				PluginDefinition pluginDefinition = getPluginDefinition(newFile);
+
+				if (pluginDefinition == null) {
+					throw new IllegalStateException("could not find plugin.xml");
+				}
+				saveFile(newFile, pluginDefinition);
+				updateIndex(pluginDefinition);
+				info("saved file: " + upload.getClientFileName());
+			} catch (Exception e) {
+				throw new IllegalStateException(e.getMessage(), e);
 			}
 		}
 	}

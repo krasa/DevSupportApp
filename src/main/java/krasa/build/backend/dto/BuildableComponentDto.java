@@ -13,7 +13,8 @@ import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
 public class BuildableComponentDto implements Serializable, CustomIdTableItem {
-	private Integer id;
+
+	private Integer componentId;
 	private String name;
 
 	private Integer environmentId;
@@ -30,23 +31,31 @@ public class BuildableComponentDto implements Serializable, CustomIdTableItem {
 	}
 
 	public BuildableComponentDto(BuildableComponent component) {
-		id = component.getId();
+		this(component, component.getLastBuildJob());
+	}
+
+	public BuildableComponentDto(BuildableComponent component, BuildJob buildJob) {
+		componentId = component.getId();
 		name = component.getName();
 		environmentId = component.getEnvironment().getId();
 		buildMode = component.getBuildMode();
-		BuildJob lastBuildJob = component.getLastBuildJob();
-		if (lastBuildJob != null) {
-			buildJobId = lastBuildJob.getId();
-			buildEndTime = lastBuildJob.getEndTime();
-			buildStartTime = lastBuildJob.getStartTime();
-			buildScheduledTime = lastBuildJob.getScheduledTime();
-			status = lastBuildJob.getStatus();
+		if (buildJob != null) {
+			buildJobId = buildJob.getId();
+			buildEndTime = buildJob.getEndTime();
+			buildStartTime = buildJob.getStartTime();
+			buildScheduledTime = buildJob.getScheduledTime();
+			status = buildJob.getStatus();
 		}
+	}
+
+	public BuildableComponentDto(Integer componentId) {
+		this.componentId = componentId;
 	}
 
 	public static List<BuildableComponentDto> transform(List<BuildableComponent> components) {
 		List<BuildableComponentDto> transform = Lists.transform(components,
 				new Function<BuildableComponent, BuildableComponentDto>() {
+
 					@Override
 					public BuildableComponentDto apply(BuildableComponent component) {
 						return new BuildableComponentDto(component);
@@ -84,12 +93,12 @@ public class BuildableComponentDto implements Serializable, CustomIdTableItem {
 		return new BuildableComponentDto(component);
 	}
 
-	public Integer getId() {
-		return id;
+	public Integer getComponentId() {
+		return componentId;
 	}
 
-	public void setId(Integer id) {
-		this.id = id;
+	public void setComponentId(Integer componentId) {
+		this.componentId = componentId;
 	}
 
 	public String getName() {
@@ -172,6 +181,10 @@ public class BuildableComponentDto implements Serializable, CustomIdTableItem {
 
 	@Override
 	public String getRowId() {
-		return String.valueOf(id);
+		return String.valueOf(componentId);
+	}
+
+	public static BuildableComponentDto byId(Integer componentId) {
+		return new BuildableComponentDto(componentId);
 	}
 }

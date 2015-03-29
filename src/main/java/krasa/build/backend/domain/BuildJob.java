@@ -18,6 +18,7 @@ import com.google.common.base.Objects;
 
 @Entity
 public class BuildJob extends AbstractEntity implements ProcessStatusListener {
+
 	protected static final Logger log = LoggerFactory.getLogger(BuildJob.class);
 	@ManyToOne(optional = false, cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
 	private BuildableComponent buildableComponent;
@@ -141,10 +142,13 @@ public class BuildJob extends AbstractEntity implements ProcessStatusListener {
 		log.info("Process stopped");
 	}
 
-	@SuppressWarnings("ThrowableResultOfMethodCallIgnored")
 	@Override
 	public void onStatusChanged(ProcessStatus processStatus) {
-		SpringApplicationContext.getBean(BuildFacade.class).onStatusChanged(this, processStatus);
+		try {
+			SpringApplicationContext.getBean(BuildFacade.class).onStatusChanged(this, processStatus);
+		} catch (Throwable e) {
+			log.error("#onStatusChanged failed", e);
+		}
 	}
 
 	public Result getLog() {

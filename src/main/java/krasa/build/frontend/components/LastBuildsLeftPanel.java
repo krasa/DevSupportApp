@@ -2,13 +2,17 @@ package krasa.build.frontend.components;
 
 import java.util.*;
 
-import krasa.build.backend.dto.BuildJobDto;
+import krasa.build.backend.dto.*;
+import krasa.build.backend.exception.ProcessAlreadyRunning;
 import krasa.build.backend.facade.*;
 import krasa.build.frontend.pages.LogPage;
+import krasa.core.frontend.StaticImage;
 import krasa.core.frontend.commons.*;
 
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.list.*;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.*;
@@ -74,6 +78,20 @@ public class LastBuildsLeftPanel extends Panel {
 						"HH:mm")));
 
 				listItem.add(link);
+				Form<BuildJobDto> form = new Form<>("form", listItem.getModel());
+				form.add(new ButtonPanel("rerun", "Rerun", StaticImage.RERUN2) {
+
+					@Override
+					protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+						BuildJobDto modelObject1 = (BuildJobDto) form.getModelObject();
+						BuildableComponentDto transform = BuildableComponentDto.byId(modelObject1.getComponentId());
+						try {
+							facade.buildComponent(transform);
+						} catch (ProcessAlreadyRunning e) {
+						}
+					}
+				});
+				listItem.add(form);
 				listItem.setOutputMarkupId(true);
 
 			}

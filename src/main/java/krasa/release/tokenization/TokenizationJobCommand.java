@@ -1,6 +1,7 @@
 package krasa.release.tokenization;
 
 import java.io.*;
+import java.util.List;
 
 import krasa.core.backend.LogNamePrefixes;
 import krasa.core.backend.utils.MdcUtils;
@@ -17,19 +18,21 @@ public class TokenizationJobCommand {
 
 	protected static final Logger log = LoggerFactory.getLogger(TokenizationJobCommand.class);
 	protected final File tempDir;
+	private String commitMessage;
 	private Integer id;
 	private final TokenizationJobParameters tokenizationJobParameters;
-	protected String branchNamePattern;
+	protected List<String> branchNamePattern;
 	private String svnRepoUrl;
 	private boolean commit = false;
 
 	public TokenizationJobCommand(Integer id, TokenizationJobParameters tokenizationJobParameters, String svnRepoUrl,
-			File tempDir, final String branchNamePattern) {
+			File tempDir, final List<String> branchNamePattern, String commitMessage) {
 		this.id = id;
 		this.tokenizationJobParameters = tokenizationJobParameters;
 		this.svnRepoUrl = svnRepoUrl;
 		this.branchNamePattern = branchNamePattern;
 		this.tempDir = tempDir;
+		this.commitMessage = commitMessage;
 	}
 
 	public void setCommit(boolean commit) {
@@ -91,7 +94,6 @@ public class TokenizationJobCommand {
 	}
 
 	private void commit() throws IOException, SVNException {
-		String commitMessage = "##config version";
 		File[] list = FileFilterUtils.filter(DirectoryFileFilter.DIRECTORY, tempDir.listFiles());
 		log.info("Commiting {} directories", list.length);
 		for (File workingCopy : list) {

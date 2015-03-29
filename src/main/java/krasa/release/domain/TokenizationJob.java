@@ -1,7 +1,7 @@
 package krasa.release.domain;
 
 import java.io.*;
-import java.util.Date;
+import java.util.*;
 
 import javax.persistence.*;
 
@@ -28,19 +28,22 @@ public class TokenizationJob extends AbstractEntity implements Serializable {
 	@Column
 	private String logName;
 	@Column
-	private String branchNamePattern;
+	@ElementCollection(fetch = FetchType.EAGER)
+	private List<String> branchNamePattern;
 	@Column
 	private Date start;
 	@Column
 	private Date end;
 	@Column
 	private String caller;
+	@Column
+	private String commitMessage;
 
 	public TokenizationJob() {
 	}
 
-	public TokenizationJob(TokenizationJobParameters jobParameters, String svnUrl, String branchNamePattern,
-			String caller) {
+	public TokenizationJob(TokenizationJobParameters jobParameters, String svnUrl, List<String> branchNamePattern,
+			String caller, String commitMessage) {
 		this.jobParameters = jobParameters;
 		jobParametersAsString = TokenizationJobParameters.toUglyJson(jobParameters);
 		if (jobParametersAsString.length() > LENGTH) {
@@ -50,6 +53,7 @@ public class TokenizationJob extends AbstractEntity implements Serializable {
 		this.branchNamePattern = branchNamePattern;
 		start = new Date();
 		this.caller = caller;
+		this.commitMessage = commitMessage;
 	}
 
 	public TokenizationJobParameters getJobParameters() {
@@ -103,11 +107,11 @@ public class TokenizationJob extends AbstractEntity implements Serializable {
 		this.status = status;
 	}
 
-	public String getBranchNamePattern() {
+	public List<String> getBranchNamePattern() {
 		return branchNamePattern;
 	}
 
-	public void setBranchNamePattern(String branchNamePattern) {
+	public void setBranchNamePattern(List<String> branchNamePattern) {
 		this.branchNamePattern = branchNamePattern;
 	}
 
@@ -125,7 +129,7 @@ public class TokenizationJob extends AbstractEntity implements Serializable {
 		Assert.notNull(getId());
 		Assert.notNull(branchNamePattern);
 		TokenizationJobCommand tokenizationJobCommand = new TokenizationJobCommand(getId(), jobParameters, svnUrl,
-				getUniqueTempDir(tempDir), branchNamePattern);
+				getUniqueTempDir(tempDir), branchNamePattern, commitMessage);
 		tokenizationJobCommand.setCommit(commit);
 		return tokenizationJobCommand;
 	}

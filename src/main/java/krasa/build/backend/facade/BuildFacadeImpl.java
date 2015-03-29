@@ -84,7 +84,7 @@ public class BuildFacadeImpl implements BuildFacade {
 
 	@Override
 	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER, readOnly = true)
-	public List<Displayable> getMatchingComponents(String input) {
+	public List<Displayable> getMatchingBranchesAndTags(String input) {
 		List<Displayable> branchesByNameLikeAsDisplayable = facade.findBranchesByNameLikeAsDisplayable(input);
 		branchesByNameLikeAsDisplayable.addAll(facade.findTagsByNameLikeAsDisplayable(input));
 		return branchesByNameLikeAsDisplayable;
@@ -119,7 +119,7 @@ public class BuildFacadeImpl implements BuildFacade {
 	@Override
 	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER)
 	public BuildableComponentDto buildComponent(BuildableComponentDto object) {
-		BuildableComponent buildableComponent = buildableComponentDAO.findById(object.getId());
+		BuildableComponent buildableComponent = buildableComponentDAO.findById(object.getComponentId());
 
 		BuildJob build = build(buildableComponent, RemoteHostUtils.getRemoteHost());
 		return BuildableComponentDto.transform(build.getBuildableComponent());
@@ -152,7 +152,7 @@ public class BuildFacadeImpl implements BuildFacade {
 	@Override
 	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER)
 	public BuildableComponentDto editBuildableComponent(BuildableComponentDto object) {
-		BuildableComponent byId = buildableComponentDAO.findById(object.getId());
+		BuildableComponent byId = buildableComponentDAO.findById(object.getComponentId());
 		byId.setName(object.getName());
 		byId.setBuildMode(object.getBuildMode());
 		buildableComponentDAO.save(byId);
@@ -164,6 +164,14 @@ public class BuildFacadeImpl implements BuildFacade {
 		List<BuildJobDto> translate = BuildJobDto.translate(runningBuildJobsHolder.getLastFinished());
 		Collections.reverse(translate);
 		return translate;
+	}
+
+	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER)
+	@Override
+	public void deleteAllBuildableComponents(Environment object) {
+		Environment environment = environmentDAO.findById(object.getId());
+		environment.getBuildableComponents().clear();
+		environmentDAO.save(environment);
 	}
 
 	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER)

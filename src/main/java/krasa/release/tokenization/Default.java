@@ -20,19 +20,18 @@ public class Default {
 		addProperties(replacementDefinitions);
 		addEclipse(replacementDefinitions);
 
-		Map<String, String> stringStringHashMap = new TreeMap<>();
-		//
-		stringStringHashMap.put("old.version", "9999");
-		stringStringHashMap.put("new.version", "14100");
-		stringStringHashMap.put("old.pom.version", "99.9.9-SNAPSHOT");
+		Map<String, String> map = new TreeMap<>();
+		map.put("old.version", "9999");
+		map.put("new.version", "14100");
+		map.put("old.pom.version", "99.9.9-SNAPSHOT");
 
-		stringStringHashMap.put("new.build.version", "14100");
-		stringStringHashMap.put("new.portal.db.version", "14100");
-		stringStringHashMap.put("new.sac.db.version", "14100");
-		stringStringHashMap.put("new.pit.db.version", "14100");
-		stringStringHashMap.put("new.pom.version", "14.1.0");
+		map.put("new.build.version", "14100");
+		map.put("new.portal.db.version", "14100");
+		map.put("new.sac.db.version", "14100");
+		map.put("new.pit.db.version", "14100");
+		map.put("new.pom.version", "14.1.0");
 		TokenizationJobParameters tokenizationJobParameters = new TokenizationJobParameters(replacementDefinitions,
-				stringStringHashMap);
+				map);
 		String s1 = tokenizationJobParameters.toJson(tokenizationJobParameters);
 
 		return loadFromJson(s1);
@@ -113,7 +112,7 @@ public class Default {
 
 		final List<Replacement> replacements = definition.getReplacements();
 		replacements.add(new Replacement("build.number=${old.version}", "build.number=" + "${new.build.version}"));
-		replacements.add(new Replacement("<name>portal-{old.version}</name>", "<name>portal-{new.version}</name>"));
+		replacements.add(new Replacement("<name>portal-${old.version}</name>", "<name>portal-${new.version}</name>"));
 		replacements.add(new Replacement("pit${old.version}", "pit" + "${new.pit.db.version}"));
 		replacements.add(new Replacement("pai${old.version}", "pai" + "${new.portal.db.version}"));
 		replacements.add(new Replacement("sac${old.version}", "sac" + "${new.sac.db.version}"));

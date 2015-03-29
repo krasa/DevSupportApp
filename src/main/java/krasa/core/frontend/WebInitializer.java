@@ -25,7 +25,7 @@ public class WebInitializer implements ServletContextInitializer {
 		filter.setInitParameter(WicketFilter.FILTER_MAPPING_PARAM, "/*");
 		filter.addMappingForUrlPatterns(null, false, "/*");
 
-		sc.getSessionCookieConfig().setMaxAge(60);
+		sc.getSessionCookieConfig().setMaxAge(60 * 60 * 10);
 	}
 
 }

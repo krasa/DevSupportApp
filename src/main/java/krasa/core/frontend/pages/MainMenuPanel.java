@@ -33,6 +33,7 @@ public final class MainMenuPanel extends Panel {
 		add(new BookmarkablePageLink("config", ConfigurationPage.class));
 		add(new BookmarkablePageLink("intellij", IntelliJMainPage.class));
 		add(new BookmarkablePageLink("Smrt", SmrtMainPage.class));
+		add(new BookmarkablePageLink("Test", TestPage.class));
 		add(new ProfileDropDownPanel("profile"));
 
 	}
