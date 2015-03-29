@@ -1,6 +1,6 @@
 <wicket:panel>
 	<plugins>
-        <plugin wicket:id="plugin" id="MyPlugin" url="http://unit:8080/myPlugin.jar"/>
+		<plugin wicket:id="plugin" id="MyPlugin" url="http://unit:8080/myPlugin.jar" />
 
 	</plugins>
 </wicket:panel>
