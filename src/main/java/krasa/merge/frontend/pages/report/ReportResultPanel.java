@@ -1,32 +1,25 @@
 package krasa.merge.frontend.pages.report;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import krasa.merge.backend.domain.SvnFolder;
 import krasa.merge.backend.dto.ReportResult;
 
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackDefaultDataTable;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.list.ListItem;
-import org.apache.wicket.markup.html.list.ListView;
-import org.apache.wicket.markup.html.panel.Fragment;
-import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.markup.html.list.*;
+import org.apache.wicket.markup.html.panel.*;
 import org.apache.wicket.markup.repeater.RepeatingView;
-import org.apache.wicket.model.AbstractReadOnlyModel;
-import org.apache.wicket.model.IModel;
-import org.tmatesoft.svn.core.SVNDirEntry;
-import org.tmatesoft.svn.core.SVNLogEntry;
+import org.apache.wicket.model.*;
+import org.tmatesoft.svn.core.*;
 
 /**
  * @author Vojtech Krasa
  */
 public class ReportResultPanel extends Panel {
+
 	public static final int ROWS_PER_PAGE = 100000;
 	protected AjaxFallbackDefaultDataTable<SvnFolder, String> table;
-	private IModel<ReportResult> model;
 
 	public ReportResultPanel(String id) {
 		super(id);
@@ -34,13 +27,13 @@ public class ReportResultPanel extends Panel {
 
 	public ReportResultPanel(String id, final IModel<ReportResult> model) {
 		super(id, model);
-		this.model = model;
 		final ReportResult object = model.getObject();
 		final Map<String, List<SVNLogEntry>> svnFolderListMap = object.getSvnFolderListMap();
 		List<String> branches = new ArrayList<>(svnFolderListMap.keySet());
 		Collections.sort(branches);
 
 		ListView<String> components = new ListView<String>("resultItem", branches) {
+
 			@Override
 			protected void populateItem(ListItem<String> components) {
 				final String branchName = components.getModelObject();
@@ -52,6 +45,7 @@ public class ReportResultPanel extends Panel {
 						+ model.getObject().getLastRevisionOfBranch(branchName) + "]"));
 
 				tableFragment.add(new ReportResultTablePanel("table", new AbstractReadOnlyModel<List<SVNLogEntry>>() {
+
 					@Override
 					public List<SVNLogEntry> getObject() {
 						return model.getObject().getIssues(branchName);
@@ -72,6 +66,7 @@ public class ReportResultPanel extends Panel {
 					Fragment tagFragment = new Fragment(view.newChildId(), "tableFragment", ReportResultPanel.this);
 					tagFragment.add(new Label("title", getTagIssuesTitle(branchName, tag, model)));
 					tagFragment.add(new ReportResultTablePanel("table", new AbstractReadOnlyModel<List<SVNLogEntry>>() {
+
 						@Override
 						public List<SVNLogEntry> getObject() {
 							return model.getObject().getIssuesByTag(branchName, tag);
@@ -83,6 +78,7 @@ public class ReportResultPanel extends Panel {
 						tagFragment.add(new Label("title", getTitle(branchName, tag, nextTag)));
 						tagFragment.add(new ReportResultTablePanel("table",
 								new AbstractReadOnlyModel<List<SVNLogEntry>>() {
+
 									@Override
 									public List<SVNLogEntry> getObject() {
 										return model.getObject().getIncrementalIssuesByTag(branchName, tag);
@@ -95,6 +91,7 @@ public class ReportResultPanel extends Panel {
 						tagFragment.add(new Label("title", getDifferenceTitle(branchName, tag, model)));
 						tagFragment.add(new ReportResultTablePanel("table",
 								new AbstractReadOnlyModel<List<SVNLogEntry>>() {
+
 									@Override
 									public List<SVNLogEntry> getObject() {
 										return model.getObject().getDifferenceBetweenTagAndBranchAsStrings(tag,

@@ -10,6 +10,7 @@ import krasa.merge.backend.dto.MergeJobDto;
 import krasa.merge.backend.service.MergeService;
 import krasa.merge.backend.service.automerge.domain.MergeJob;
 
+import org.slf4j.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
@@ -19,7 +20,7 @@ import com.google.common.collect.Collections2;
 
 @Service
 public class AutoMergeExecutor {
-
+	private static final Logger log = LoggerFactory.getLogger(AutoMergeExecutor.class);
 	@Autowired
 	MergeJobsHolder runningTasks;
 
@@ -52,7 +53,7 @@ public class AutoMergeExecutor {
 
 	public void jobFinished(AutoMergeProcess autoMergeProcess, Throwable e) {
 		if (e != null) {
-			e.printStackTrace();
+			log.error("", e);
 		}
 		MergeJob mergeJob1 = autoMergeProcess.getMergeJob();
 		runningTasks.remove(mergeJob1.getToPath());
@@ -79,6 +80,11 @@ public class AutoMergeExecutor {
 
 	public void statusUpdated(MergeJob mergeJob) {
 		mergeService.update(mergeJob);
+		sendMergeEvent();
+	}
+
+	private void sendMergeEvent() {
+		log.debug("sending MergeEvent");
 		eventService.sendEvent(new MergeEvent());
 	}
 }

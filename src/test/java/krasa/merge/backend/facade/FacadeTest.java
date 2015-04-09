@@ -8,7 +8,7 @@ import org.junit.Test;
 /**
  * @author Vojtech Krasa
  */
-public class FacadeImplTest {
+public class FacadeTest {
 
 	@Test
 	public void testName() throws Exception {

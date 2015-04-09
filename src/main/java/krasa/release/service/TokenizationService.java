@@ -4,8 +4,7 @@ import java.io.File;
 import java.util.*;
 
 import krasa.build.backend.domain.Status;
-import krasa.build.backend.facade.EventService;
-import krasa.core.backend.RemoteHostUtils;
+import krasa.build.backend.facade.*;
 import krasa.core.backend.config.MainConfig;
 import krasa.core.backend.dao.*;
 import krasa.merge.backend.domain.Repository;
@@ -95,7 +94,7 @@ public class TokenizationService {
 		final TokenizationJobParameters jobParameters = new Gson().fromJson(json.getJson(),
 				TokenizationJobParameters.class);
 		final TokenizationJob tokenizationJobCommand = new TokenizationJob(jobParameters, svnUrl,
-				json.getBranchesPatterns(), RemoteHostUtils.getRemoteHost(), json.getCommitMessage());
+				json.getBranchesPatterns(), BuildFacade.getCaller(), json.getCommitMessage());
 		save(tokenizationJobCommand);
 		return tokenizationJobCommand;
 	}

@@ -29,7 +29,7 @@
 	<!-- hibernate session factory -->
 	<bean id="sessionFactory"
 		  class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
-		<property name="dataSource" ref="dataSource"/>
+		<property name="dataSource" ref="coreDataSource"/>
 		<property name="hibernateProperties">
 			<props>
 				<prop key="hibernate.hbm2ddl.auto">update</prop>
@@ -37,9 +37,9 @@
 				<prop key="hibernate.connection.pool_size">5</prop>
 				<!--<prop key="hibernate.current_session_context_class">thread</prop>-->
 				<prop key="hibernate.show_sql">false</prop>
-				<!--<prop key="hibernate.cglib.use_reflection_optimizer">true</prop>-->
-				<!--<prop key="hibernate.cache.provider_class">org.hibernate.search.store.RAMDirectoryProvider</prop>-->
-				<prop key="hibernate.hibernate.cache.use_query_cache">true</prop>
+				<prop key="hibernate.cglib.use_reflection_optimizer">true</prop>
+				<!--<prop key="hibernate.cache.region.factory_class">org.hibernate.cache.ehcache.EhCacheRegionFactory</prop>-->
+				<!--<prop key="hibernate.cache.use_query_cache">true</prop>-->
 			</props>
 		</property>
 		<property name="entityInterceptor" ref="interceptor"/>
@@ -56,7 +56,7 @@
 
 
 	<beans profile="!IN_MEMORY">
-		<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<bean id="coreDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
 			<property name="driverClassName" value="org.hsqldb.jdbcDriver"/>
 			<property name="url" value="jdbc:hsqldb:file:db.hsqldb;hsqldb.tx=mvcc"/>
 			<!--<property name="url" value="jdbc:hsqldb:hsql//localhost/svnmergeinfo"/>-->
@@ -66,7 +66,7 @@
 	</beans>
 
 	<beans profile="IN_MEMORY">
-		<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<bean id="coreDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
 			<property name="driverClassName" value="org.hsqldb.jdbcDriver"/>
 			<property name="url" value="jdbc:hsqldb:mem:aname"/>
 			<property name="username" value="sa"/>

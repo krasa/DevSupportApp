@@ -1,14 +1,9 @@
 package krasa.merge.backend.dao;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import krasa.core.backend.dao.AbstractDAO;
-import krasa.merge.backend.domain.Branch;
-import krasa.merge.backend.domain.SvnFolder;
-import krasa.merge.backend.domain.Type;
+import krasa.merge.backend.domain.*;
 
 import org.hibernate.Query;
 import org.springframework.stereotype.Repository;
@@ -152,5 +147,12 @@ public class SvnFolderDAO extends AbstractDAO<SvnFolder> {
 		query.setParameter("type", type);
 		query.setString("parentName", name);
 		return query.list();
+	}
+
+	public void deleteAllBy(krasa.merge.backend.domain.Repository repository) {
+		Query query = getSession().createQuery("delete from " + getEntityName() + " where repository = :repository").setParameter(
+				"repository", repository);
+		query.executeUpdate();
+
 	}
 }

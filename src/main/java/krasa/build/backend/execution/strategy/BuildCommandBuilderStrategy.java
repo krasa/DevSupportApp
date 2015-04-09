@@ -1,7 +1,6 @@
 package krasa.build.backend.execution.strategy;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import krasa.build.backend.domain.BuildableComponent;
 
@@ -30,7 +29,7 @@ public class BuildCommandBuilderStrategy {
 		}
 		sb.append("\"|onbuild -c /dev/stdin");
 
-		return Arrays.asList(sb.toString());
+		return Collections.singletonList(sb.toString());
 	}
 
 	private String getName(String[] split) {

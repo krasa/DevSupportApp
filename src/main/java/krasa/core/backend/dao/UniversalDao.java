@@ -74,7 +74,7 @@ public class UniversalDao {
 		} else {
 			getSession().update(object);
 		}
-		return (T) object;
+		return object;
 	}
 
 	public int count(Class clazz) {

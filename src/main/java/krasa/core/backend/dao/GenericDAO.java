@@ -31,5 +31,4 @@ public class GenericDAO<T extends AbstractEntity> extends AbstractDAO<T> impleme
 	public void setEntityClass(Class<T> entityClass) {
 		this.entityClass = entityClass;
 	}
-
 }

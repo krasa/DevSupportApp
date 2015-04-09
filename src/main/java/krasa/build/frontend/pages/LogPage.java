@@ -145,6 +145,6 @@ public class LogPage extends BasePage {
 
 	@Override
 	protected Component newLeftColumnPanel(String id) {
-		return new BuildLeftPanel(id, null);
+		return new BuildLeftPanel(id);
 	}
 }

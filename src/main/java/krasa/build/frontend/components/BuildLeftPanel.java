@@ -15,13 +15,11 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 
 public class BuildLeftPanel extends BasePanel {
 
-	private final IModel<Environment> actualEnvironment;
 	@SpringBean
 	private BuildFacade facade;
 
-	public BuildLeftPanel(String id, IModel<Environment> actualEnvironment) {
+	public BuildLeftPanel(String id) {
 		super(id);
-		this.actualEnvironment = actualEnvironment;
 		add(new CurrentlyBuildingLeftPanel("currentlyBuilding"));
 		add(new LastBuildsLeftPanel("lastBuilds"));
 		initList();
@@ -30,6 +28,7 @@ public class BuildLeftPanel extends BasePanel {
 	private void initList() {
 		ListView<Environment> projectsList;
 		LoadableDetachableModel<List<Environment>> model = new LoadableDetachableModel<List<Environment>>() {
+
 			@Override
 			protected List<Environment> load() {
 				return facade.getEnvironments();
@@ -37,6 +36,7 @@ public class BuildLeftPanel extends BasePanel {
 		};
 
 		projectsList = new ListView<Environment>("item", model) {
+
 			@Override
 			protected void populateItem(ListItem<Environment> listItem) {
 				PageParameters pageParameters = BuildPage.createPageParameters(listItem.getModelObject());

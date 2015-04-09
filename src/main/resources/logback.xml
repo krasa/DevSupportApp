@@ -49,8 +49,9 @@
 	</root>
 
 	<logger name="krasa" level="debug"/>
+	<logger name="krasa.build.backend.execution.adapter.CurrentBuildJobsHolder" level="info"/>
 	<logger name="org.apache.wicket.atmosphere" level="warn"/>
-	<logger name="org.apache.http" level="info" />
+	<logger name="org.apache.http" level="info"/>
 	<!--<logger name="org.hibernate.SQL" level="debug"/>-->
 	<logger name="org.apache.wicket.atmosphere.EventBus" level="warn"/>
 

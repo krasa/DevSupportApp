@@ -27,7 +27,8 @@ public class MySession extends WebSession {
 	 * Constructor. Note that {@link org.apache.wicket.request.cycle.RequestCycle} is not available until this
 	 * constructor returns.
 	 * 
-	 * @param request The current request
+	 * @param request
+	 *            The current request
 	 */
 	public MySession(Request request) {
 		super(request);

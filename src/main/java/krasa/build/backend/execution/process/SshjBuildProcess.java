@@ -15,6 +15,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Value;
 
 public class SshjBuildProcess extends AbstractProcess {
+
 	@Value("${ssh.username}")
 	String userName;
 	@Value("${ssh.password}")
@@ -121,12 +122,13 @@ public class SshjBuildProcess extends AbstractProcess {
 			try {
 				session.close();
 			} catch (Exception e) {
+				log.error(String.valueOf(e), e);
 				throw new RuntimeException(e);
 			} finally {
 				try {
 					ssh.disconnect();
 				} catch (IOException e) {
-					throw new RuntimeException(e);
+					log.error(String.valueOf(e), e);
 				}
 			}
 		}

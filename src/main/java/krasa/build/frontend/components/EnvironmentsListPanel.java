@@ -4,23 +4,20 @@ import java.util.List;
 
 import krasa.build.backend.domain.Environment;
 
-import org.apache.wicket.markup.html.list.ListItem;
-import org.apache.wicket.markup.html.list.ListView;
+import org.apache.wicket.markup.html.list.*;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.*;
 
 public class EnvironmentsListPanel extends Panel {
+
 	protected final Logger log = LoggerFactory.getLogger(getClass());
 
 	protected ListView<Environment> list;
-	private IModel<List<Environment>> environmentsModel;
 
 	public EnvironmentsListPanel(String id, final IModel<List<Environment>> environmentsModel) {
 		super(id);
 		setOutputMarkupId(true);
-		this.environmentsModel = environmentsModel;
 		createList(environmentsModel);
 	}
 

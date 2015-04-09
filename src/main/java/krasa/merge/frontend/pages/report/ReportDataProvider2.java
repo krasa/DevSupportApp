@@ -1,26 +1,21 @@
 package krasa.merge.frontend.pages.report;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import krasa.merge.backend.dto.ReportItem;
 
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.ISortState;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.ISortableDataProvider;
 import org.apache.wicket.extensions.markup.html.repeater.util.SingleSortState;
-import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
+import org.apache.wicket.model.*;
 import org.tmatesoft.svn.core.SVNLogEntry;
 
-import com.google.common.collect.Multimap;
-import com.google.common.collect.TreeMultimap;
+import com.google.common.collect.*;
 
-class ReportDataProvider implements ISortableDataProvider<ReportItem, String> {
+public class ReportDataProvider2 implements ISortableDataProvider<ReportItem, String> {
 	List<ReportItem> uniqueCPRs;
 
-	public ReportDataProvider(IModel<List<SVNLogEntry>> merges) {
+	public ReportDataProvider2(IModel<List<SVNLogEntry>> merges) {
 		uniqueCPRs = new ArrayList<>();
 		Multimap<String, SVNLogEntry> stringSVNLogEntryMultimap = filterAndSort(merges.getObject());
 		for (String entry : stringSVNLogEntryMultimap.keySet()) {

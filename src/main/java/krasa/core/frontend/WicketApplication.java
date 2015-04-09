@@ -78,7 +78,7 @@ public class WicketApplication extends WebApplication {
 
 		getResourceSettings().getResourceFinders().add(
 				new WebApplicationPath(getServletContext(), "intellijPluginRepoResources"));
-
+		getDebugSettings().setDevelopmentUtilitiesEnabled(false);
 		// add your configuration here
 		getComponentInstantiationListeners().add(new IComponentInstantiationListener() {
 

@@ -1,38 +1,27 @@
 package krasa.merge.frontend.pages.config;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import krasa.core.backend.domain.GlobalSettings;
 import krasa.core.frontend.commons.EntityModelWrapper;
-import krasa.core.frontend.commons.table.ButtonColumn;
-import krasa.core.frontend.commons.table.DropDownChoiceColumn;
-import krasa.core.frontend.commons.table.DummyModelDataProvider;
-import krasa.core.frontend.commons.table.LabelColumn;
+import krasa.core.frontend.commons.table.*;
 import krasa.core.frontend.components.BasePanel;
-import krasa.merge.backend.domain.Repository;
-import krasa.merge.backend.domain.RepositoryStructure;
+import krasa.merge.backend.domain.*;
 import krasa.merge.backend.facade.Facade;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackDefaultDataTable;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.PropertyColumn;
-import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.model.AbstractReadOnlyModel;
-import org.apache.wicket.model.CompoundPropertyModel;
-import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.LoadableDetachableModel;
-import org.apache.wicket.model.Model;
-import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.*;
+import org.apache.wicket.markup.html.form.*;
+import org.apache.wicket.model.*;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
 /**
  * @author Vojtech Krasa
  */
 public class RepositoryConfigurationPanel extends BasePanel {
+
 	protected final IModel<GlobalSettings> globalSettings;
 	protected final Form<Repository> form;
 	protected final EntityModelWrapper<Repository> repositoryEntityModelWrapper = new EntityModelWrapper<>();
@@ -44,6 +33,7 @@ public class RepositoryConfigurationPanel extends BasePanel {
 		form = new Form<>("form", createNewModel());
 		form.add(createList());
 		form.add(new AjaxButton("add") {
+
 			@Override
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
 				facade.saveRepository((Repository) form.getModelObject());
@@ -92,6 +82,7 @@ public class RepositoryConfigurationPanel extends BasePanel {
 			@Override
 			protected IModel<List<String>> getDisplayModel(IModel<Repository> rowModel) {
 				return new AbstractReadOnlyModel<List<String>>() {
+
 					@Override
 					public List<String> getObject() {
 						final RepositoryStructure[] values = RepositoryStructure.values();
@@ -112,6 +103,7 @@ public class RepositoryConfigurationPanel extends BasePanel {
 		});
 
 		columns.add(new ButtonColumn<Repository>(new Model<String>("delete")) {
+
 			@Override
 			protected void onSubmit(IModel<Repository> model, AjaxRequestTarget target, Form<?> form) {
 				facade.deleteRepository(model.getObject().getId());
@@ -131,6 +123,7 @@ public class RepositoryConfigurationPanel extends BasePanel {
 
 	private IModel<List<Repository>> getRepositoriesModel() {
 		return new LoadableDetachableModel<List<Repository>>() {
+
 			@Override
 			protected List<Repository> load() {
 				return facade.getAllRepositories();
@@ -140,6 +133,7 @@ public class RepositoryConfigurationPanel extends BasePanel {
 
 	public IModel<GlobalSettings> getGlobalSettings() {
 		return new LoadableDetachableModel<GlobalSettings>() {
+
 			@Override
 			protected GlobalSettings load() {
 				return facade.getGlobalSettings();

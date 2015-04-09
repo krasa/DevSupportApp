@@ -9,15 +9,15 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 @Service
-public class SmrtMonitoringImpl {
+public class SmrtMonitoring {
 
-	private static final Logger log = LoggerFactory.getLogger(SmrtMonitoringImpl.class);
+	private static final Logger log = LoggerFactory.getLogger(SmrtMonitoring.class);
 
 	private static ForkJoinPool pool = new ForkJoinPool(10);
 	@Autowired
 	Environment environment;
 
-	public SmrtMonitoringImpl() {
+	public SmrtMonitoring() {
 	}
 
 	public List<SmrtConnection> getSmrtConnections() {

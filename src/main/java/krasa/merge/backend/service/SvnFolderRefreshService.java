@@ -9,7 +9,7 @@ import krasa.merge.backend.SvnException;
 import krasa.merge.backend.dao.SvnFolderDAO;
 import krasa.merge.backend.domain.*;
 import krasa.merge.backend.service.conventions.ConventionsStrategyHolder;
-import krasa.merge.backend.svn.*;
+import krasa.merge.backend.svn.SvnFolderProvider;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -109,7 +109,7 @@ public class SvnFolderRefreshService {
 	}
 
 	private SvnFolderProvider getSvnFolderProvider(Repository repository) {
-		return new SvnFolderProviderImpl(repository);
+		return new SvnFolderProvider(repository);
 	}
 
 	private void postProcessAfterRefresh(SvnFolder project) {

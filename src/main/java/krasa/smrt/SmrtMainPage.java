@@ -20,7 +20,7 @@ import com.google.gson.Gson;
 public class SmrtMainPage extends BasePage {
 
 	@SpringBean
-	SmrtMonitoringImpl smrtMonitoring;
+	SmrtMonitoring smrtMonitoring;
 	List<ChoiceFilteredPropertyColumnModel<?, ?>> updateOnBeforeRender = new ArrayList<>();
 	private SmrtFilter smrtFilter;
 
@@ -38,10 +38,8 @@ public class SmrtMainPage extends BasePage {
 		List<IColumn<SmrtConnection, String>> iColumns = getColumns(smrtConnections);
 		FilterForm<SmrtConnection> form = new FilterForm<>("form", smrtFilter);
 		add(form);
-		AjaxFallbackDefaultDataTable<SmrtConnection, String> table = new AjaxFallbackDefaultDataTable<>(
-				"table", iColumns,
-				getDataProvider(smrtConnections),
-				200);
+		AjaxFallbackDefaultDataTable<SmrtConnection, String> table = new AjaxFallbackDefaultDataTable<>("table",
+				iColumns, getDataProvider(smrtConnections), 200);
 		form.add(table);
 		table.addTopToolbar(new FilterToolbar(table, form));
 	}
@@ -68,8 +66,7 @@ public class SmrtMainPage extends BasePage {
 		updateOnBeforeRender.add(url);
 
 		final ChoiceFilteredPropertyColumnModel<String, SmrtConnection> environments = new ChoiceFilteredPropertyColumnModel<String, SmrtConnection>(
-				smrtConnections,
-				"environment") {
+				smrtConnections, "environment") {
 
 			@Override
 			public void reload() {
@@ -97,8 +94,8 @@ public class SmrtMainPage extends BasePage {
 
 	private SortableFilteredModelDataProvider<SmrtConnection> getDataProvider(
 			IModel<List<SmrtConnection>> smrtFilteredConnections) {
-		return new SortableFilteredModelDataProvider<>(smrtFilteredConnections, "type",
-				SortOrder.DESCENDING, smrtFilter);
+		return new SortableFilteredModelDataProvider<>(smrtFilteredConnections, "type", SortOrder.DESCENDING,
+				smrtFilter);
 	}
 
 	@Override

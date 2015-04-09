@@ -4,14 +4,13 @@ import krasa.StartVojtitko;
 
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
+@EnableScheduling
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 @Configuration
 @ImportResource("classpath:spring.xml")
-@ComponentScan(value = "krasa", excludeFilters = @ComponentScan.Filter(
-		value = StartVojtitko.class,
-		type = FilterType.ASSIGNABLE_TYPE
-		))
+@ComponentScan(value = "krasa", excludeFilters = @ComponentScan.Filter(value = StartVojtitko.class, type = FilterType.ASSIGNABLE_TYPE))
 public class MainConfig extends CommonConfig {
 
 	public static final String HSQLDB_TX_MANAGER = "txManager";

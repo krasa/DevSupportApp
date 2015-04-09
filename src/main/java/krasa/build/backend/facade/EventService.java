@@ -56,4 +56,5 @@ public class EventService {
 		Assert.notNull(application);
 		return application;
 	}
+
 }

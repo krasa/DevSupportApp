@@ -26,7 +26,8 @@ public final class ProfileEditPanel extends Panel {
 	}
 
 	private void initComponents(IModel<Profile> model) {
-		Form<Profile> form = new Form<Profile>("form", new CompoundPropertyModel<>(model)) {};
+		Form<Profile> form = new Form<Profile>("form", new CompoundPropertyModel<>(model)) {
+		};
 		form.add(new TextField<String>("name"));
 		form.add(new Button("save") {
 

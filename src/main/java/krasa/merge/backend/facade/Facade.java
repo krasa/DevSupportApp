@@ -1,109 +1,420 @@
 package krasa.merge.backend.facade;
 
-import java.util.List;
+import java.io.*;
+import java.util.*;
 
+import krasa.build.backend.domain.*;
 import krasa.core.backend.config.MainConfig;
+import krasa.core.backend.dao.*;
 import krasa.core.backend.domain.GlobalSettings;
+import krasa.core.backend.service.GlobalSettingsProvider;
+import krasa.core.frontend.MySession;
+import krasa.merge.backend.dao.*;
 import krasa.merge.backend.domain.*;
 import krasa.merge.backend.dto.*;
+import krasa.merge.backend.service.*;
+import krasa.merge.backend.service.conventions.ConventionsStrategyHolder;
+import krasa.merge.backend.svn.SvnReleaseProvider;
 
+import org.apache.wicket.util.io.IOUtils;
+import org.hibernate.*;
+import org.hibernate.criterion.Restrictions;
+import org.slf4j.*;
+import org.springframework.beans.factory.annotation.*;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Vojtech Krasa
  */
-public interface Facade {
+@Service
+@Transactional(value = MainConfig.HSQLDB_TX_MANAGER)
+public class Facade {
 
-	List<SvnFolder> getBranches();
+	protected final Logger log = LoggerFactory.getLogger(getClass());
 
-	List<SvnFolder> getProjects();
+	@Autowired
+	private GlobalSettingsProvider globalSettingsProvider;
+	private GenericDAO<GlobalSettings> globalSettingsDAO;
+	@Autowired
+	private SvnFolderDAO svnFolderDAO;
+	@Autowired
+	private MergeInfoService mergeInfoService;
+	@Autowired
+	private ProfileProvider profileProvider;
+	@Autowired
+	private ProfileDAO profileDAO;
+	private GenericDAO<Environment> environmentDAO;
+	private GenericDAO<BuildableComponent> branchBuildDAO;
+	private GenericDAO<Branch> branchDAO;
+	private GenericDAO<Repository> repositoryGenericDAO;
+	@Autowired
+	private ReportService reportService;
+	@Autowired
+	private SvnReleaseProvider svnReleaseProvider;
+	@Value("${rns.directory}")
+	private String rnsDirectory;
+	@Value("${rns.command}")
+	private String rnsCommand;
+	@Value("${SvnHeadVsLastTag.command}")
+	private String svnHeadVsLastTagCommand;
+	@Value("${VersionsOnPrgens.command}")
+	private String versionsOnPrgensCommand;
+	private GenericDaoBuilder genericDAO;
+	@Autowired
+	@Qualifier("sessionFactory")
+	protected SessionFactory sf;
 
-	List<Profile> getProfiles();
+	public Facade() {
 
-	Profile getDefaultProfile();
+	}
 
-	List<SvnFolder> getSubDirs(String name);
-
-	void updateProfile(Profile modelObject);
-
-	List<String> getSelectedBranchesNames();
-
-	SvnFolder getSvnFolderById(Integer id);
-
-	void updateSelectionOfSvnFolder(SvnFolder object, Boolean booleanIModelObject);
-
-	List<SvnFolder> getSelectedBranches();
-
-	List<SvnFolder> findBranchesByNameLike(String name);
-
-	List<Displayable> findBranchesByNameLikeAsDisplayable(String name);
-
-	SvnFolder findBranchByName(String name);
-
-	List<Displayable> findTagsByNameLikeAsDisplayable(String input);
-
-	SvnFolder findBranchByInCaseSensitiveName(String objectAsString);
-
-	void addBranchIntoProfile(String objectAsString);
-
-	MergeInfoResult getMergeInfoForAllSelectedBranches();
-
-	MergeInfoResult getMergeInfoForAllSelectedBranchesInProject(String path);
-
-	Profile getProfileByIdOrDefault(Integer id);
+	@Autowired
+	public void setGenericDAO(GenericDaoBuilder genericDAO) {
+		this.genericDAO = genericDAO;
+		this.environmentDAO = genericDAO.build(Environment.class);
+		this.branchBuildDAO = genericDAO.build(BuildableComponent.class);
+		this.branchDAO = genericDAO.build(Branch.class);
+		this.globalSettingsDAO = genericDAO.build(GlobalSettings.class);
+		this.repositoryGenericDAO = genericDAO.build(Repository.class);
+	}
 
 	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER, readOnly = true)
-	Profile getCurrentProfile();
+	public List<SvnFolder> getSubDirs(String name) {
+		return svnFolderDAO.getSubDirsByParentPath(name);
+	}
 
-	Profile createNewProfile();
+	public void updateProfile(Profile modelObject) {
+		Profile byId = profileDAO.findById(modelObject.getId());
+		byId.setName(modelObject.getName());
+		profileDAO.save(byId);
+	}
 
-	Profile copyProfile(Profile configModel);
+	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER, readOnly = true)
+	public List<String> getSelectedBranchesNames() {
+		return profileProvider.getSelectedBranchesNames();
+	}
 
-	Boolean isMergeOnSubFoldersForProject(String path);
+	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER, readOnly = true)
+	public List<SvnFolder> getSelectedBranches() {
+		List<Branch> selectedBranches = profileProvider.getSelectedBranches();
+		return svnFolderDAO.findBranchesByNames(selectedBranches);
+	}
 
-	void setMergeOnSubFoldersForProject(String path, Boolean modelObject);
+	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER, readOnly = true)
+	public SvnFolder getSvnFolderById(Integer id) {
+		return svnFolderDAO.findById(id);
+	}
 
-	ReportResult getReport();
+	public void updateSelectionOfSvnFolder(SvnFolder object, Boolean aBoolean) {
+		profileProvider.updateSelectionOfSvnFolder(object, aBoolean);
+	}
 
-	List<Profile> getReleasesFromSvn();
+	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER, readOnly = true)
+	public List<SvnFolder> findBranchesByNameLike(String name) {
+		return svnFolderDAO.findFoldersByNameLike(name, Type.BRANCH);
+	}
 
-	void refreshReleasesFromSvn();
+	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER, readOnly = true)
+	public List<Displayable> findBranchesByNameLikeAsDisplayable(String name) {
+		return new ArrayList<Displayable>(findBranchesByNameLike(name));
+	}
 
-	void delete(Profile modelObject);
+	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER, readOnly = true)
+	public SvnFolder findBranchByName(String name) {
+		return svnFolderDAO.findBranchByName(name);
+	}
 
-	String runRns(String profileName);
+	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER, readOnly = true)
+	public List<Displayable> findTagsByNameLikeAsDisplayable(String input) {
+		return new ArrayList<Displayable>(svnFolderDAO.findFoldersByNameLike(input, Type.TAG));
+	}
 
-	String runVersionsOnPrgens();
+	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER, readOnly = true)
+	public SvnFolder findBranchByInCaseSensitiveName(String name) {
+		return svnFolderDAO.findBranchByInCaseSensitiveName(name);
 
-	String runSvnHeadVsLastTag(String name);
+	}
 
-	void updateGlobalSettings(GlobalSettings globalSettings);
+	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER, readOnly = true)
+	public MergeInfoResult getMergeInfoForAllSelectedBranches() {
+		List<Branch> selectedBranches = profileProvider.getSelectedBranches();
+		List<SvnFolder> branchesByNames = svnFolderDAO.findBranchesByNames(selectedBranches);
+		return mergeInfoService.findMerges(branchesByNames);
+	}
 
-	GlobalSettings getGlobalSettings();
+	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER, readOnly = true)
+	public MergeInfoResult getMergeInfoForAllSelectedBranchesInProject(String projectPath) {
+		List<Branch> selectedBranches = profileProvider.getSelectedBranches();
+		List<SvnFolder> branchesByNames = svnFolderDAO.findFoldersByNames(projectPath, selectedBranches);
+		return mergeInfoService.findMerges(branchesByNames);
+	}
 
-	void updateBranch(SvnFolder folder);
+	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER, readOnly = true)
+	public Profile getProfileByIdOrDefault(Integer current) {
+		Profile byId = profileDAO.findById(current);
+		if (byId == null) {
+			return profileProvider.getFirstProfile();
+		}
+		return byId;
+	}
 
-	List<SvnFolder> getAllBranchesByProjectName(String name);
+	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER, readOnly = true)
+	public Profile getCurrentProfile() {
+		return profileDAO.findById(MySession.get().getCurrentProfileId());
+	}
 
-	void addAllMatchingBranchesIntoProfile(String fieldValue);
+	public Profile createNewProfile() {
+		return profileDAO.save(new Profile());
+	}
 
-	String resolveProjectByPath(String path);
+	public Profile copyProfile(Profile configModel) {
+		Profile object = new Profile(configModel);
+		return profileDAO.save(object);
+	}
 
-	void setLoadTagsForProject(String path, Boolean modelObject);
+	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER, readOnly = true)
+	public Boolean isMergeOnSubFoldersForProject(String path) {
+		GlobalSettings first = globalSettingsProvider.getGlobalSettings();
+		return first.isMergeOnSubFoldersForProject(path);
+	}
 
-	Boolean isLoadTags(String path);
+	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER, readOnly = true)
+	public GlobalSettings getGlobalSettings() {
+		return globalSettingsProvider.getGlobalSettings();
+	}
 
-	void saveRepository(Repository modelObject);
+	public void updateBranch(SvnFolder folder) {
+		svnFolderDAO.save(folder);
+	}
 
-	List<Repository> getAllRepositories();
+	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER, readOnly = true)
+	public List<SvnFolder> getAllBranchesByProjectName(String name) {
+		return svnFolderDAO.findByParentName(name, Type.BRANCH);
+	}
 
-	void deleteRepository(Integer modelObject);
+	public void addBranchIntoProfile(String objectAsString) {
+		SvnFolder branchByInCaseSensitiveName = findBranchByInCaseSensitiveName(objectAsString);
+		if (branchByInCaseSensitiveName != null) {
+			profileProvider.addSelectedBranch(branchByInCaseSensitiveName.getName());
+		}
+	}
 
-	void deleteAllSvnBranches();
+	public void addAllMatchingBranchesIntoProfile(String fieldValue) {
+		List<SvnFolder> branches = findBranchesByNameLike(fieldValue);
+		profileProvider.addSelectedBranches(branches);
+	}
 
-	void deleteAllBranchesFromProfile();
+	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER, readOnly = true)
+	public String resolveProjectByPath(String path) {
+		int endIndex = path.indexOf("/");
+		if (endIndex > 0) {
+			path = path.substring(0, endIndex);
+		}
+		SvnFolder branchByName = svnFolderDAO.findBranchByName(path);
+		if (branchByName != null) {
+			path = branchByName.getParent().getName();
+		}
+		return path;
+	}
 
-	void replaceSearchFrom();
+	public void setLoadTagsForProject(String path, Boolean modelObject) {
+		globalSettingsProvider.getGlobalSettings().setLoadTagsForProject(path, modelObject);
+	}
 
-	void deleteProfile(Profile modelObject);
+	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER, readOnly = true)
+	public Boolean isLoadTags(String path) {
+		return globalSettingsProvider.getGlobalSettings().isLoadTags(path);
+	}
+
+	public void saveRepository(Repository modelObject) {
+		repositoryGenericDAO.save(modelObject);
+		GlobalSettings globalSettings = getGlobalSettings();
+		if (globalSettings.getDefaultRepository() == null) {
+			globalSettings.setDefaultRepository(modelObject);
+			globalSettingsDAO.save(globalSettings);
+		}
+	}
+
+	public List<Repository> getAllRepositories() {
+		return repositoryGenericDAO.findAll();
+	}
+
+	public void deleteRepository(Integer id) {
+		Repository byId = repositoryGenericDAO.findById(id);
+		final GlobalSettings globalSettings = getGlobalSettings();
+		final Repository defaultRepository = globalSettings.getDefaultRepository();
+		if (defaultRepository != null && defaultRepository.equals(byId)) {
+			globalSettings.setDefaultRepository(null);
+			globalSettingsDAO.save(globalSettings);
+		}
+		svnFolderDAO.deleteAllBy(byId);
+		repositoryGenericDAO.delete(byId);
+	}
+
+	public void deleteAllSvnBranches() {
+		svnFolderDAO.deleteAll();
+	}
+
+	public void deleteAllBranchesFromProfile() {
+		profileProvider.deleteAllBranchesFromProfile();
+	}
+
+	public void replaceSearchFrom() {
+		List<SvnFolder> selectedBranches = getSelectedBranches();
+		for (SvnFolder selectedBranch : selectedBranches) {
+			ConventionsStrategyHolder.getStrategy().replaceSearchFrom(selectedBranch);
+			svnFolderDAO.save(selectedBranch);
+		}
+	}
+
+	public void deleteProfile(Profile modelObject) {
+		profileDAO.delete(modelObject);
+	}
+
+	public void cleanHsqldb() {
+		log.info("cleaning Hsqldb");
+		deleteOldBuildJobs();
+	}
+
+	private void deleteOldBuildJobs() {
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.DAY_OF_WEEK, -7);
+
+		final Session session = sf.getCurrentSession();
+		final Criteria crit = session.createCriteria(BuildJob.class);
+		crit.add(Restrictions.le("endTime", cal.getTime()));
+		List<BuildJob> list = crit.list();
+		log.info("found: {}", list.size());
+
+		for (BuildJob o : list) {
+			BuildableComponent buildableComponent = o.getBuildableComponent();
+			BuildJob lastBuildJob = buildableComponent.getLastBuildJob();
+			if (lastBuildJob != o) {
+				log.info("deleting {}", o);
+				session.delete(o);
+			}
+		}
+	}
+
+	public void setMergeOnSubFoldersForProject(String path, Boolean modelObject) {
+		GlobalSettings settings = globalSettingsProvider.getGlobalSettings();
+		settings.setProjectsWithSubfoldersMergeSearching(path, modelObject);
+		globalSettingsDAO.save(settings);
+	}
+
+	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER, readOnly = true)
+	public ReportResult getReport() {
+		return reportService.getReport(getDefaultRepository());
+	}
+
+	private Repository getDefaultRepository() {
+		Repository defaultRepository = globalSettingsProvider.getGlobalSettings().getDefaultRepository();
+		if (defaultRepository == null) {
+			defaultRepository = repositoryGenericDAO.findFirst();
+		}
+		if (defaultRepository == null) {
+			throw new IllegalStateException("no default repository exists");
+		}
+		return defaultRepository;
+	}
+
+	public List<Profile> getReleasesFromSvn() {
+		return profileDAO.findAllByType(Profile.Type.FROM_SVN);
+	}
+
+	public void refreshReleasesFromSvn() {
+		deleteAllReleasesFromSvn();
+		List<Profile> releases = svnReleaseProvider.getReleases();
+		for (Profile release : releases) {
+			List<Branch> branches = release.getBranches();
+			Collections.sort(branches);
+			profileDAO.save(release);
+		}
+	}
+
+	private void deleteAllReleasesFromSvn() {
+		List<Profile> releases = getReleasesFromSvn();
+
+		for (Profile release : releases) {
+			profileDAO.delete(release);
+		}
+	}
+
+	public void delete(Profile modelObject) {
+		profileDAO.delete(modelObject);
+		MySession.get().setCurrentProfile(profileProvider.getFirstProfile().getId());
+	}
+
+	public String runRns(String profileName) {
+		ProcessBuilder pb = new ProcessBuilder(rnsCommand, "releases/" + profileName);
+		pb.redirectErrorStream(true);
+		pb.directory(new File(rnsDirectory));
+		try {
+			Process p = pb.start();
+			String x = IOUtils.toString(p.getInputStream());
+			String xs = IOUtils.toString(p.getErrorStream());
+			p.destroy();
+			return x;
+		} catch (IOException e) {
+			throw new IllegalArgumentException(e);
+		}
+	}
+
+	public String runVersionsOnPrgens() {
+		ProcessBuilder pb = new ProcessBuilder(versionsOnPrgensCommand);
+		pb.redirectErrorStream(true);
+		pb.directory(new File(rnsDirectory));
+		try {
+			Process p = pb.start();
+			String x = IOUtils.toString(p.getInputStream());
+			String xs = IOUtils.toString(p.getErrorStream());
+			p.destroy();
+			return x;
+		} catch (IOException e) {
+			throw new IllegalArgumentException(e);
+		}
+
+	}
+
+	public String runSvnHeadVsLastTag(String profileName) {
+		ProcessBuilder pb = new ProcessBuilder(svnHeadVsLastTagCommand, "releases/" + profileName);
+		pb.redirectErrorStream(true);
+		pb.directory(new File(rnsDirectory));
+		try {
+			Process p = pb.start();
+			String x = IOUtils.toString(p.getInputStream());
+			String xs = IOUtils.toString(p.getErrorStream());
+			System.err.println(xs);
+			p.destroy();
+			return x;
+		} catch (IOException e) {
+			throw new IllegalArgumentException(e);
+		}
+	}
+
+	public void updateGlobalSettings(GlobalSettings globalSettings) {
+		globalSettingsDAO.save(globalSettings);
+	}
+
+	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER, readOnly = true)
+	public List<SvnFolder> getProjects() {
+		return svnFolderDAO.findAllProjects();
+	}
+
+	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER, readOnly = true)
+	public List<Profile> getProfiles() {
+		return profileDAO.findAll();
+	}
+
+	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER, readOnly = false)
+	public Profile getDefaultProfile() {
+		return profileProvider.getFirstProfile();
+	}
+
+	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER, readOnly = true)
+	public List<SvnFolder> getBranches() {
+		return svnFolderDAO.findAll();
+	}
+
 }

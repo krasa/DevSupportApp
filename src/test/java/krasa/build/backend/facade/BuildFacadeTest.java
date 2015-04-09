@@ -9,11 +9,11 @@ import krasa.build.backend.execution.ProcessStatus;
 import org.junit.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class BuildFacadeImplTest extends FullTest {
+public class BuildFacadeTest extends FullTest {
 
 	public static final String ENV = "env";
 	@Autowired
-	BuildFacadeImpl buildFacade;
+	BuildFacade buildFacade;
 
 	private Environment environment;
 	private BuildableComponent buildableComponent2;

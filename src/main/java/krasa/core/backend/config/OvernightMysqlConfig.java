@@ -3,8 +3,6 @@ package krasa.core.backend.config;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
-import javax.sql.DataSource;
-
 import org.springframework.context.annotation.*;
 
 import com.jolbox.bonecp.BoneCPDataSource;
@@ -14,7 +12,7 @@ import com.jolbox.bonecp.BoneCPDataSource;
 public class OvernightMysqlConfig extends CommonConfig {
 
 	@Bean(destroyMethod = "close")
-	public DataSource overnightDataSource() {
+	public BoneCPDataSource overnightDataSource() {
 		BoneCPDataSource ds = new BoneCPDataSource();
 
 		ds.setJdbcUrl(get("jdbc.overnight.url"));
@@ -24,7 +22,7 @@ public class OvernightMysqlConfig extends CommonConfig {
 		return setCommonProperties(ds);
 	}
 
-	private DataSource setCommonProperties(BoneCPDataSource ds) {
+	private BoneCPDataSource setCommonProperties(BoneCPDataSource ds) {
 		ds.setDriverClass(get("jdbc.driverClassName"));
 		ds.setIdleMaxAge(getLong("bonecp.idleMaxAge.mins"), TimeUnit.MINUTES);
 		ds.setIdleConnectionTestPeriod(getLong("bonecp.idleConnectionTestPeriod.mins"), TimeUnit.MINUTES);

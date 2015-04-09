@@ -24,13 +24,9 @@ public class TokenizationJobsLeftPanel extends BasePanel {
 
 	@SpringBean
 	private TokenizationService facade;
-	private ListView<TokenizationJob> jobsList;
-	private IModel<List<TokenizationJob>> jobsModel;
-	private WebMarkupContainer listContainer;
 
 	public TokenizationJobsLeftPanel(String id) {
 		super(id);
-		jobsModel = getJobsModel();
 		initList();
 		add(new WebSocketBehavior() {
 
@@ -54,8 +50,8 @@ public class TokenizationJobsLeftPanel extends BasePanel {
 	}
 
 	private void initList() {
-		listContainer = new WebMarkupContainer("list");
-		jobsList = new ListView<TokenizationJob>("item", jobsModel) {
+		WebMarkupContainer listContainer = new WebMarkupContainer("list");
+		ListView<TokenizationJob> jobsList = new ListView<TokenizationJob>("item", getJobsModel()) {
 
 			@Override
 			protected void populateItem(final ListItem<TokenizationJob> listItem) {

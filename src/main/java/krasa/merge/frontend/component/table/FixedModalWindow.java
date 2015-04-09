@@ -28,7 +28,7 @@ public class FixedModalWindow extends ModalWindow {
 	@Override
 	protected CharSequence getShowJavaScript() {
 		// Hack in some JS to remove the onMove handlers
-		StringBuffer showJS = new StringBuffer();
+		StringBuilder showJS = new StringBuilder();
 		showJS.append((String) super.getShowJavaScript());
 		showJS.append("$('body').css('overflow','hidden');");
 		return showJS.toString();
@@ -36,7 +36,7 @@ public class FixedModalWindow extends ModalWindow {
 
 	@Override
 	protected String getCloseJavacript() {
-		StringBuffer closeJS = new StringBuffer();
+		StringBuilder closeJS = new StringBuilder();
 		closeJS.append(super.getCloseJavacript());
 		closeJS.append("$('body').css('overflow','auto');");
 		return closeJS.toString();

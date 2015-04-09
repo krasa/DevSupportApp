@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.*;
 
 import krasa.merge.backend.domain.*;
-import krasa.merge.backend.svn.*;
+import krasa.merge.backend.svn.SvnFolderProvider;
 
 import org.slf4j.*;
 import org.tmatesoft.svn.core.*;
@@ -28,7 +28,7 @@ public class SvnBranchesCheckouter {
 				branchNamePattern);
 
 		SVNClientManager svnClientManager = SVNClientManager.newInstance();
-		SvnFolderProvider svnFolderProvider = new SvnFolderProviderImpl(new Repository(svnUrl));
+		SvnFolderProvider svnFolderProvider = new SvnFolderProvider(new Repository(svnUrl));
 		List<SVNDirEntry> projects = svnFolderProvider.getProjects();
 		for (SVNDirEntry project : projects) {
 			List<SvnFolder> projectContent = svnFolderProvider.getProjectContent(

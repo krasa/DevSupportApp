@@ -66,7 +66,7 @@ public abstract class CommonDAO {
 		} else {
 			getSession().update(object);
 		}
-		return (T) object;
+		return object;
 	}
 
 	protected Query query(String query) {

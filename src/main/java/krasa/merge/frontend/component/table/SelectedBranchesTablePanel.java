@@ -16,6 +16,7 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
  * @author Vojtech Krasa
  */
 public class SelectedBranchesTablePanel extends BranchesTablePanel {
+
 	@SpringBean
 	private Facade facade;
 
@@ -33,6 +34,7 @@ public class SelectedBranchesTablePanel extends BranchesTablePanel {
 
 	private ButtonColumn<SvnFolder> createDeleteColumn() {
 		return new ButtonColumn<SvnFolder>(new Model<>("Delete")) {
+
 			@Override
 			protected void onSubmit(IModel<SvnFolder> model, AjaxRequestTarget target, Form<?> form) {
 				facade.updateSelectionOfSvnFolder(model.getObject(), false);

@@ -109,7 +109,7 @@ public abstract class AbstractDAO<T extends AbstractEntity> implements DAO<T> {
 		} else {
 			getSession().update(object);
 		}
-		return (T) object;
+		return object;
 	}
 
 	public T merge(T buildJob) {

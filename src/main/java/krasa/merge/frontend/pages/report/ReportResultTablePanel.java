@@ -1,36 +1,26 @@
 package krasa.merge.frontend.pages.report;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
-import krasa.core.frontend.commons.FishEyeLink;
-import krasa.core.frontend.commons.FishEyeLinkModel;
-import krasa.merge.backend.dto.MergeInfoResult;
-import krasa.merge.backend.dto.MergeInfoResultItem;
-import krasa.merge.backend.dto.ReportItem;
-import krasa.merge.backend.dto.ReportResult;
+import krasa.core.frontend.commons.*;
+import krasa.merge.backend.dto.*;
 
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackDefaultDataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.*;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
-import org.apache.wicket.markup.html.panel.Fragment;
-import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.markup.repeater.Item;
-import org.apache.wicket.markup.repeater.RepeatingView;
-import org.apache.wicket.model.AbstractReadOnlyModel;
-import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
-import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.markup.html.panel.*;
+import org.apache.wicket.markup.repeater.*;
+import org.apache.wicket.model.*;
 import org.tmatesoft.svn.core.SVNLogEntry;
 
 public class ReportResultTablePanel extends Panel {
+
 	public ReportResultTablePanel(String id, final IModel<List<SVNLogEntry>> model) {
 		super(id, model);
 		final ArrayList<IColumn<ReportItem, String>> columns = getColumns();
 		AjaxFallbackDefaultDataTable<ReportItem, String> table = new AjaxFallbackDefaultDataTable<>("merges", columns,
-				new ReportDataProvider(model), 100);
+				new ReportDataProvider2(model), 100);
 		add(table);
 	}
 
@@ -51,6 +41,7 @@ public class ReportResultTablePanel extends Panel {
 
 	private AbstractColumn<ReportItem, String> messageColumn() {
 		return new AbstractColumn<ReportItem, String>(new Model<>("message"), "message") {
+
 			@Override
 			public void populateItem(Item<ICellPopulator<ReportItem>> cellItem, String componentId,
 					IModel<ReportItem> rowModel) {
@@ -61,6 +52,7 @@ public class ReportResultTablePanel extends Panel {
 
 	private AbstractColumn<ReportItem, String> revidionsColumn() {
 		return new AbstractColumn<ReportItem, String>(new Model<>("revision"), "revision") {
+
 			@Override
 			public void populateItem(Item<ICellPopulator<ReportItem>> cellItem, String componentId,
 					IModel<ReportItem> rowModel) {
@@ -93,6 +85,7 @@ public class ReportResultTablePanel extends Panel {
 	private AbstractReadOnlyModel<List<? extends MergeInfoResultItem>> getAbstractReadOnlyModel(
 			final IModel<MergeInfoResult> model) {
 		return new AbstractReadOnlyModel<List<? extends MergeInfoResultItem>>() {
+
 			@Override
 			public List<? extends MergeInfoResultItem> getObject() {
 				return model.getObject().getMergeInfoResultItems();

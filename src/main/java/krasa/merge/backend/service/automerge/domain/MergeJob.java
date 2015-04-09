@@ -8,7 +8,7 @@ import javax.persistence.*;
 import krasa.build.backend.domain.Status;
 import krasa.build.backend.execution.ProcessStatus;
 import krasa.build.backend.execution.process.ProcessStatusListener;
-import krasa.core.backend.RemoteHostUtils;
+import krasa.build.backend.facade.BuildFacade;
 import krasa.core.backend.domain.AbstractEntity;
 import krasa.core.backend.utils.MdcUtils;
 import krasa.merge.backend.dto.*;
@@ -77,7 +77,7 @@ public class MergeJob extends AbstractEntity implements ProcessStatusListener {
 		String toPath = mergeInfoResultItem.getToPath();
 		String repository = mergeInfoResultItem.getRepository();
 		long revision = svnLogEntry.getRevision();
-		String author = RemoteHostUtils.getRemoteHost();
+		String author = BuildFacade.getCaller();
 		return new MergeJob(from, to, fromPath, toPath, repository, revision, author, mergeJobMode);
 	}
 

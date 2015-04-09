@@ -68,6 +68,20 @@ public class ConfigurationPage extends BasePage {
 			}
 		});
 
+		form.add(new IndicatingAjaxButton("cleanHsqldb") {
+
+			@Override
+			protected void onSubmit(AjaxRequestTarget ajaxRequestTarget, Form<?> components) {
+				facade.cleanHsqldb();
+				info("done");
+			}
+
+			@Override
+			protected void onError(AjaxRequestTarget ajaxRequestTarget, Form<?> components) {
+				error("Error");
+			}
+		});
+
 		setOutputMarkupPlaceholderTag(true);
 
 		add(form);

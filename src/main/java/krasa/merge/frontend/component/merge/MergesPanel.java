@@ -25,7 +25,6 @@ public class MergesPanel extends BasePanel {
 	@SpringBean
 	private MergeService facade;
 	private IModel<List<MergeJobDto>> model;
-	private WebMarkupContainer list;
 
 	public MergesPanel(String id) {
 		super(id);
@@ -53,7 +52,7 @@ public class MergesPanel extends BasePanel {
 	}
 
 	private void initList() {
-		list = new WebMarkupContainer("list");
+		WebMarkupContainer list = new WebMarkupContainer("list");
 		ListView<MergeJobDto> runningMergeJobDtoListView = new ListView<MergeJobDto>("item", model) {
 
 			@Override

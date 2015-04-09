@@ -3,18 +3,18 @@ package krasa.build.frontend.components;
 import java.util.List;
 
 import krasa.build.backend.dto.BuildJobDto;
-import krasa.build.backend.facade.BuildFacade;
+import krasa.build.backend.facade.*;
 import krasa.build.frontend.pages.LogPage;
 import krasa.core.frontend.commons.LabeledBookmarkablePageLink;
 
-import org.apache.wicket.ajax.*;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.list.*;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.*;
+import org.apache.wicket.protocol.ws.api.*;
+import org.apache.wicket.protocol.ws.api.message.IWebSocketPushMessage;
 import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.apache.wicket.util.time.Duration;
 import org.slf4j.*;
 
 public class CurrentlyBuildingLeftPanel extends Panel {
@@ -34,14 +34,15 @@ public class CurrentlyBuildingLeftPanel extends Panel {
 	}
 
 	private void addAjaxRefreshBehaviour() {
-		AbstractAjaxTimerBehavior abstractAjaxTimerBehavior = new AbstractAjaxTimerBehavior(Duration.seconds(1)) {
+		add(new WebSocketBehavior() {
 
 			@Override
-			protected void onTimer(AjaxRequestTarget ajaxRequestTarget) {
-				ajaxRequestTarget.add(list);
+			protected void onPush(WebSocketRequestHandler handler, IWebSocketPushMessage message) {
+				if (message == CurrentlyBuildingUpdate.INSTANCE) {
+					handler.add(list);
+				}
 			}
-		};
-		add(abstractAjaxTimerBehavior);
+		});
 	}
 
 	private IModel<List<BuildJobDto>> getCurrentlyBuildingModel() {
