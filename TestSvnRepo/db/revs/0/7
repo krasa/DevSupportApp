@@ -1,0 +1,51 @@
+id: 3-1.0-7.r7/0
+type: dir
+pred: 3-1.0.r1/66
+count: 1
+cpath: /Project/tags
+copyfrom: 6 /tags
+
+PLAIN
+K 8
+branches
+V 16
+dir 2-1.0-5.r5/0
+K 4
+tags
+V 16
+dir 3-1.0-7.r7/0
+K 5
+trunk
+V 16
+dir 0-1.0-6.r6/0
+END
+ENDREP
+id: 0-4.0.r7/209
+type: dir
+pred: 0-4.0.r6/181
+count: 3
+text: 7 94 102 102 8fd11eef72fa8d251faa50529ba1540c
+cpath: /Project
+copyroot: 0 /
+
+PLAIN
+K 7
+Project
+V 16
+dir 0-4.0.r7/209
+END
+ENDREP
+id: 0.0.r7/398
+type: dir
+pred: 0.0.r6/398
+count: 7
+text: 7 347 38 38 8d189611f72a5c37fdc742cc4394a81f
+cpath: /
+copyroot: 0 /
+
+3-1._0.t6-7 add-dir false false /Project/tags
+6 /tags
+3-1.0.r1/66 delete-dir false false /tags
+
+
+398 524
