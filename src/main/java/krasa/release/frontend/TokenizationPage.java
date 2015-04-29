@@ -229,7 +229,7 @@ public class TokenizationPage extends BasePage {
 				setResponsePage(FileSystemLogPage.class, parameters);
 			}
 		};
-		button.setDefaultFormProcessing(false);
+		// button.setDefaultFormProcessing(false);
 		return button;
 	}
 
@@ -243,7 +243,7 @@ public class TokenizationPage extends BasePage {
 				target.add(TokenizationPage.this);
 			}
 		};
-		reset.setDefaultFormProcessing(false);
+		// reset.setDefaultFormProcessing(false);
 		return reset;
 	}
 
@@ -263,7 +263,7 @@ public class TokenizationPage extends BasePage {
 			}
 		};
 		// TODO fixes Stackoverflow
-		generateJson.setDefaultFormProcessing(false);
+		// generateJson.setDefaultFormProcessing(false);
 		return generateJson;
 	}
 
