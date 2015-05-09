@@ -26,16 +26,16 @@ public class BuildPage extends BasePage {
 	protected IModel<Environment> model;
 
 	public BuildPage() {
-		add(createEnvironmentPanel());
-		add(environmets = new EnvironmentsListPanel("environmets", getEnvironmentsModel()));
+		queue(createEnvironmentPanel());
+		queue(environmets = new EnvironmentsListPanel("environmets", getEnvironmentsModel()));
 	}
 
 	public BuildPage(PageParameters parameters) {
 		super(parameters);
 		final StringValue stringValue = parameters.get(NAME);
 		model = getEnvironmentModel(stringValue);
-		add(createEnvironmentPanel());
-		add(environmets = new EnvironmentsListPanel("environmets", getEnvironmentsModel(model)));
+		queue(createEnvironmentPanel());
+		queue(environmets = new EnvironmentsListPanel("environmets", getEnvironmentsModel(model)));
 	}
 
 	private CreateEnvironmentFormPanel createEnvironmentPanel() {

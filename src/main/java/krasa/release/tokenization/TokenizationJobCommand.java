@@ -1,7 +1,7 @@
 package krasa.release.tokenization;
 
 import java.io.*;
-import java.util.List;
+import java.util.*;
 
 import krasa.core.backend.LogNamePrefixes;
 import krasa.core.backend.utils.MdcUtils;
@@ -46,6 +46,12 @@ public class TokenizationJobCommand {
 			tempDir.mkdirs();
 		}
 		MdcUtils.putLogName(getLogName());
+		log.info("id={}", id);
+		log.info("branchNamePattern={}", Arrays.toString(branchNamePattern.toArray()));
+		log.info("tokenizationJobParameters={}", tokenizationJobParameters);
+		log.info("svnRepoUrl={}", svnRepoUrl);
+		log.info("tempDir={}", tempDir);
+		log.info("commitMessage={}", commitMessage);
 		log.info("Runnning");
 		try {
 			checkout();

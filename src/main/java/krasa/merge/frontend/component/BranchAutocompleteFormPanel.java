@@ -6,6 +6,7 @@ import krasa.core.frontend.components.BasePanel;
 import krasa.merge.backend.facade.Facade;
 import krasa.merge.frontend.pages.config.ConfigurationPage;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
@@ -48,7 +49,6 @@ public abstract class BranchAutocompleteFormPanel extends BasePanel {
 			@Override
 			protected void onError() {
 				AjaxRequestTarget target = Ajax.getAjaxRequestTarget();
-				super.onError();
 				if (target != null && feedback != null) {
 					target.add(feedback);
 				} else {
@@ -65,9 +65,11 @@ public abstract class BranchAutocompleteFormPanel extends BasePanel {
 			@Override
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
 				String fieldValue = autocomplete.getFieldValue();
-				addBranch(fieldValue, target);
-				onUpdate(target);
-				autocomplete.resetFieldValue(target);
+				if (StringUtils.isNotBlank(fieldValue)) {
+					addBranch(fieldValue, target);
+					onUpdate(target);
+					autocomplete.resetFieldValue(target);
+				}
 			}
 
 			@Override
@@ -81,9 +83,11 @@ public abstract class BranchAutocompleteFormPanel extends BasePanel {
 			@Override
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
 				String fieldValue = autocomplete.getFieldValue();
-				addAllMatchingBranches(fieldValue, target);
-				onUpdate(target);
-				autocomplete.resetFieldValue(target);
+				if (StringUtils.isNotBlank(fieldValue)) {
+					addAllMatchingBranches(fieldValue, target);
+					onUpdate(target);
+					autocomplete.resetFieldValue(target);
+				}
 			}
 
 			@Override

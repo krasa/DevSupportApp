@@ -35,7 +35,7 @@ public class ConfigurationPage extends BasePage {
 	}
 
 	private void initComponents() {
-		add(new RepositoryConfigurationPanel("repositories"));
+		queue(new RepositoryConfigurationPanel("repositories"));
 		final Form<Profile> form = new Form<>("form");
 
 		form.add(new RefreshBranchesButton(form, "refreshBranchesButton"));
@@ -84,7 +84,7 @@ public class ConfigurationPage extends BasePage {
 
 		setOutputMarkupPlaceholderTag(true);
 
-		add(form);
+		queue(form);
 	}
 
 	@Override

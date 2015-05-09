@@ -29,9 +29,9 @@ public class StartVojtitko extends SpringBootServletInitializer implements WebSo
 		SpringApplication springApplication = new SpringApplication(StartVojtitko.class);
 		springApplication.addListeners(new ApplicationPidFileWriter());
 		springApplication.addListeners(new EmbeddedServerPortFileWriter());
-		ConfigurableApplicationContext run = springApplication.run(args);
+		ConfigurableApplicationContext ಠ_ಠ = springApplication.run(args);
 		System.in.read();
-		SpringApplication.exit(run);
+		SpringApplication.exit(ಠ_ಠ);
 		// System.out.println("Let's inspect the beans provided by Spring Boot:");
 		//
 		// String[] beanNames = ctx.getBeanDefinitionNames();

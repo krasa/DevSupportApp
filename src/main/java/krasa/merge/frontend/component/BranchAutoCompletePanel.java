@@ -54,7 +54,7 @@ public class BranchAutoCompletePanel extends Panel {
 				return choices.iterator();
 			}
 		};
-		components.setRequired(true);
+		// components.setRequired(true);
 		return components;
 	}
 

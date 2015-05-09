@@ -22,15 +22,15 @@ public class IntelliJMainPage extends BasePage {
 		final PluginUploadForm progressUploadForm = new PluginUploadForm("progressUpload");
 		progressUploadForm.add(new UploadProgressBar("progress", progressUploadForm,
 				progressUploadForm.getFileUploadField()));
-		add(progressUploadForm);
+		queue(progressUploadForm);
 
-		add(new BookmarkablePageLink<>("repoUrl", IntelliJEnterprisePluginRepositoryPage.class));
+		queue(new BookmarkablePageLink<>("repoUrl", IntelliJEnterprisePluginRepositoryPage.class));
 
 		List<IColumn<PluginDefinition, String>> iColumns = new ArrayList<IColumn<PluginDefinition, String>>();
 		iColumns.add(new PropertyColumn<PluginDefinition, String>(Model.of("id"), "id"));
 		iColumns.add(new PropertyColumn<PluginDefinition, String>(Model.of("version"), "version"));
 		iColumns.add(new PropertyColumn<PluginDefinition, String>(Model.of("fileName"), "fileName"));
-		add(new AjaxFallbackDefaultDataTable<PluginDefinition, String>("table", iColumns,
+		queue(new AjaxFallbackDefaultDataTable<PluginDefinition, String>("table", iColumns,
 				new DummyModelDataProvider<PluginDefinition>(new IntelliJPluginsModel()), 50));
 	}
 

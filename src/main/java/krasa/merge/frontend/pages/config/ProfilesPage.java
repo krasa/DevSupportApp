@@ -6,10 +6,8 @@ import krasa.merge.backend.domain.Profile;
 import krasa.merge.backend.facade.Facade;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.markup.html.form.Button;
-import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.LoadableDetachableModel;
+import org.apache.wicket.markup.html.form.*;
+import org.apache.wicket.model.*;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.util.string.StringValue;
@@ -18,6 +16,7 @@ import org.apache.wicket.util.string.StringValue;
  * @author Vojtech Krasa
  */
 public class ProfilesPage extends BasePage {
+
 	@SpringBean
 	private Facade facade;
 	protected IModel<Profile> actualProfile;
@@ -34,8 +33,9 @@ public class ProfilesPage extends BasePage {
 	private void init() {
 		initActualProfileModel();
 		final Form<Profile> form = new Form<>("form");
-		add(form);
+		queue(form);
 		form.add(new Button("newProfile") {
+
 			@Override
 			public void onSubmit() {
 				Profile newProfile = facade.createNewProfile();
@@ -45,6 +45,7 @@ public class ProfilesPage extends BasePage {
 			}
 		});
 		form.add(new Button("copyProfile") {
+
 			@Override
 			public void onSubmit() {
 				Profile newProfile = facade.copyProfile(actualProfile.getObject());
@@ -57,6 +58,7 @@ public class ProfilesPage extends BasePage {
 
 	private void initActualProfileModel() {
 		actualProfile = new LoadableDetachableModel<Profile>() {
+
 			@Override
 			protected Profile load() {
 				StringValue id = getPageParameters().get("id");

@@ -39,7 +39,7 @@ public class TestPage extends BasePage {
 		};
 		add(abstractAjaxTimerBehavior);
 		foo = new Label("foo", "foo");
-		add(foo);
+		queue(foo);
 	}
 
 }

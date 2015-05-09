@@ -34,7 +34,7 @@ public class FileSystemLogPage extends BasePage {
 		logFile = TokenizationFileUtils.getLogFileByName(parameters.get(NAME).toString());
 		type = parameters.get(TYPE).toEnum(Type.class);
 		lastLength = logFile.length();
-		add(new AjaxLazyLoadPanel("logPanel") {
+		queue(new AjaxLazyLoadPanel("logPanel") {
 
 			@Override
 			public Component getLazyLoadComponent(String markupId) {

@@ -128,6 +128,7 @@ public class TokenizationJob extends AbstractEntity implements Serializable {
 		Assert.notNull(svnUrl);
 		Assert.notNull(getId());
 		Assert.notNull(branchNamePattern);
+		Assert.notEmpty(branchNamePattern);
 		TokenizationJobCommand tokenizationJobCommand = new TokenizationJobCommand(getId(), jobParameters, svnUrl,
 				getUniqueTempDir(tempDir), branchNamePattern, commitMessage);
 		tokenizationJobCommand.setCommit(commit);

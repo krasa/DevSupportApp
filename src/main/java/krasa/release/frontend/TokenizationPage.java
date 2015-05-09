@@ -43,12 +43,12 @@ public class TokenizationPage extends BasePage {
 	private FixedModalWindow modalWindow;
 
 	private TextArea<Object> jsonTextArea;
-	private RequiredTextField<Object> fromVersionField;
-	private RequiredTextField<Object> toVersionField;
-	private RequiredTextField newPortalDbField;
-	private RequiredTextField newSacDbField;
-	private RequiredTextField commitMessage;
-	private RequiredTextField newPitDbField;
+	private TextField<Object> fromVersionField;
+	private TextField<Object> toVersionField;
+	private TextField newPortalDbField;
+	private TextField newSacDbField;
+	private TextField commitMessage;
+	private TextField newPitDbField;
 
 	private TokenizationPageModel tokenizationPageModel = new TokenizationPageModel();
 	private AjaxFallbackDefaultDataTable<String, String> branchesTable;
@@ -56,11 +56,11 @@ public class TokenizationPage extends BasePage {
 	private AutoCompleteTextField<String> branchNamePatternField;
 
 	public TokenizationPage() throws IOException {
-		add(modalWindow = new FixedModalWindow("modalWindow"));
-		add(form = new Form<>("form", new CompoundPropertyModel<>(tokenizationPageModel)));
+		queue(modalWindow = new FixedModalWindow("modalWindow"));
+		queue(form = new Form<>("form", new CompoundPropertyModel<>(tokenizationPageModel)));
 		form.add(fromVersionField = new RequiredTextField<>("fromVersion"));
 
-		toVersionField = new RequiredTextField<>("toVersion");
+		toVersionField = new TextField<>("toVersion");
 		toVersionField.add(new OnChangeAjaxBehavior() {
 
 			@Override
@@ -80,10 +80,10 @@ public class TokenizationPage extends BasePage {
 			}
 		});
 		form.add(toVersionField);
-		form.add(newPortalDbField = new RequiredTextField<>("newPortalDb"));
-		form.add(newSacDbField = new RequiredTextField<>("newSacDb"));
-		form.add(newPitDbField = new RequiredTextField<>("newPitDb"));
-		form.add(commitMessage = new RequiredTextField<>("commitMessage"));
+		form.add(newPortalDbField = new TextField<>("newPortalDb"));
+		form.add(newSacDbField = new TextField<>("newSacDb"));
+		form.add(newPitDbField = new TextField<>("newPitDb"));
+		form.add(commitMessage = new TextField<>("commitMessage"));
 		form.add(jsonTextArea = new TextArea<>("json"));
 		form.add(resetButton());
 		form.add(generateJsonButton());
@@ -98,7 +98,6 @@ public class TokenizationPage extends BasePage {
 
 			@Override
 			protected void onError(AjaxRequestTarget target, Form<?> form) {
-				super.onError(target, form);
 				target.add(getFeedbackPanel());
 			}
 
@@ -216,20 +215,19 @@ public class TokenizationPage extends BasePage {
 
 			@Override
 			protected void onError(AjaxRequestTarget target, Form<?> form) {
-				super.onError(target, form);
 				target.add(getFeedbackPanel());
 			}
 
 			@Override
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-				setAsDefault();
+				// setAsDefault();
 				File logFile = tokenizationService.tokenizeAsync(tokenizationPageModel);
 				final String tokenize = logFile.getName();
 				final PageParameters parameters = FileSystemLogPage.getTokenizationPageParameters(tokenize);
 				setResponsePage(FileSystemLogPage.class, parameters);
 			}
 		};
-		button.setDefaultFormProcessing(false);
+		// button.setDefaultFormProcessing(false);
 		return button;
 	}
 
@@ -243,7 +241,7 @@ public class TokenizationPage extends BasePage {
 				target.add(TokenizationPage.this);
 			}
 		};
-		reset.setDefaultFormProcessing(false);
+		// reset.setDefaultFormProcessing(false);
 		return reset;
 	}
 
@@ -263,7 +261,7 @@ public class TokenizationPage extends BasePage {
 			}
 		};
 		// TODO fixes Stackoverflow
-		generateJson.setDefaultFormProcessing(false);
+		// generateJson.setDefaultFormProcessing(false);
 		return generateJson;
 	}
 

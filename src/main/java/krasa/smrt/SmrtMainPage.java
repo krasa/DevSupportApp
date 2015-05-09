@@ -37,7 +37,7 @@ public class SmrtMainPage extends BasePage {
 		smrtFilter = new SmrtFilter();
 		List<IColumn<SmrtConnection, String>> iColumns = getColumns(smrtConnections);
 		FilterForm<SmrtConnection> form = new FilterForm<>("form", smrtFilter);
-		add(form);
+		queue(form);
 		AjaxFallbackDefaultDataTable<SmrtConnection, String> table = new AjaxFallbackDefaultDataTable<>("table",
 				iColumns, getDataProvider(smrtConnections), 200);
 		form.add(table);

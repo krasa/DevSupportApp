@@ -86,7 +86,7 @@ public class LogPage extends BasePage {
 		if (model.getObject() == null) {
 			getFeedbackPanel().error("Process not found");
 		}
-		add(new Label("info", new AbstractReadOnlyModel<Object>() {
+		queue(new Label("info", new AbstractReadOnlyModel<Object>() {
 
 			@Override
 			public Object getObject() {
@@ -97,7 +97,7 @@ public class LogPage extends BasePage {
 		form = new Form("form");
 
 		form.add(getLogPanel());
-		add(form);
+		queue(form);
 
 		kill = new PocessKillButton("kill", model);
 		kill2 = new PocessKillButton("kill2", model);

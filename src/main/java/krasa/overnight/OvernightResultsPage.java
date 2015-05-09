@@ -37,7 +37,7 @@ public class OvernightResultsPage extends BasePage {
 
 	public OvernightResultsPage() {
 		Form form = new Form("form");
-		add(form);
+		queue(form);
 		DateTextField df = new DateTextField("date", new PropertyModel<Date>(this, "date"), "dd.MM.yyyy");
 		df.add(new DatePicker());
 		df.add(new OnChangeAjaxBehavior() {
@@ -66,7 +66,7 @@ public class OvernightResultsPage extends BasePage {
 		ArrayList<IColumn<Result, String>> iColumns = getiColumns();
 
 		table = new AjaxFallbackDefaultDataTable<>("table", iColumns, getSortableDataProvider(), 100);
-		add(table);
+		queue(table);
 		differenceFromTable = new AjaxFallbackDefaultDataTable<>("differenceFromTable", iColumns,
 				getDifferenceSortableDataProvider(), 100);
 		form.add(differenceFromTable);

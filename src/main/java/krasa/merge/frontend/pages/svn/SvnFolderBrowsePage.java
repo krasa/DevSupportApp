@@ -42,8 +42,8 @@ public class SvnFolderBrowsePage extends BasePage {
 		}
 		path = facade.resolveProjectByPath(path1);
 		createForm();
-		add(createResultPanel());
-		add(branchesTablePanel = createTable());
+		queue(createResultPanel());
+		queue(branchesTablePanel = createTable());
 
 	}
 
@@ -79,7 +79,7 @@ public class SvnFolderBrowsePage extends BasePage {
 		});
 		form.add(createMergeOnSubfoldersCheckbox());
 		form.add(createLoadTagsCheckbox());
-		add(new IndicatingAjaxButton("findMerges", form) {
+		queue(new IndicatingAjaxButton("findMerges", form) {
 
 			@Override
 			protected void onSubmit(AjaxRequestTarget ajaxRequestTarget, Form<?> components) {
@@ -102,7 +102,7 @@ public class SvnFolderBrowsePage extends BasePage {
 			}
 		});
 
-		add(form);
+		queue(form);
 	}
 
 	private StandaloneAjaxCheckBox createLoadTagsCheckbox() {

@@ -27,11 +27,11 @@ public class ReportPage extends BasePage {
 	protected MultiLineLabel resultLabel;
 
 	public ReportPage() {
-		add(createAddBranchIntoProfileFormPanel());
-		add(createResultLabel());
-		add(createResultPanel());
-		add(createForm());
-		add(createBranchesTable());
+		queue(createAddBranchIntoProfileFormPanel());
+		queue(createResultLabel());
+		queue(createResultPanel());
+		queue(createForm());
+		queue(createBranchesTable());
 
 	}
 

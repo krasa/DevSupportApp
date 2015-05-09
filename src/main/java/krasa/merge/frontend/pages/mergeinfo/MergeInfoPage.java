@@ -21,11 +21,11 @@ public class MergeInfoPage extends BasePage {
 	protected SelectedBranchesTablePanel branchesTable;
 
 	public MergeInfoPage() {
-		add(new MergeLeftPanel(LEFT));
-		add(createAddBranchIntoProfileFormPanel());
-		add(createResultPanel());
-		add(createBranchesTable());
-		add(createFindMergesForm());
+		queue(new MergeLeftPanel(LEFT));
+		queue(createAddBranchIntoProfileFormPanel());
+		queue(createResultPanel());
+		queue(createBranchesTable());
+		queue(createFindMergesForm());
 	}
 
 	private BranchAutocompleteFormPanel createAddBranchIntoProfileFormPanel() {
