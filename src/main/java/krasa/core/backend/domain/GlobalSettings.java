@@ -5,7 +5,7 @@ import java.util.*;
 import javax.annotation.Nullable;
 import javax.persistence.*;
 
-import krasa.merge.backend.domain.Repository;
+import krasa.svn.backend.domain.Repository;
 
 /**
  * @author Vojtech Krasa

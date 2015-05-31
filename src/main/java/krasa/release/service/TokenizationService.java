@@ -7,10 +7,10 @@ import krasa.build.backend.domain.Status;
 import krasa.build.backend.facade.*;
 import krasa.core.backend.config.MainConfig;
 import krasa.core.backend.dao.*;
-import krasa.merge.backend.domain.Repository;
-import krasa.merge.backend.facade.Facade;
 import krasa.release.domain.*;
 import krasa.release.tokenization.*;
+import krasa.svn.backend.domain.Repository;
+import krasa.svn.backend.facade.SvnFacade;
 
 import org.slf4j.*;
 import org.springframework.beans.factory.annotation.*;
@@ -34,7 +34,7 @@ public class TokenizationService {
 	@Value("${tokenization.commit}")
 	Boolean commit;
 	@Autowired
-	Facade facade;
+	SvnFacade facade;
 	@Autowired
 	TokenizationExecutor tokenizationExecutor;
 	@Autowired

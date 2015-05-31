@@ -7,13 +7,13 @@ import krasa.core.frontend.StaticImage;
 import krasa.core.frontend.commons.LabelPanel;
 import krasa.core.frontend.commons.table.*;
 import krasa.core.frontend.pages.*;
-import krasa.merge.backend.domain.*;
-import krasa.merge.backend.facade.Facade;
-import krasa.merge.frontend.component.BranchAutocompleteFormPanel;
-import krasa.merge.frontend.component.table.FixedModalWindow;
 import krasa.release.domain.TokenizationPageModel;
 import krasa.release.service.TokenizationService;
 import krasa.release.tokenization.TokenizationResult;
+import krasa.svn.backend.domain.*;
+import krasa.svn.backend.facade.SvnFacade;
+import krasa.svn.frontend.component.BranchAutocompleteFormPanel;
+import krasa.svn.frontend.component.table.FixedModalWindow;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.wicket.Component;
@@ -38,7 +38,7 @@ public class TokenizationPage extends BasePage {
 	@SpringBean
 	TokenizationService tokenizationService;
 	@SpringBean
-	Facade facade;
+	SvnFacade facade;
 
 	private FixedModalWindow modalWindow;
 

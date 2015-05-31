@@ -45,11 +45,11 @@
 		<property name="entityInterceptor" ref="interceptor"/>
 		<property name="packagesToScan">
 			<list>
-				<value>krasa.merge.backend.domain</value>
+				<value>krasa.svn.backend.domain</value>
 				<value>krasa.build.backend.domain</value>
 				<value>krasa.core.backend.domain</value>
 				<value>krasa.release.domain</value>
-				<value>krasa.merge.backend.service.automerge</value>
+				<value>krasa.automerge</value>
 			</list>
 		</property>
 	</bean>

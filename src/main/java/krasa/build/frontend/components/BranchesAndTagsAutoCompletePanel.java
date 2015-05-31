@@ -3,8 +3,8 @@ package krasa.build.frontend.components;
 import java.util.List;
 
 import krasa.build.backend.facade.BuildFacade;
-import krasa.merge.backend.domain.Displayable;
-import krasa.merge.frontend.component.BranchAutoCompletePanel;
+import krasa.svn.backend.domain.Displayable;
+import krasa.svn.frontend.component.BranchAutoCompletePanel;
 
 import org.apache.wicket.spring.injection.annot.SpringBean;
 

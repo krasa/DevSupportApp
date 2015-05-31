@@ -1,8 +1,8 @@
 package krasa.core.frontend.pages;
 
 import krasa.core.frontend.commons.MyFeedbackPanel;
-import krasa.merge.backend.facade.Facade;
-import krasa.merge.frontend.component.SvnProjectsLeftMenuPanel;
+import krasa.svn.backend.facade.SvnFacade;
+import krasa.svn.frontend.component.SvnProjectsLeftMenuPanel;
 
 import org.apache.wicket.*;
 import org.apache.wicket.devutils.debugbar.DebugBar;
@@ -18,7 +18,7 @@ public abstract class BasePage extends WebPage {
 	public static final String LEFT = "left";
 	public static final String CURRENT = "current";
 	@SpringBean
-	protected Facade facade;
+	protected SvnFacade facade;
 	protected WebMarkupContainer centerColumn = new WebMarkupContainer("center-column");
 
 	// public abstract IModel getPageTitle();

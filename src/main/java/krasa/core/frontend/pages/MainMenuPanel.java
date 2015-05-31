@@ -4,13 +4,13 @@ import java.util.logging.Logger;
 
 import krasa.build.frontend.pages.BuildPage;
 import krasa.intellij.IntelliJMainPage;
-import krasa.merge.frontend.component.ProfileDropDownPanel;
-import krasa.merge.frontend.pages.config.*;
-import krasa.merge.frontend.pages.mergeinfo.MergeInfoPage;
-import krasa.merge.frontend.pages.report.ReportPage;
 import krasa.overnight.OvernightResultsPage;
 import krasa.release.frontend.TokenizationPage;
 import krasa.smrt.SmrtMainPage;
+import krasa.svn.frontend.component.ProfileDropDownPanel;
+import krasa.svn.frontend.pages.config.*;
+import krasa.svn.frontend.pages.mergeinfo.MergeInfoPage;
+import krasa.svn.frontend.pages.report.ReportPage;
 
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.Panel;

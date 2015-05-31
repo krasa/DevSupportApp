@@ -1,6 +1,6 @@
 package krasa.core.frontend.commons;
 
-import krasa.merge.frontend.pages.svn.SvnFolderBrowsePage;
+import krasa.svn.frontend.pages.svn.SvnFolderBrowsePage;
 
 import org.apache.wicket.markup.*;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;

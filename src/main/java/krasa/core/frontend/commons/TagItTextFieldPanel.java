@@ -1,6 +1,6 @@
 package krasa.core.frontend.commons;
 
-import krasa.merge.backend.facade.Facade;
+import krasa.svn.backend.facade.SvnFacade;
 
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
@@ -11,7 +11,7 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
  */
 public class TagItTextFieldPanel extends Panel {
 	@SpringBean
-	private Facade facade;
+	private SvnFacade facade;
 
 	public TagItTextFieldPanel(String componentId, String path, Model<String> of) {
 		super(componentId, of);

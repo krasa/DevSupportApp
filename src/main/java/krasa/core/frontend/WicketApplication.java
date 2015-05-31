@@ -4,7 +4,7 @@ import java.io.File;
 
 import krasa.build.frontend.pages.*;
 import krasa.intellij.IntelliJEnterprisePluginRepositoryPage;
-import krasa.merge.frontend.pages.mergeinfo.MergeInfoPage;
+import krasa.svn.frontend.pages.mergeinfo.MergeInfoPage;
 
 import org.apache.wicket.*;
 import org.apache.wicket.application.IComponentInstantiationListener;

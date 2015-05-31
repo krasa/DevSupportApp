@@ -3,8 +3,8 @@ package krasa.release.utls;
 import java.io.File;
 import java.util.*;
 
-import krasa.merge.backend.domain.*;
-import krasa.merge.backend.svn.SvnFolderProvider;
+import krasa.svn.backend.domain.*;
+import krasa.svn.backend.service.SvnFolderProvider;
 
 import org.slf4j.*;
 import org.tmatesoft.svn.core.*;

@@ -1,6 +1,6 @@
 package krasa.core.frontend.commons;
 
-import krasa.merge.backend.domain.SvnFolder;
+import krasa.svn.backend.domain.SvnFolder;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;

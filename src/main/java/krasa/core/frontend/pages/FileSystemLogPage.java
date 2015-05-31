@@ -4,11 +4,11 @@ import java.io.*;
 
 import krasa.core.frontend.commons.LabelPanel;
 import krasa.core.frontend.components.BaseEmptyPanel;
-import krasa.merge.backend.dto.MergeJobDto;
-import krasa.merge.frontend.component.merge.MergesPanel;
 import krasa.release.domain.TokenizationJob;
 import krasa.release.frontend.TokenizationLeftPanel;
 import krasa.release.service.TokenizationFileUtils;
+import krasa.svn.backend.dto.MergeJobDto;
+import krasa.svn.frontend.component.merge.MergesPanel;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.wicket.Component;

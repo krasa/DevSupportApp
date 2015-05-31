@@ -11,13 +11,15 @@ import krasa.build.backend.execution.adapter.CurrentBuildJobsHolder;
 import krasa.core.backend.RemoteHostUtils;
 import krasa.core.backend.config.MainConfig;
 import krasa.core.backend.dao.*;
-import krasa.merge.backend.domain.*;
-import krasa.merge.backend.facade.Facade;
+import krasa.svn.backend.domain.*;
+import krasa.svn.backend.facade.SvnFacade;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.hibernate.*;
+import org.hibernate.criterion.Restrictions;
 import org.slf4j.*;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,13 +36,70 @@ public class BuildFacade {
 	@Autowired
 	private CommonBuildDao commonBuildDao;
 	@Autowired
-	private Facade facade;
+	private SvnFacade facade;
 	@Autowired
 	private krasa.build.backend.execution.ProcessBuilder processBuilder;
 	@Autowired
 	EventService eventService;
 	@Autowired
 	BuildJobExecutor buildJobExecutor;
+	@Autowired
+	@Qualifier("sessionFactory")
+	protected SessionFactory sf;
+
+	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER)
+	public void cleanHsqldb() {
+		log.info("cleaning Hsqldb");
+		deleteOldBuildJobs();
+		limitNumberOfBuildJobs();
+	}
+
+	@SuppressWarnings({ "JpaQlInspection", "unchecked" })
+	private void limitNumberOfBuildJobs() {
+		List<Long> ids = sf.getCurrentSession().createQuery("select id from BuildJob order by id desc").setMaxResults(
+				200).list();
+		int deleted = 0;
+		List<BuildJob> list = sf.getCurrentSession().createQuery("from BuildJob where id not in :ids").setParameterList(
+				"ids", ids).setMaxResults(1000).list();
+		for (BuildJob o : list) {
+			BuildableComponent buildableComponent = o.getBuildableComponent();
+			BuildJob lastBuildJob = buildableComponent.getLastBuildJob();
+			if (lastBuildJob != o) {
+				log.info("deleting {}", o);
+				sf.getCurrentSession().delete(o);
+				deleted++;
+			} else {
+				buildableComponent.setLastBuildJob(null);
+				sf.getCurrentSession().save(buildableComponent);
+				log.info("deleting {}", o);
+				sf.getCurrentSession().delete(o);
+				deleted++;
+			}
+		}
+		log.info("deleted: {}", deleted);
+	}
+
+	private void deleteOldBuildJobs() {
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.DAY_OF_WEEK, -7);
+
+		Session session = sf.getCurrentSession();
+		Criteria crit = session.createCriteria(BuildJob.class);
+		crit.add(Restrictions.le("endTime", cal.getTime()));
+		List<BuildJob> list = crit.list();
+		log.info("found: {}", list.size());
+		int deleted = 0;
+		for (BuildJob o : list) {
+			BuildableComponent buildableComponent = o.getBuildableComponent();
+			BuildJob lastBuildJob = buildableComponent.getLastBuildJob();
+			if (lastBuildJob != o) {
+				log.info("deleting {}", o);
+				session.delete(o);
+				deleted++;
+			}
+		}
+		log.info("deleted: {}", deleted);
+	}
 
 	protected BuildJob createAndSaveBuildJob(BuildableComponent buildableComponent, String author) {
 		buildableComponent = refresh(buildableComponent);

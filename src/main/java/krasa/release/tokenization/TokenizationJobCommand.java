@@ -3,9 +3,9 @@ package krasa.release.tokenization;
 import java.io.*;
 import java.util.*;
 
+import krasa.automerge.*;
 import krasa.core.backend.LogNamePrefixes;
 import krasa.core.backend.utils.MdcUtils;
-import krasa.merge.backend.service.automerge.*;
 import krasa.release.utls.SvnBranchesCheckouter;
 
 import org.apache.commons.io.filefilter.*;

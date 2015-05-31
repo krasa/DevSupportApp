@@ -1,12 +1,10 @@
 package krasa;
 
 import krasa.core.frontend.WicketApplication;
-import krasa.merge.frontend.pages.mergeinfo.MergeInfoPage;
+import krasa.svn.frontend.pages.mergeinfo.MergeInfoPage;
 
 import org.apache.wicket.util.tester.WicketTester;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.*;
 
 /**
  * Simple test using the WicketTester

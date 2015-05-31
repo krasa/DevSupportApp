@@ -6,7 +6,7 @@ import krasa.build.backend.exception.AlreadyExistsException;
 import krasa.build.backend.facade.BuildFacade;
 import krasa.core.frontend.commons.EntityModelWrapper;
 import krasa.core.frontend.components.BasePanel;
-import krasa.merge.frontend.component.*;
+import krasa.svn.frontend.component.*;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;

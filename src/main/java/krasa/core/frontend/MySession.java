@@ -2,8 +2,8 @@ package krasa.core.frontend;
 
 import javax.servlet.http.Cookie;
 
-import krasa.merge.backend.domain.Profile;
-import krasa.merge.backend.facade.Facade;
+import krasa.svn.backend.domain.Profile;
+import krasa.svn.backend.facade.SvnFacade;
 
 import org.apache.wicket.*;
 import org.apache.wicket.protocol.http.WebSession;
@@ -19,7 +19,7 @@ public class MySession extends WebSession {
 
 	public static final String PROFILE_ID = "profileId";
 	@SpringBean
-	private Facade facade;
+	private SvnFacade facade;
 
 	private Integer current;
 

@@ -1,13 +1,10 @@
 package krasa;
 
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.*;
 
-import krasa.merge.backend.svn.connection.SVNConnector;
+import krasa.svn.backend.connection.SVNConnector;
 
-import org.tmatesoft.svn.core.SVNDirEntry;
-import org.tmatesoft.svn.core.SVNException;
-import org.tmatesoft.svn.core.SVNNodeKind;
+import org.tmatesoft.svn.core.*;
 import org.tmatesoft.svn.core.io.SVNRepository;
 
 /**
