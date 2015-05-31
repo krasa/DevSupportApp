@@ -18,3 +18,8 @@ hs_err_pid*
 logs/
 intellijPluginRepo/
 .settings/
+target/
+
+application.pid
+application.port
+db.hsqldb.*

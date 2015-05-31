@@ -30,17 +30,18 @@ public class SVNLogEntryTablePanel extends Panel {
 
 	private static final Logger log = LoggerFactory.getLogger(SVNLogEntryTablePanel.class);
 
-	public static final String ROW_ID_PREFIX = "revision";
 	@SpringBean
 	protected MergeService mergeService;
 
 	protected AjaxFallbackDefaultDataTable<SVNLogEntry, String> table;
 	protected FixedModalWindow modalWindow;
 	private final MergeInfoResultItem mergeInfoResultItemWithoutMerges;
+	private String rowPrefix;
 
 	public SVNLogEntryTablePanel(String id, final IModel<MergeInfoResultItem> model) {
 		super(id, model);
 		mergeInfoResultItemWithoutMerges = new MergeInfoResultItem(model.getObject());
+		rowPrefix = mergeInfoResultItemWithoutMerges.getFrom() + "->" + mergeInfoResultItemWithoutMerges.getTo();
 		mergeInfoResultItemWithoutMerges.setMerges(null);// save memory
 		final ArrayList<IColumn<SVNLogEntry, String>> columns = getColumns();
 		final DataProvider dataProvider = new DataProvider(new AbstractReadOnlyModel<List<SVNLogEntry>>() {
@@ -73,16 +74,17 @@ public class SVNLogEntryTablePanel extends Panel {
 							SVNLogEntry logEntry = (SVNLogEntry) payload.getObject();
 							AjaxRequestTarget target = payload.getTarget();
 							if (logEntry.getRevision() == (getModelObject().getRevision())) {
-								log.info("DeleteRowEvent revision matches, deleting.");
+								log.info("DeleteRowEvent revision {} matches, deleting.", logEntry.getRevision());
 								this.setVisible(false);
 								target.add(this);
 								event.stop();
-								log.info("DeleteRowEvent revision deleted.");
+								log.info("DeleteRowEvent revision {} deleted.", getModelObject().getRevision());
 							}
 						}
 					}
 				};
-				item.setMarkupId(ROW_ID_PREFIX + model.getObject().getRevision());
+				// must be unique across the whole page even with multiple tables
+				item.setMarkupId(rowPrefix + "_revision" + model.getObject().getRevision());
 				item.setOutputMarkupId(true);
 				return item;
 			}
@@ -224,10 +226,10 @@ public class SVNLogEntryTablePanel extends Panel {
 
 		@Override
 		protected void onSubmit(IModel<SVNLogEntry> revision, AjaxRequestTarget target, Form<?> form) {
-			SVNLogEntry object = revision.getObject();
-			log.info("merge " + object);
-			mergeService.merge(mergeInfoResultItemWithoutMerges, object);
-			sendDeletedRowEvent(target, revision.getObject());
+			SVNLogEntry svnLogEntry = revision.getObject();
+			log.info("merge " + svnLogEntry);
+			mergeService.merge(mergeInfoResultItemWithoutMerges, svnLogEntry);
+			sendDeletedRowEvent(target, svnLogEntry);
 		}
 	}
 }

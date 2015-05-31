@@ -19,7 +19,7 @@ public class MergeService {
 	@Autowired
 	MergeJobsHolder runningTasks;
 	@Autowired
-	AutoMergeExecutor autoMergeExecutor;
+	AutoMergeService autoMergeService;
 	@Autowired
 	@Qualifier("universalDao")
 	UniversalDao universalDao;
@@ -28,18 +28,18 @@ public class MergeService {
 	public void merge(MergeInfoResultItem mergeInfoResultItem, SVNLogEntry svnLogEntry) {
 		MergeJob mergeJob = MergeJob.create(mergeInfoResultItem, svnLogEntry, AutoMergeJobMode.ALL);
 		universalDao.save(mergeJob);
-		autoMergeExecutor.schedule(mergeJob);
+		autoMergeService.schedule(mergeJob);
 	}
 
 	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER)
 	public void mergeSvnMergeInfoOnly(MergeInfoResultItem mergeInfoResultItem, SVNLogEntry svnLogEntry) {
 		MergeJob mergeJob = MergeJob.create(mergeInfoResultItem, svnLogEntry, AutoMergeJobMode.ONLY_MERGE_INFO);
 		universalDao.save(mergeJob);
-		autoMergeExecutor.schedule(mergeJob);
+		autoMergeService.schedule(mergeJob);
 	}
 
 	public List<MergeJobDto> getRunningMergeJobs() {
-		return autoMergeExecutor.getRunningMergeJobs();
+		return autoMergeService.getRunningMergeJobs();
 	}
 
 	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER, readOnly = true)

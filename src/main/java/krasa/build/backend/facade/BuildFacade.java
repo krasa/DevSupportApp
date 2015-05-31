@@ -2,7 +2,6 @@ package krasa.build.backend.facade;
 
 import java.util.*;
 
-import krasa.build.backend.config.ExecutorConfig;
 import krasa.build.backend.dao.CommonBuildDao;
 import krasa.build.backend.domain.*;
 import krasa.build.backend.dto.*;
@@ -18,8 +17,7 @@ import krasa.merge.backend.facade.Facade;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.*;
-import org.springframework.beans.factory.annotation.*;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,12 +36,11 @@ public class BuildFacade {
 	@Autowired
 	private Facade facade;
 	@Autowired
-	@Qualifier(ExecutorConfig.BUILD_EXECUTOR)
-	private ThreadPoolTaskExecutor taskExecutor;
-	@Autowired
 	private krasa.build.backend.execution.ProcessBuilder processBuilder;
 	@Autowired
 	EventService eventService;
+	@Autowired
+	BuildJobExecutor buildJobExecutor;
 
 	protected BuildJob createAndSaveBuildJob(BuildableComponent buildableComponent, String author) {
 		buildableComponent = refresh(buildableComponent);
@@ -124,7 +121,7 @@ public class BuildFacade {
 		commonBuildDao.flush();
 
 		runningCurrentBuildJobsHolder.put(buildJob);
-		taskExecutor.submit(buildJob.getProcess());
+		buildJobExecutor.executeBuildJob(buildJob);
 		log.info("process scheduled " + buildableComponent.toString());
 		return buildJob;
 	}
@@ -239,8 +236,18 @@ public class BuildFacade {
 						buildLog = new BuildLog();
 						lastBuildJob.setBuildLog(buildLog);
 					}
-					buildLog.setLogContent(buildLog.getLogContent() + "\n-------------------\nProcess died\n"
-							+ ExceptionUtils.getStackTrace(buildJob.getProcess().getStatus().getException()));
+					String logContent = buildLog.getLogContent();
+					krasa.build.backend.execution.process.Process process = buildJob.getProcess();
+					ProcessStatus status = process.getStatus();
+					Exception exception = status.getException();
+					String stackTrace = "";
+					if (exception != null) {
+						stackTrace = ExceptionUtils.getStackTrace(exception);
+					} else {
+						stackTrace = "NO STACKTRACE!!";
+
+					}
+					buildLog.setLogContent(logContent + "\n-------------------\nProcess died\n" + stackTrace);
 					buildJobDAO.save(lastBuildJob);
 				}
 			}

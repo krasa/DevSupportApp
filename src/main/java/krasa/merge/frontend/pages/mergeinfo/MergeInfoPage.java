@@ -9,7 +9,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.panel.EmptyPanel;
+import org.apache.wicket.markup.html.panel.*;
 import org.apache.wicket.model.*;
 
 /**
@@ -19,6 +19,7 @@ public class MergeInfoPage extends BasePage {
 
 	private static final String RESULT = "result";
 	protected SelectedBranchesTablePanel branchesTable;
+	private Panel result;
 
 	public MergeInfoPage() {
 		queue(new MergeLeftPanel(LEFT));
@@ -40,10 +41,10 @@ public class MergeInfoPage extends BasePage {
 		return branchesTable = new SelectedBranchesTablePanel("branchesTable");
 	}
 
-	private EmptyPanel createResultPanel() {
-		EmptyPanel label = new EmptyPanel(RESULT);
-		label.setOutputMarkupPlaceholderTag(true);
-		return label;
+	private Panel createResultPanel() {
+		result = new EmptyPanel(RESULT);
+		result.setOutputMarkupPlaceholderTag(true);
+		return result;
 	}
 
 	private Form createFindMergesForm() {
@@ -61,7 +62,8 @@ public class MergeInfoPage extends BasePage {
 							}
 						});
 
-				MergeInfoPage.this.replace(result);
+				MergeInfoPage.this.result.replaceWith(result);
+				MergeInfoPage.this.result = result;
 				target.add(result);
 			}
 
@@ -82,6 +84,7 @@ public class MergeInfoPage extends BasePage {
 		protected Form createAddBranchForm(ResourceModel labelModel) {
 			Form addBranchForm = super.createAddBranchForm(labelModel);
 			addBranchForm.add(new ReplaceSearchFromButton("replaceSearchFrom"));
+			addBranchForm.add(new ReplaceSearchFromToTrunkButton("replaceSearchFromToTrunk"));
 			return addBranchForm;
 		}
 
@@ -100,6 +103,21 @@ public class MergeInfoPage extends BasePage {
 			@Override
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
 				facade.replaceSearchFrom();
+				update(target);
+			}
+
+		}
+
+		private class ReplaceSearchFromToTrunkButton extends AjaxButton {
+
+			public ReplaceSearchFromToTrunkButton(String replaceSearchFrom) {
+				super(replaceSearchFrom);
+				setDefaultFormProcessing(false);
+			}
+
+			@Override
+			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+				facade.replaceSearchFromToTrunk();
 				update(target);
 			}
 

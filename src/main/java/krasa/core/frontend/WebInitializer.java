@@ -4,8 +4,10 @@ import javax.servlet.*;
 
 import org.apache.wicket.protocol.http.WicketFilter;
 import org.apache.wicket.protocol.ws.javax.JavaxWebSocketFilter;
-import org.springframework.boot.context.embedded.ServletContextInitializer;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.context.embedded.*;
+import org.springframework.context.annotation.*;
+
+import com.netflix.hystrix.contrib.metrics.eventstream.HystrixMetricsStreamServlet;
 
 /**
  * This class is the replacement of the web.xml. It registers the wicket filter in the spring aware configuration style.
@@ -28,4 +30,8 @@ public class WebInitializer implements ServletContextInitializer {
 		sc.getSessionCookieConfig().setMaxAge(60 * 60 * 10);
 	}
 
+	@Bean
+	public ServletRegistrationBean servletRegistrationBean() {
+		return new ServletRegistrationBean(new HystrixMetricsStreamServlet(), "/hystrix.stream/*");
+	}
 }

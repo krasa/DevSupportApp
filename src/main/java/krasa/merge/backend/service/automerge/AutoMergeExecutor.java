@@ -1,90 +1,31 @@
 package krasa.merge.backend.service.automerge;
 
-import java.util.*;
+import java.util.concurrent.Future;
 
-import javax.annotation.Nullable;
-
-import krasa.build.backend.config.ExecutorConfig;
-import krasa.build.backend.facade.EventService;
-import krasa.merge.backend.dto.MergeJobDto;
-import krasa.merge.backend.service.MergeService;
-import krasa.merge.backend.service.automerge.domain.MergeJob;
-
-import org.slf4j.*;
-import org.springframework.beans.factory.annotation.*;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Collections2;
+import com.netflix.hystrix.contrib.javanica.annotation.*;
+import com.netflix.hystrix.contrib.javanica.command.AsyncResult;
 
 @Service
 public class AutoMergeExecutor {
-	private static final Logger log = LoggerFactory.getLogger(AutoMergeExecutor.class);
-	@Autowired
-	MergeJobsHolder runningTasks;
 
-	@Autowired
-	@Qualifier(ExecutorConfig.BUILD_EXECUTOR)
-	private ThreadPoolTaskExecutor taskExecutor;
+	@HystrixCommand(commandProperties = { @HystrixProperty(name = "execution.timeout.enabled", value = "false")
 
-	@Autowired
-	private AutoMergeQueue autoMergeQueue;
+	}, threadPoolProperties = { @HystrixProperty(name = "coreSize", value = "3"),
+			@HystrixProperty(name = "maxQueueSize", value = "15"),
+			@HystrixProperty(name = "keepAliveTimeMinutes", value = "2"),
+			@HystrixProperty(name = "queueSizeRejectionThreshold", value = "15"),
+			@HystrixProperty(name = "metrics.rollingStats.numBuckets", value = "12"),
+			@HystrixProperty(name = "metrics.rollingStats.timeInMilliseconds", value = "1440") })
+	public Future<Void> executeAutoMerge(final AutoMergeProcess autoMergeProcess) {
+		return new AsyncResult<Void>() {
 
-	@Autowired
-	private MergeService mergeService;
-
-	@Autowired
-	EventService eventService;
-
-	public AutoMergeExecutor() {
-	}
-
-	public synchronized void schedule(MergeJob mergeJob) {
-		String toPath = mergeJob.getToPath();
-		if (runningTasks.containsKey(toPath)) {
-			autoMergeQueue.put(mergeJob);
-		} else {
-			AutoMergeProcess autoMergeProcess = new AutoMergeProcess(mergeJob, AutoMergeExecutor.this);
-			runningTasks.put(toPath, autoMergeProcess);
-			taskExecutor.execute(autoMergeProcess);
-		}
-	}
-
-	public void jobFinished(AutoMergeProcess autoMergeProcess, Throwable e) {
-		if (e != null) {
-			log.error("", e);
-		}
-		MergeJob mergeJob1 = autoMergeProcess.getMergeJob();
-		runningTasks.remove(mergeJob1.getToPath());
-		MergeJob mergeJob = autoMergeQueue.getAndRemove(mergeJob1);
-		if (mergeJob != null) {
-			schedule(mergeJob);
-		}
-	}
-
-	public List<MergeJobDto> getRunningMergeJobs() {
-		final Collection<AutoMergeProcess> values = runningTasks.getAll();
-		final Collection<MergeJob> lastFinished = Collections2.transform(values,
-				new Function<AutoMergeProcess, MergeJob>() {
-
-					@Nullable
-					@Override
-					public MergeJob apply(@Nullable AutoMergeProcess input) {
-						return input.getMergeJob();
-					}
-				});
-
-		return MergeJobDto.translate(lastFinished);
-	}
-
-	public void statusUpdated(MergeJob mergeJob) {
-		mergeService.update(mergeJob);
-		sendMergeEvent();
-	}
-
-	private void sendMergeEvent() {
-		log.debug("sending MergeEvent");
-		eventService.sendEvent(new MergeEvent());
+			@Override
+			public Void invoke() {
+				autoMergeProcess.run();
+				return null;
+			}
+		};
 	}
 }

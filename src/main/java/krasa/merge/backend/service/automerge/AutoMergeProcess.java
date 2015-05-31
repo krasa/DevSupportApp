@@ -12,11 +12,11 @@ public class AutoMergeProcess implements Runnable {
 	protected final Logger log = LoggerFactory.getLogger(getClass());
 
 	private MergeJob mergeJob;
-	private AutoMergeExecutor autoMergeExecutor;
+	private AutoMergeService autoMergeService;
 
-	public AutoMergeProcess(@NotNull MergeJob mergeJob, AutoMergeExecutor autoMergeExecutor) {
+	public AutoMergeProcess(@NotNull MergeJob mergeJob, AutoMergeService autoMergeService) {
 		this.mergeJob = mergeJob;
-		this.autoMergeExecutor = autoMergeExecutor;
+		this.autoMergeService = autoMergeService;
 	}
 
 	public MergeJob getMergeJob() {
@@ -29,16 +29,16 @@ public class AutoMergeProcess implements Runnable {
 			updateStatus(Status.RUNNING);
 			mergeJob.merge();
 			updateStatus(Status.SUCCESS);
-			autoMergeExecutor.jobFinished(this, null);
+			autoMergeService.jobFinished(this, null);
 		} catch (Throwable e) {
 			updateStatus(Status.EXCEPTION);
-			autoMergeExecutor.jobFinished(this, e);
+			autoMergeService.jobFinished(this, e);
 		}
 	}
 
 	private void updateStatus(Status running) {
 		mergeJob.setStatus(running);
-		autoMergeExecutor.statusUpdated(mergeJob);
+		autoMergeService.statusUpdated(mergeJob);
 	}
 
 }

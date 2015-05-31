@@ -25,13 +25,15 @@ import org.springframework.web.socket.server.standard.ServerEndpointExporter;
 public class StartVojtitko extends SpringBootServletInitializer implements WebSocketConfigurer {
 
 	public static void main(String[] args) throws IOException {
+		start(args);
+	}
+
+	public static ConfigurableApplicationContext start(String[] args) {
 		System.setProperty("APPENDER", "SIFT");
 		SpringApplication springApplication = new SpringApplication(StartVojtitko.class);
 		springApplication.addListeners(new ApplicationPidFileWriter());
 		springApplication.addListeners(new EmbeddedServerPortFileWriter());
-		ConfigurableApplicationContext ಠ_ಠ = springApplication.run(args);
-		System.in.read();
-		SpringApplication.exit(ಠ_ಠ);
+		return springApplication.run(args);
 		// System.out.println("Let's inspect the beans provided by Spring Boot:");
 		//
 		// String[] beanNames = ctx.getBeanDefinitionNames();

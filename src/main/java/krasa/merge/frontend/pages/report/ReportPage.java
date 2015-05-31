@@ -58,7 +58,7 @@ public class ReportPage extends BasePage {
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
 				ReportResult report = facade.getReport();
 				ReportResultPanel result = new ReportResultPanel(RESULT, new Model<>(report));
-				ReportPage.this.replace(result);
+				getParent().get(RESULT).replaceWith(result);
 				target.add(result);
 			}
 
@@ -72,7 +72,7 @@ public class ReportPage extends BasePage {
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
 				ReportResult report = facade.getReport();
 				NotTaggedCommitsPanel result = new NotTaggedCommitsPanel(RESULT, new Model<>(report));
-				ReportPage.this.replace(result);
+				getParent().get(RESULT).replaceWith(result);
 				target.add(result);
 			}
 
@@ -86,9 +86,9 @@ public class ReportPage extends BasePage {
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
 				Profile current = MySession.get().getCurrent();
 				String result = facade.runRns(current.getName());
-				resultLabel = new MultiLineLabel("result", new Model<Serializable>(result));
+				resultLabel = new MultiLineLabel(RESULT, new Model<Serializable>(result));
 				resultLabel.setOutputMarkupPlaceholderTag(true);
-				ReportPage.this.replace(resultLabel);
+				getParent().get(RESULT).replaceWith(resultLabel);
 				target.add(resultLabel);
 			}
 
@@ -108,9 +108,9 @@ public class ReportPage extends BasePage {
 			@Override
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
 				String result = facade.runVersionsOnPrgens();
-				resultLabel = new MultiLineLabel("result", new Model<Serializable>(result));
+				resultLabel = new MultiLineLabel(RESULT, new Model<Serializable>(result));
 				resultLabel.setOutputMarkupPlaceholderTag(true);
-				ReportPage.this.replace(resultLabel);
+				getParent().get(RESULT).replaceWith(resultLabel);
 				target.add(resultLabel);
 			}
 
@@ -126,7 +126,7 @@ public class ReportPage extends BasePage {
 				String result = facade.runSvnHeadVsLastTag(current.getName());
 				resultLabel = new MultiLineLabel("result", new Model<Serializable>(result));
 				resultLabel.setOutputMarkupPlaceholderTag(true);
-				ReportPage.this.replace(resultLabel);
+				getParent().get(RESULT).replaceWith(resultLabel);
 				target.add(resultLabel);
 			}
 

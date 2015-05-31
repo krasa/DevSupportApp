@@ -4,12 +4,14 @@ import javax.validation.constraints.NotNull;
 
 import krasa.build.backend.execution.ProcessStatus;
 
-public interface Process extends Runnable {
-	public void stop();
+public interface Process {
+	void run();
 
-	public ProcessStatus getStatus();
+	void stop(String reason);
+
+	ProcessStatus getStatus();
 
 	@NotNull
-	public ProcessLog getProcessLog();
+	ProcessLog getProcessLog();
 
 }

@@ -88,4 +88,7 @@ public class SvnConventionsStrategy {
 
 	}
 
+	public void replaceSearchFromToTrunk(SvnFolder selectedBranch) {
+
+	}
 }

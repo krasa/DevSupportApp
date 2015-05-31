@@ -32,24 +32,8 @@ public class DiffPanel extends BasePanel {
 		add(diff);
 		Form form = new Form("form");
 		add(form);
-		form.add(new AjaxButton("merge") {
-
-			@Override
-			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-				mergeService.merge(mergeInfoResultItem, revisionObject);
-				onMerged(revisionObject, target);
-				modal.close(target);
-			}
-		});
-		form.add(new AjaxButton("mergeSvnMergeInfoOnly") {
-
-			@Override
-			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-				mergeService.mergeSvnMergeInfoOnly(mergeInfoResultItem, revisionObject);
-				onMerged(revisionObject, target);
-				modal.close(target);
-			}
-		});
+		form.add(new MergeButton(mergeInfoResultItem, revisionObject));
+		form.add(new MergeSvnMergeInfoOnlyButton(mergeInfoResultItem, revisionObject));
 		form.add(new AjaxButton("close") {
 
 			@Override
@@ -74,4 +58,41 @@ public class DiffPanel extends BasePanel {
 
 	}
 
+	private class MergeButton extends AjaxButton {
+
+		private final MergeInfoResultItem mergeInfoResultItem;
+		private final SVNLogEntry revisionObject;
+
+		public MergeButton(MergeInfoResultItem mergeInfoResultItem, SVNLogEntry revisionObject) {
+			super("merge");
+			this.mergeInfoResultItem = mergeInfoResultItem;
+			this.revisionObject = revisionObject;
+		}
+
+		@Override
+		protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+			mergeService.merge(mergeInfoResultItem, revisionObject);
+			onMerged(revisionObject, target);
+			modal.close(target);
+		}
+	}
+
+	private class MergeSvnMergeInfoOnlyButton extends AjaxButton {
+
+		private final MergeInfoResultItem mergeInfoResultItem;
+		private final SVNLogEntry revisionObject;
+
+		public MergeSvnMergeInfoOnlyButton(MergeInfoResultItem mergeInfoResultItem, SVNLogEntry revisionObject) {
+			super("mergeSvnMergeInfoOnly");
+			this.mergeInfoResultItem = mergeInfoResultItem;
+			this.revisionObject = revisionObject;
+		}
+
+		@Override
+		protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+			mergeService.mergeSvnMergeInfoOnly(mergeInfoResultItem, revisionObject);
+			onMerged(revisionObject, target);
+			modal.close(target);
+		}
+	}
 }

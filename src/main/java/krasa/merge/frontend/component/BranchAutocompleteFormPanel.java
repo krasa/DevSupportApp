@@ -56,7 +56,8 @@ public abstract class BranchAutocompleteFormPanel extends BasePanel {
 				}
 			}
 		};
-		form.add(new AjaxFormSubmitBehavior(form, "submit") {});
+		form.add(new AjaxFormSubmitBehavior(form, "submit") {
+		});
 		form.add(createLabel(labelModel));
 		form.add(autocomplete = createAutoCompletePanel("autocomplete"));
 		form.add(feedback = new MyFeedbackPanel("feedback"));

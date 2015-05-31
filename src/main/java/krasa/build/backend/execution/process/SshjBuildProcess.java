@@ -117,7 +117,7 @@ public class SshjBuildProcess extends AbstractProcess {
 	}
 
 	@Override
-	protected void onFinally() {
+	protected void releaseResources() {
 		if (session != null) {
 			try {
 				session.close();
@@ -132,7 +132,7 @@ public class SshjBuildProcess extends AbstractProcess {
 				}
 			}
 		}
-		super.onFinally();
+		super.releaseResources();
 	}
 
 	@Override

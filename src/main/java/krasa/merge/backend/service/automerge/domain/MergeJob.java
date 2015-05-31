@@ -198,10 +198,11 @@ public class MergeJob extends AbstractEntity implements ProcessStatusListener {
 		}
 		String commitMessage;
 		if (jobMode == AutoMergeJobMode.ONLY_MERGE_INFO) {
-			commitMessage = "##merge mergeinfo by " + caller + " revision=" + rangeToMerge.getEndRevision() + "; "
-					+ message;
+			commitMessage = "##merge mergeinfo by " + caller + " from " + this.from + " rev="
+					+ rangeToMerge.getEndRevision() + "; " + message;
 		} else {
-			commitMessage = "##merge by " + caller + " revision=" + rangeToMerge.getEndRevision() + "; " + message;
+			commitMessage = "##merge by " + caller + ", from " + this.from + ", rev=" + rangeToMerge.getEndRevision()
+					+ "; " + message;
 
 		}
 		return commitMessage;

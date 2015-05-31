@@ -6,7 +6,7 @@ import krasa.merge.backend.domain.SvnFolder;
 import krasa.merge.backend.dto.MergeInfoResult;
 import krasa.merge.backend.service.SvnFolderRefreshService;
 import krasa.merge.frontend.component.table.BranchesTablePanel;
-import krasa.merge.frontend.pages.mergeinfo.MergeInfoResultPanel;
+import krasa.merge.frontend.pages.mergeinfo.*;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
@@ -35,6 +35,7 @@ public class SvnFolderBrowsePage extends BasePage {
 
 	public SvnFolderBrowsePage(PageParameters parameters) {
 		super(parameters);
+		queue(new MergeLeftPanel(LEFT));
 		StringValue name = parameters.get(PATH_PARAMETER);
 		String path1 = name.toString();
 		if (path1 == null || path1.isEmpty()) {
@@ -83,7 +84,7 @@ public class SvnFolderBrowsePage extends BasePage {
 
 			@Override
 			protected void onSubmit(AjaxRequestTarget ajaxRequestTarget, Form<?> components) {
-				MergeInfoResultPanel mergeInfo1 = new MergeInfoResultPanel(MERGE_INFO,
+				MergeInfoResultPanel resultPanel = new MergeInfoResultPanel(MERGE_INFO,
 						new LoadableDetachableModel<MergeInfoResult>() {
 
 							@Override
@@ -91,8 +92,8 @@ public class SvnFolderBrowsePage extends BasePage {
 								return facade.getMergeInfoForAllSelectedBranchesInProject(path);
 							}
 						});
-				ajaxRequestTarget.add(mergeInfo1);
-				SvnFolderBrowsePage.this.replace(mergeInfo1);
+				getParent().get(MERGE_INFO).replaceWith(resultPanel);
+				ajaxRequestTarget.add(resultPanel);
 				info("Processing");
 			}
 

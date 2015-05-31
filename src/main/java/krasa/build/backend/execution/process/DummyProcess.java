@@ -27,7 +27,7 @@ public class DummyProcess extends SshjBuildProcess {
 			log.trace(String.valueOf(++i));
 			processLog.append(String.valueOf(++i)).newLine();
 			try {
-				Thread.sleep(10);
+				Thread.sleep(100);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

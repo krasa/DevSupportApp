@@ -88,13 +88,13 @@ public class CurrentlyBuildingLeftPanel extends Panel {
 		public String getObject() {
 			BuildJobDto modelObject = listItem.getModelObject();
 
-			String s = "";
+			String s;
 			if (modelObject.getStart() == null) {
 				s = "Pending, ";
-			}
-			String format = modelObject.getRemainsAsString();
-			if (format != null) {
-				s = format + ", ";
+			} else if (modelObject.getRemainsAsString() != null) {
+				s = modelObject.getRemainsAsString() + ", ";
+			} else {
+				s = "Running, ";
 			}
 
 			return s;

@@ -268,6 +268,14 @@ public class Facade {
 		}
 	}
 
+	public void replaceSearchFromToTrunk() {
+		List<SvnFolder> selectedBranches = getSelectedBranches();
+		for (SvnFolder selectedBranch : selectedBranches) {
+			ConventionsStrategyHolder.getStrategy().replaceSearchFromToTrunk(selectedBranch);
+			svnFolderDAO.save(selectedBranch);
+		}
+	}
+
 	public void deleteProfile(Profile modelObject) {
 		profileDAO.delete(modelObject);
 	}
@@ -275,6 +283,31 @@ public class Facade {
 	public void cleanHsqldb() {
 		log.info("cleaning Hsqldb");
 		deleteOldBuildJobs();
+		limitNumberOfBuildJobs();
+	}
+
+	private void limitNumberOfBuildJobs() {
+		List<Long> ids = sf.getCurrentSession().createQuery("select d.id from BuildJob  d order by d.id desc").setMaxResults(
+				200).list();
+		int deleted = 0;
+		List<BuildJob> list = sf.getCurrentSession().createQuery("from BuildJob b where b.id not in :ids").setParameterList(
+				"ids", ids).setMaxResults(1000).list();
+		for (BuildJob o : list) {
+			BuildableComponent buildableComponent = o.getBuildableComponent();
+			BuildJob lastBuildJob = buildableComponent.getLastBuildJob();
+			if (lastBuildJob != o) {
+				log.info("deleting {}", o);
+				sf.getCurrentSession().delete(o);
+				deleted++;
+			} else {
+				buildableComponent.setLastBuildJob(null);
+				sf.getCurrentSession().save(buildableComponent);
+				log.info("deleting {}", o);
+				sf.getCurrentSession().delete(o);
+				deleted++;
+			}
+		}
+		log.info("deleted: {}", deleted);
 	}
 
 	private void deleteOldBuildJobs() {
@@ -286,15 +319,17 @@ public class Facade {
 		crit.add(Restrictions.le("endTime", cal.getTime()));
 		List<BuildJob> list = crit.list();
 		log.info("found: {}", list.size());
-
+		int deleted = 0;
 		for (BuildJob o : list) {
 			BuildableComponent buildableComponent = o.getBuildableComponent();
 			BuildJob lastBuildJob = buildableComponent.getLastBuildJob();
 			if (lastBuildJob != o) {
 				log.info("deleting {}", o);
 				session.delete(o);
+				deleted++;
 			}
 		}
+		log.info("deleted: {}", deleted);
 	}
 
 	public void setMergeOnSubFoldersForProject(String path, Boolean modelObject) {

@@ -158,7 +158,7 @@ public class BuildableComponentDto implements Serializable, CustomIdTableItem {
 	}
 
 	public Date getTotalTime() {
-		if (buildEndTime == null) {
+		if (buildEndTime == null || buildStartTime == null) {
 			return null;
 		}
 		return new Date(buildEndTime.getTime() - buildStartTime.getTime());

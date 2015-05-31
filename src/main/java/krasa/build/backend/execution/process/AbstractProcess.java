@@ -32,7 +32,7 @@ public abstract class AbstractProcess implements Process {
 		return processStatusListeners.add(processStatusListener);
 	}
 
-	protected void onFinally() {
+	protected void releaseResources() {
 		log.info("process complete. " + this.toString());
 	}
 
@@ -49,7 +49,7 @@ public abstract class AbstractProcess implements Process {
 			processStatus.setStatus(Status.EXCEPTION);
 		} finally {
 			try {
-				onFinally();
+				releaseResources();
 			} catch (Exception e) {
 				e.printStackTrace();
 				log.error("process #finally failed", e);
@@ -74,9 +74,13 @@ public abstract class AbstractProcess implements Process {
 	}
 
 	@Override
-	public void stop() {
+	public void stop(String reason) {
+		processLog.newLine();
+		processLog.append(reason);
 		processStatus.setStatus(Status.KILLED);
-		onFinally();
+		processStatus.setException(new RuntimeException());
+		releaseResources();
+		notifyListeners();
 	}
 
 	@Override

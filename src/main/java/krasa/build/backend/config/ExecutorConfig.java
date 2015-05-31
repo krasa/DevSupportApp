@@ -10,28 +10,8 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 public class ExecutorConfig {
 
 	public static final String REFRESH_EXECUTOR = "refreshTaskExecutor";
-	public static final String BUILD_EXECUTOR = "buildTaskExecutor";
-	public static final String AUTO_MERGE_EXECUTOR = "buildTaskExecutor";
-	public static final int MAX_CONCURRENT_BUILDS = 3;
-	public static final int MAX_CONCURRENT_MERGES = 3;
 	public static final int MAX_CONCURRENT_TOKENIZATIONS = 3;
 	public static final String TOKENIZATION_EXECUTOR = "tokenizationTaskExecutor";
-
-	@Bean(name = AUTO_MERGE_EXECUTOR)
-	public ThreadPoolTaskExecutor mergeExecutor() {
-		ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
-		threadPoolTaskExecutor.setMaxPoolSize(MAX_CONCURRENT_MERGES);
-		threadPoolTaskExecutor.setCorePoolSize(MAX_CONCURRENT_MERGES);
-		return threadPoolTaskExecutor;
-	}
-
-	@Bean(name = BUILD_EXECUTOR)
-	public ThreadPoolTaskExecutor buildExecutor() {
-		ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
-		threadPoolTaskExecutor.setMaxPoolSize(MAX_CONCURRENT_BUILDS);
-		threadPoolTaskExecutor.setCorePoolSize(MAX_CONCURRENT_BUILDS);
-		return threadPoolTaskExecutor;
-	}
 
 	@Bean(name = TOKENIZATION_EXECUTOR)
 	public ThreadPoolTaskExecutor tokenizationExecutor() {

@@ -5,8 +5,7 @@ import krasa.build.backend.domain.BuildJob;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
+import org.apache.wicket.model.*;
 
 public class PocessKillButton extends AjaxButton {
 	private IModel<BuildJob> model;
@@ -27,7 +26,7 @@ public class PocessKillButton extends AjaxButton {
 
 	@Override
 	protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-		model.getObject().kill();
+		model.getObject().kill("killed manually");
 		this.setEnabled(false);
 		target.add(this);
 		super.onSubmit();

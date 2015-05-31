@@ -64,8 +64,14 @@ public class TMSvnConventionsStrategy extends SvnConventionsStrategy {
 		if (searchFrom == null) {
 			return Collections.emptyList();
 		}
-		// when searchFrom < branchName or branchName isTrunk
-		if (TM_NAME_COMPARATOR_BY_VERSION_STRING.compare(searchFrom, branchName) < 0 || isTrunk(branchName)) {
+		if (isTrunk(searchFrom)) {
+			for (SvnFolder child : childs) {
+				if (searchFrom.equals(child.getName())) {
+					result.add(child);
+				}
+			}
+			// when searchFrom < branchName or branchName isTrunk
+		} else if (TM_NAME_COMPARATOR_BY_VERSION_STRING.compare(searchFrom, branchName) < 0 || isTrunk(branchName)) {
 			for (SvnFolder child : childs) {
 				String childName = child.getName();
 				if (branchVersionIsHigherOrEquals(searchFrom, childName)
@@ -130,6 +136,11 @@ public class TMSvnConventionsStrategy extends SvnConventionsStrategy {
 		Set<Integer> versionsSet = searchFromDTO.getVersionsSet();
 		List<Integer> versions = searchFromDTO.getVersions();
 		setSearchFrom(versionsSet, versions, selectedBranch);
+	}
+
+	@Override
+	public void replaceSearchFromToTrunk(SvnFolder selectedBranch) {
+		selectedBranch.setSearchFrom(getNameWithoutVersion(selectedBranch) + "9999");
 	}
 
 	protected void setSearchFrom(Set<Integer> versionsSet, List<Integer> versions, SvnFolder child) {

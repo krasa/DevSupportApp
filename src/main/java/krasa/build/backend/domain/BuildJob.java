@@ -136,9 +136,9 @@ public class BuildJob extends AbstractEntity implements ProcessStatusListener {
 		return status == Status.RUNNING || status == Status.PENDING;
 	}
 
-	public void kill() {
+	public void kill(String reason) {
 		log.info("Killing");
-		process.stop();
+		process.stop(reason);
 		log.info("Process stopped");
 	}
 
