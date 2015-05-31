@@ -8,7 +8,7 @@ import org.apache.wicket.model.IModel;
  */
 public abstract class LabeledAjaxLink<T> extends AjaxLink<T> {
 
-	public LabeledAjaxLink(final String id, final IModel<T> model, IModel<String> labelModel) {
+	public LabeledAjaxLink(String id, IModel<T> model, IModel<String> labelModel) {
 		super(id, model);
 		setBody(labelModel);
 	}

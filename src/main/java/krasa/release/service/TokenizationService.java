@@ -46,9 +46,9 @@ public class TokenizationService {
 	}
 
 	public TokenizationResult tokenizeSynchronously(TokenizationPageModel json) {
-		final TokenizationJob tokenizationJob = createJob(json);
+		TokenizationJob tokenizationJob = createJob(json);
 
-		final TokenizationJobCommand jobCommand = tokenizationJob.prepareCommand(new File(tempDir), commit);
+		TokenizationJobCommand jobCommand = tokenizationJob.prepareCommand(new File(tempDir), commit);
 		String logName = jobCommand.getLogName();
 		try {
 			tokenizationJob.setLogName(logName);
@@ -76,9 +76,9 @@ public class TokenizationService {
 	}
 
 	public File tokenizeAsync(TokenizationPageModel json) {
-		final TokenizationJob tokenizationJob = createJob(json);
+		TokenizationJob tokenizationJob = createJob(json);
 
-		final TokenizationJobCommand jobCommand = tokenizationJob.prepareCommand(new File(tempDir), commit);
+		TokenizationJobCommand jobCommand = tokenizationJob.prepareCommand(new File(tempDir), commit);
 		String logName = jobCommand.getLogName();
 		tokenizationJob.setLogName(logName);
 		tokenizationJob.setStatus(Status.PENDING);
@@ -90,11 +90,10 @@ public class TokenizationService {
 	}
 
 	protected TokenizationJob createJob(TokenizationPageModel json) {
-		final String svnUrl = getSvnUrl();
-		final TokenizationJobParameters jobParameters = new Gson().fromJson(json.getJson(),
-				TokenizationJobParameters.class);
-		final TokenizationJob tokenizationJobCommand = new TokenizationJob(jobParameters, svnUrl,
-				json.getBranchesPatterns(), BuildFacade.getCaller(), json.getCommitMessage());
+		String svnUrl = getSvnUrl();
+		TokenizationJobParameters jobParameters = new Gson().fromJson(json.getJson(), TokenizationJobParameters.class);
+		TokenizationJob tokenizationJobCommand = new TokenizationJob(jobParameters, svnUrl, json.getBranchesPatterns(),
+				BuildFacade.getCaller(), json.getCommitMessage());
 		save(tokenizationJobCommand);
 		return tokenizationJobCommand;
 	}

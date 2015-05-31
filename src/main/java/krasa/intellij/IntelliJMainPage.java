@@ -19,7 +19,7 @@ import org.apache.wicket.model.Model;
 public class IntelliJMainPage extends BasePage {
 
 	public IntelliJMainPage() {
-		final PluginUploadForm progressUploadForm = new PluginUploadForm("progressUpload");
+		PluginUploadForm progressUploadForm = new PluginUploadForm("progressUpload");
 		progressUploadForm.add(new UploadProgressBar("progress", progressUploadForm,
 				progressUploadForm.getFileUploadField()));
 		queue(progressUploadForm);

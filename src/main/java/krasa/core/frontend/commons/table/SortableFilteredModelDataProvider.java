@@ -20,7 +20,8 @@ public class SortableFilteredModelDataProvider<T extends Serializable> extends S
 
 	class SortableDataProviderComparator implements Comparator<T>, Serializable {
 
-		public int compare(final T o1, final T o2) {
+		@Override
+		public int compare(T o1, T o2) {
 			SortParam<String> sort = getSort();
 			if (sort == null) {
 				return 0;

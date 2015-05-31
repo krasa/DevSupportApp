@@ -56,7 +56,7 @@ public class MergesPanel extends BasePanel {
 		ListView<MergeJobDto> runningMergeJobDtoListView = new ListView<MergeJobDto>("item", model) {
 
 			@Override
-			protected void populateItem(final ListItem<MergeJobDto> listItem) {
+			protected void populateItem(ListItem<MergeJobDto> listItem) {
 				LabeledBookmarkablePageLink link = new LabeledBookmarkablePageLink("link", FileSystemLogPage.class,
 						FileSystemLogPage.params(listItem.getModelObject()));
 				PropertyModel<Object> status = new PropertyModel<>(listItem.getModel(), "status");

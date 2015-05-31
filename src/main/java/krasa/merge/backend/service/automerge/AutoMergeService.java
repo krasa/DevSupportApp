@@ -61,8 +61,8 @@ public class AutoMergeService {
 	}
 
 	public List<MergeJobDto> getRunningMergeJobs() {
-		final Collection<AutoMergeProcess> values = runningTasks.getAll();
-		final Collection<MergeJob> lastFinished = Collections2.transform(values,
+		Collection<AutoMergeProcess> values = runningTasks.getAll();
+		Collection<MergeJob> lastFinished = Collections2.transform(values,
 				new Function<AutoMergeProcess, MergeJob>() {
 
 					@Nullable

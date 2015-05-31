@@ -24,6 +24,7 @@ public class SelectedBranchesTablePanel extends BranchesTablePanel {
 		super(id);
 	}
 
+	@Override
 	protected List<IColumn<SvnFolder, String>> createColumns() {
 		List<IColumn<SvnFolder, String>> columns = new ArrayList<>();
 		columns.add(createNameColumn());

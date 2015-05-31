@@ -23,7 +23,7 @@ public class TokenizationJobsHolder {
 	}
 
 	public void remove(TokenizationProcess tokenizationProcess) {
-		final TokenizationProcess remove = runningTasks.remove(tokenizationProcess.getJob().getId());
+		TokenizationProcess remove = runningTasks.remove(tokenizationProcess.getJob().getId());
 		finished.add(remove);
 	}
 

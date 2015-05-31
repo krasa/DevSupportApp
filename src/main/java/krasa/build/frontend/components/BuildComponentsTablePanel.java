@@ -48,7 +48,7 @@ public class BuildComponentsTablePanel extends BasePanel {
 	private BuildFacade buildFacade;
 	MyAjaxFallbackDefaultDataTable table;
 
-	public BuildComponentsTablePanel(String id, final IModel<Environment> environmentIModel) {
+	public BuildComponentsTablePanel(String id, IModel<Environment> environmentIModel) {
 		super(id);
 		environmentId = environmentIModel.getObject().getId();
 		add(feedback = new MyFeedbackPanel("feedback"));
@@ -92,7 +92,7 @@ public class BuildComponentsTablePanel extends BasePanel {
 	}
 
 	private List<IColumn<BuildableComponentDto, String>> getColumns() {
-		final ArrayList<IColumn<BuildableComponentDto, String>> columns = new ArrayList<>();
+		ArrayList<IColumn<BuildableComponentDto, String>> columns = new ArrayList<>();
 		columns.add(new ProjectLinkColumn<BuildableComponentDto, String>(new Model<>("name"), "name", "name"));
 		columns.add(new PropertyEditableColumn<BuildableComponentDto, String>(new Model<>("buildMode"), "buildMode",
 				"buildMode", 60) {

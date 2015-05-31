@@ -26,7 +26,7 @@ public class TokenizationJobCommand {
 	private boolean commit = false;
 
 	public TokenizationJobCommand(Integer id, TokenizationJobParameters tokenizationJobParameters, String svnRepoUrl,
-			File tempDir, final List<String> branchNamePattern, String commitMessage) {
+			File tempDir, List<String> branchNamePattern, String commitMessage) {
 		this.id = id;
 		this.tokenizationJobParameters = tokenizationJobParameters;
 		this.svnRepoUrl = svnRepoUrl;

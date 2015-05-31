@@ -26,6 +26,7 @@ public class LogOutputStream extends OutputStream {
 		this.logger = logger;
 	}
 
+	@Override
 	public void write(int b) {
 		byte[] bytes = new byte[1];
 		bytes[0] = (byte) (b & 0xff);
@@ -37,6 +38,7 @@ public class LogOutputStream extends OutputStream {
 		}
 	}
 
+	@Override
 	public void flush() {
 		logger.info(mem);
 		mem = "";

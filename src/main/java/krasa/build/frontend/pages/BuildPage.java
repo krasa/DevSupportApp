@@ -32,7 +32,7 @@ public class BuildPage extends BasePage {
 
 	public BuildPage(PageParameters parameters) {
 		super(parameters);
-		final StringValue stringValue = parameters.get(NAME);
+		StringValue stringValue = parameters.get(NAME);
 		model = getEnvironmentModel(stringValue);
 		queue(createEnvironmentPanel());
 		queue(environmets = new EnvironmentsListPanel("environmets", getEnvironmentsModel(model)));

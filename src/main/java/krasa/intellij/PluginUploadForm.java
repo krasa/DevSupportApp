@@ -45,7 +45,7 @@ public class PluginUploadForm extends Form<Void> {
 
 	@Override
 	protected void onSubmit() {
-		final List<FileUpload> uploads = fileUploadField.getFileUploads();
+		List<FileUpload> uploads = fileUploadField.getFileUploads();
 		if (uploads.isEmpty()) {
 			error("No file uploaded");
 		}

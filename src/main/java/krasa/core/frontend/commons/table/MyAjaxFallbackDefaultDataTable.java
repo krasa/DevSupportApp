@@ -68,7 +68,7 @@ public class MyAjaxFallbackDefaultDataTable<T, S> extends AjaxFallbackDefaultDat
 
 		@SuppressWarnings({ "rawtypes", "unchecked" })
 		@Override
-		protected Item newCellItem(final String id, final int index, final IModel model) {
+		protected Item newCellItem(String id, int index, IModel model) {
 			Item item = MyAjaxFallbackDefaultDataTable.this.newCellItem(id, index, model);
 			final IColumn<T, S> column = MyAjaxFallbackDefaultDataTable.this.iColumns.get(index);
 			if (column instanceof IStyledColumn) {
@@ -86,7 +86,7 @@ public class MyAjaxFallbackDefaultDataTable<T, S> extends AjaxFallbackDefaultDat
 		}
 
 		@Override
-		protected Item<T> newRowItem(final String id, final int index, final IModel<T> model) {
+		protected Item<T> newRowItem(String id, int index, IModel<T> model) {
 			return MyAjaxFallbackDefaultDataTable.this.newRowItem(id, index, model);
 		}
 	}
@@ -101,7 +101,7 @@ public class MyAjaxFallbackDefaultDataTable<T, S> extends AjaxFallbackDefaultDat
 		 * @see Behavior#onComponentTag(org.apache.wicket.Component, org.apache.wicket.markup.ComponentTag)
 		 */
 		@Override
-		public void onComponentTag(final Component component, final ComponentTag tag) {
+		public void onComponentTag(Component component, ComponentTag tag) {
 			String className = getCssClass();
 			if (!Strings.isEmpty(className)) {
 				tag.append("class", className, " ");

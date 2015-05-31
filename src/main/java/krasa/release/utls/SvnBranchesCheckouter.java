@@ -22,7 +22,7 @@ public class SvnBranchesCheckouter {
 		new SvnBranchesCheckouter().checkout(SVN, new File(TARGET + INT), Arrays.asList(".*_" + INT));
 	}
 
-	public void checkout(String svnUrl, final File baseDir, final List<String> branchNamePattern,
+	public void checkout(String svnUrl, File baseDir, List<String> branchNamePattern,
 			CheckoutCallback... checkoutCallback) throws SVNException {
 		log.info("Checkouting from {}, to {}, branches with patter {}", svnUrl, baseDir.getAbsolutePath(),
 				branchNamePattern);

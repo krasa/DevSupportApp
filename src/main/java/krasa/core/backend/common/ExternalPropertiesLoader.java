@@ -3,18 +3,13 @@ package krasa.core.backend.common;
 import java.io.IOException;
 import java.util.Properties;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.*;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.config.*;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.PriorityOrdered;
-import org.springframework.core.env.AbstractEnvironment;
-import org.springframework.core.env.Environment;
-import org.springframework.core.env.PropertiesPropertySource;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
+import org.springframework.core.env.*;
+import org.springframework.core.io.*;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 
 public class ExternalPropertiesLoader implements BeanFactoryPostProcessor, PriorityOrdered, EnvironmentAware {
@@ -29,7 +24,7 @@ public class ExternalPropertiesLoader implements BeanFactoryPostProcessor, Prior
 		environment.getPropertySources().addFirst(new PropertiesPropertySource("custom", props));
 	}
 
-	private void load(Properties props, final String path) {
+	private void load(Properties props, String path) {
 		if (path != null) {
 			Resource classPathResource = new FileSystemResource(path);
 			if (classPathResource.exists()) {

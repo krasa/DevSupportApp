@@ -54,7 +54,7 @@ public class TokenizationJobsLeftPanel extends BasePanel {
 		ListView<TokenizationJob> jobsList = new ListView<TokenizationJob>("item", getJobsModel()) {
 
 			@Override
-			protected void populateItem(final ListItem<TokenizationJob> listItem) {
+			protected void populateItem(ListItem<TokenizationJob> listItem) {
 				LabeledBookmarkablePageLink link = new LabeledBookmarkablePageLink("link", FileSystemLogPage.class,
 						FileSystemLogPage.params(listItem.getModelObject()));
 				link.add(new StyledLabel("status", new PropertyModel(listItem.getModel(), "status")));

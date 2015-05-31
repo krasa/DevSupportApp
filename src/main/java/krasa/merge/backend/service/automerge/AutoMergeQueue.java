@@ -26,7 +26,7 @@ public class AutoMergeQueue {
 			}
 		}
 		MergeJob.sort(mergeJobs);
-		final MergeJob mergeJob;
+		MergeJob mergeJob;
 		if (mergeJobs.isEmpty()) {
 			mergeJob = null;
 		} else {

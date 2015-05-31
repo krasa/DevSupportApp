@@ -242,8 +242,8 @@ public class Facade {
 
 	public void deleteRepository(Integer id) {
 		Repository byId = repositoryGenericDAO.findById(id);
-		final GlobalSettings globalSettings = getGlobalSettings();
-		final Repository defaultRepository = globalSettings.getDefaultRepository();
+		GlobalSettings globalSettings = getGlobalSettings();
+		Repository defaultRepository = globalSettings.getDefaultRepository();
 		if (defaultRepository != null && defaultRepository.equals(byId)) {
 			globalSettings.setDefaultRepository(null);
 			globalSettingsDAO.save(globalSettings);
@@ -314,8 +314,8 @@ public class Facade {
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.DAY_OF_WEEK, -7);
 
-		final Session session = sf.getCurrentSession();
-		final Criteria crit = session.createCriteria(BuildJob.class);
+		Session session = sf.getCurrentSession();
+		Criteria crit = session.createCriteria(BuildJob.class);
 		crit.add(Restrictions.le("endTime", cal.getTime()));
 		List<BuildJob> list = crit.list();
 		log.info("found: {}", list.size());

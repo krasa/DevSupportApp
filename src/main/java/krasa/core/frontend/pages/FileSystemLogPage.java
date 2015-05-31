@@ -29,7 +29,7 @@ public class FileSystemLogPage extends BasePage {
 	private long lastLength;
 	private File logFile;
 
-	public FileSystemLogPage(final PageParameters parameters) {
+	public FileSystemLogPage(PageParameters parameters) {
 		super(parameters);
 		logFile = TokenizationFileUtils.getLogFileByName(parameters.get(NAME).toString());
 		type = parameters.get(TYPE).toEnum(Type.class);
@@ -96,7 +96,7 @@ public class FileSystemLogPage extends BasePage {
 	}
 
 	public static PageParameters getTokenizationPageParameters(String tokenize) {
-		final PageParameters parameters = new PageParameters();
+		PageParameters parameters = new PageParameters();
 		parameters.add("logName", tokenize);
 		parameters.add(TYPE, Type.TokenizationJob);
 		return parameters;

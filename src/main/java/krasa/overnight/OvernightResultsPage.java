@@ -158,7 +158,7 @@ public class OvernightResultsPage extends BasePage {
 						DateUtils.addHours(result.getTimeStamp(), -OvernightDao.OFFSET));
 
 				String environment = result.getTargetEnvironment().getName();
-				final String testNameName = result.getTestName().getName();
+				String testNameName = result.getTestName().getName();
 				String component = result.getTestName().getComponent().getName();
 				String name = result.getName();
 				String href;

@@ -33,7 +33,7 @@ public class SmrtMainPage extends BasePage {
 
 	public SmrtMainPage() {
 		centerColumn.add(new AttributeModifier("id", "center-column-wide"));
-		final IModel<List<SmrtConnection>> smrtConnections = new SmrtConnectionsModel(this);
+		IModel<List<SmrtConnection>> smrtConnections = new SmrtConnectionsModel(this);
 		smrtFilter = new SmrtFilter();
 		List<IColumn<SmrtConnection, String>> iColumns = getColumns(smrtConnections);
 		FilterForm<SmrtConnection> form = new FilterForm<>("form", smrtFilter);
@@ -65,7 +65,7 @@ public class SmrtMainPage extends BasePage {
 		updateOnBeforeRender.add(systemId);
 		updateOnBeforeRender.add(url);
 
-		final ChoiceFilteredPropertyColumnModel<String, SmrtConnection> environments = new ChoiceFilteredPropertyColumnModel<String, SmrtConnection>(
+		ChoiceFilteredPropertyColumnModel<String, SmrtConnection> environments = new ChoiceFilteredPropertyColumnModel<String, SmrtConnection>(
 				smrtConnections, "environment") {
 
 			@Override

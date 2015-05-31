@@ -222,8 +222,8 @@ public class TokenizationPage extends BasePage {
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
 				// setAsDefault();
 				File logFile = tokenizationService.tokenizeAsync(tokenizationPageModel);
-				final String tokenize = logFile.getName();
-				final PageParameters parameters = FileSystemLogPage.getTokenizationPageParameters(tokenize);
+				String tokenize = logFile.getName();
+				PageParameters parameters = FileSystemLogPage.getTokenizationPageParameters(tokenize);
 				setResponsePage(FileSystemLogPage.class, parameters);
 			}
 		};
@@ -232,7 +232,7 @@ public class TokenizationPage extends BasePage {
 	}
 
 	protected AjaxButton resetButton() {
-		final AjaxButton reset = new AjaxButton("reset") {
+		AjaxButton reset = new AjaxButton("reset") {
 
 			@Override
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
@@ -246,7 +246,7 @@ public class TokenizationPage extends BasePage {
 	}
 
 	protected AjaxButton generateJsonButton() {
-		final AjaxButton generateJson = new AjaxButton("generateJson") {
+		AjaxButton generateJson = new AjaxButton("generateJson") {
 
 			@Override
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {

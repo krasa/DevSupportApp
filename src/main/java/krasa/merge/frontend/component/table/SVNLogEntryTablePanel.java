@@ -43,8 +43,8 @@ public class SVNLogEntryTablePanel extends Panel {
 		mergeInfoResultItemWithoutMerges = new MergeInfoResultItem(model.getObject());
 		rowPrefix = mergeInfoResultItemWithoutMerges.getFrom() + "->" + mergeInfoResultItemWithoutMerges.getTo();
 		mergeInfoResultItemWithoutMerges.setMerges(null);// save memory
-		final ArrayList<IColumn<SVNLogEntry, String>> columns = getColumns();
-		final DataProvider dataProvider = new DataProvider(new AbstractReadOnlyModel<List<SVNLogEntry>>() {
+		ArrayList<IColumn<SVNLogEntry, String>> columns = getColumns();
+		DataProvider dataProvider = new DataProvider(new AbstractReadOnlyModel<List<SVNLogEntry>>() {
 
 			@Override
 			public List<SVNLogEntry> getObject() {
@@ -59,7 +59,7 @@ public class SVNLogEntryTablePanel extends Panel {
 		add(modalWindow = new FixedModalWindow("modal1"));
 	}
 
-	protected void createTable(final ArrayList<IColumn<SVNLogEntry, String>> columns, final DataProvider dataProvider) {
+	protected void createTable(ArrayList<IColumn<SVNLogEntry, String>> columns, DataProvider dataProvider) {
 		table = new AjaxFallbackDefaultDataTable<SVNLogEntry, String>("merges", columns, dataProvider, 100) {
 
 			@Override
@@ -92,7 +92,7 @@ public class SVNLogEntryTablePanel extends Panel {
 	}
 
 	private ArrayList<IColumn<SVNLogEntry, String>> getColumns() {
-		final ArrayList<IColumn<SVNLogEntry, String>> columns = new ArrayList<>();
+		ArrayList<IColumn<SVNLogEntry, String>> columns = new ArrayList<>();
 		columns.add(new AbstractColumn<SVNLogEntry, String>(new Model<>("revision"), "revision") {
 
 			@Override
@@ -191,7 +191,7 @@ public class SVNLogEntryTablePanel extends Panel {
 		}
 
 		@Override
-		protected void onSubmit(final IModel<SVNLogEntry> revision, AjaxRequestTarget target, Form<?> form) {
+		protected void onSubmit(IModel<SVNLogEntry> revision, AjaxRequestTarget target, Form<?> form) {
 			final SVNLogEntry revisionObject = revision.getObject();
 			modalWindow.setContent(new AjaxLazyLoadPanel(modalWindow.getContentId()) {
 

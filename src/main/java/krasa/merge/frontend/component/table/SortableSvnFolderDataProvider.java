@@ -1,7 +1,6 @@
 package krasa.merge.frontend.component.table;
 
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import krasa.merge.backend.domain.SvnFolder;
 import krasa.merge.backend.facade.Facade;
@@ -9,10 +8,8 @@ import krasa.merge.backend.facade.Facade;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.ISortState;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.ISortableDataProvider;
 import org.apache.wicket.extensions.markup.html.repeater.util.SingleSortState;
-import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.LoadableDetachableModel;
-import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
+import org.apache.wicket.model.*;
+import org.apache.wicket.spring.injection.annot.*;
 
 /**
  * @author Vojtech Krasa
@@ -24,7 +21,7 @@ public class SortableSvnFolderDataProvider implements ISortableDataProvider<SvnF
 	private String parentPath;
 	protected final LoadableDetachableModel<List<SvnFolder>> loadableDetachableModel;
 
-	public SortableSvnFolderDataProvider(final String parentPath) {
+	public SortableSvnFolderDataProvider(String parentPath) {
 		// set default sort
 		// setSort("name", SortOrder.ASCENDING);
 		this.parentPath = parentPath;

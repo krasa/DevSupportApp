@@ -16,16 +16,16 @@ import org.tmatesoft.svn.core.SVNLogEntry;
 
 public class ReportResultTablePanel extends Panel {
 
-	public ReportResultTablePanel(String id, final IModel<List<SVNLogEntry>> model) {
+	public ReportResultTablePanel(String id, IModel<List<SVNLogEntry>> model) {
 		super(id, model);
-		final ArrayList<IColumn<ReportItem, String>> columns = getColumns();
+		ArrayList<IColumn<ReportItem, String>> columns = getColumns();
 		AjaxFallbackDefaultDataTable<ReportItem, String> table = new AjaxFallbackDefaultDataTable<>("merges", columns,
 				new ReportDataProvider2(model), 100);
 		add(table);
 	}
 
 	private ArrayList<IColumn<ReportItem, String>> getColumns() {
-		final ArrayList<IColumn<ReportItem, String>> columns = new ArrayList<>();
+		ArrayList<IColumn<ReportItem, String>> columns = new ArrayList<>();
 		columns.add(revidionsColumn());
 		columns.add(messageColumn());
 		// columns.add(new PropertyColumn<ReportItem, String>(new Model<String>("author"), "author", "author"));

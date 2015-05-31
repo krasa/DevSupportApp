@@ -22,12 +22,12 @@ public class DiffPanel extends BasePanel {
 	protected MergeService mergeService;
 	private ModalWindow modal;
 
-	public DiffPanel(String markupId, ModalWindow modal1, final MergeInfoResultItem mergeInfoResultItem,
-			final SVNLogEntry revisionObject) {
+	public DiffPanel(String markupId, ModalWindow modal1, MergeInfoResultItem mergeInfoResultItem,
+			SVNLogEntry revisionObject) {
 		super(markupId);
 		modal = modal1;
 
-		final Label diff = new Label("diff", getDiffModel(mergeInfoResultItem, revisionObject));
+		Label diff = new Label("diff", getDiffModel(mergeInfoResultItem, revisionObject));
 		diff.setOutputMarkupPlaceholderTag(true);
 		add(diff);
 		Form form = new Form("form");

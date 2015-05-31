@@ -27,8 +27,8 @@ public class ReportResultPanel extends Panel {
 
 	public ReportResultPanel(String id, final IModel<ReportResult> model) {
 		super(id, model);
-		final ReportResult object = model.getObject();
-		final Map<String, List<SVNLogEntry>> svnFolderListMap = object.getSvnFolderListMap();
+		ReportResult object = model.getObject();
+		Map<String, List<SVNLogEntry>> svnFolderListMap = object.getSvnFolderListMap();
 		List<String> branches = new ArrayList<>(svnFolderListMap.keySet());
 		Collections.sort(branches);
 

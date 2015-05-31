@@ -28,11 +28,11 @@ public abstract class ButtonColumn<T> extends AbstractColumn<T, String> {
 	}
 
 	@Override
-	public void populateItem(Item<ICellPopulator<T>> components, String s, final IModel<T> model) {
+	public void populateItem(Item<ICellPopulator<T>> components, String s, IModel<T> model) {
 		components.add(createButtonPanel(s, model, label == null ? null : label.getObject()));
 	}
 
-	protected ButtonPanel createButtonPanel(final String id, final IModel<T> model, final String displayModel) {
+	protected ButtonPanel createButtonPanel(String id, final IModel<T> model, String displayModel) {
 		return new ButtonPanel(id, displayModel, image) {
 			@Override
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {

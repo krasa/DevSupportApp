@@ -15,17 +15,17 @@ public class EnvironmentsListPanel extends Panel {
 
 	protected ListView<Environment> list;
 
-	public EnvironmentsListPanel(String id, final IModel<List<Environment>> environmentsModel) {
+	public EnvironmentsListPanel(String id, IModel<List<Environment>> environmentsModel) {
 		super(id);
 		setOutputMarkupId(true);
 		createList(environmentsModel);
 	}
 
-	private void createList(final IModel<List<Environment>> environmentsModel) {
+	private void createList(IModel<List<Environment>> environmentsModel) {
 		list = new ListView<Environment>("environment", environmentsModel) {
 
 			@Override
-			protected void populateItem(final ListItem<Environment> item) {
+			protected void populateItem(ListItem<Environment> item) {
 				item.setOutputMarkupId(true); // write id attribute of element to html
 				item.setMarkupId("envId" + item.getModelObject().getId());
 				item.add(new EnvironmentDetailPanel("detail", item.getModel()));

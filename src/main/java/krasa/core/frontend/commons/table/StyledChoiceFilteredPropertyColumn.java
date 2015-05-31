@@ -22,9 +22,7 @@ public class StyledChoiceFilteredPropertyColumn<T, Y, S> extends ChoiceFilteredP
 	}
 
 	@Override
-	public void populateItem(final Item<ICellPopulator<T>> item, final String componentId,
-			final IModel<T> rowModel)
-	{
+	public void populateItem(Item<ICellPopulator<T>> item, String componentId, IModel<T> rowModel) {
 		item.add(new StyledLabel(componentId, getDataModel(rowModel)));
 	}
 

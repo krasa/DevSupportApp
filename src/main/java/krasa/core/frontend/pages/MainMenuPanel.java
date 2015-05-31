@@ -21,7 +21,7 @@ public final class MainMenuPanel extends Panel {
 
 	// do li pridat class="active"
 	// AttributeModifier modifier = new AttributeModifier("class", new Model("active"));
-	public MainMenuPanel(String id, final BasePage parent) {
+	public MainMenuPanel(String id, BasePage parent) {
 		super(id);
 		// add(new BookmarkablePageLink("projects", HomePage.class));
 		add(new BookmarkablePageLink("Merge", MergeInfoPage.class));

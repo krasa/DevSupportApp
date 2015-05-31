@@ -1,26 +1,18 @@
 package krasa.merge.frontend.pages.report;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import krasa.merge.backend.domain.SvnFolder;
-import krasa.merge.backend.dto.MergeInfoResultItem;
-import krasa.merge.backend.dto.ReportResult;
+import krasa.merge.backend.dto.*;
 import krasa.merge.frontend.component.table.SVNLogEntryTablePanel;
 
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackDefaultDataTable;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.list.ListItem;
-import org.apache.wicket.markup.html.list.ListView;
-import org.apache.wicket.markup.html.panel.Fragment;
-import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.markup.html.list.*;
+import org.apache.wicket.markup.html.panel.*;
 import org.apache.wicket.markup.repeater.RepeatingView;
-import org.apache.wicket.model.AbstractReadOnlyModel;
-import org.apache.wicket.model.IModel;
-import org.tmatesoft.svn.core.SVNDirEntry;
-import org.tmatesoft.svn.core.SVNLogEntry;
+import org.apache.wicket.model.*;
+import org.tmatesoft.svn.core.*;
 
 public class NotTaggedCommitsPanel extends Panel {
 
@@ -28,8 +20,8 @@ public class NotTaggedCommitsPanel extends Panel {
 
 	public NotTaggedCommitsPanel(String id, final IModel<ReportResult> model) {
 		super(id, model);
-		final ReportResult object = model.getObject();
-		final Map<String, List<SVNLogEntry>> svnFolderListMap = object.getSvnFolderListMap();
+		ReportResult object = model.getObject();
+		Map<String, List<SVNLogEntry>> svnFolderListMap = object.getSvnFolderListMap();
 		List<String> branches = new ArrayList<>(svnFolderListMap.keySet());
 		Collections.sort(branches);
 
@@ -37,7 +29,7 @@ public class NotTaggedCommitsPanel extends Panel {
 
 			@Override
 			protected void populateItem(ListItem<String> components) {
-				final String branchName = components.getModelObject();
+				String branchName = components.getModelObject();
 				RepeatingView view = new RepeatingView("repeater");
 
 				// incremental mezi tagy
@@ -52,7 +44,7 @@ public class NotTaggedCommitsPanel extends Panel {
 					view.add(tagFragment);
 				}
 				for (int i = 0; i < tagsByBranchaName.size(); i++) {
-					final SVNDirEntry tag = tagsByBranchaName.get(i);
+					SVNDirEntry tag = tagsByBranchaName.get(i);
 					SVNDirEntry nextTag = null;
 					if (tagsByBranchaName.size() > i + 1) {
 						nextTag = tagsByBranchaName.get(i + 1);

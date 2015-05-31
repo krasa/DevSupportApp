@@ -22,8 +22,8 @@ public class UniversalDao {
 	}
 
 	public <T extends AbstractEntity> List<T> findBy(Class clazz, Object... propertyAndValue) {
-		final Session session = getSession();
-		final Criteria crit = session.createCriteria(clazz.getCanonicalName());
+		Session session = getSession();
+		Criteria crit = session.createCriteria(clazz.getCanonicalName());
 		for (int i = 0; i < propertyAndValue.length - 1; i = i + 2) {
 			crit.add(Restrictions.eq((String) propertyAndValue[i], propertyAndValue[i + 1]));
 		}

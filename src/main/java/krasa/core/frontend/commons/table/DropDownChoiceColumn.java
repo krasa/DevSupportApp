@@ -8,8 +8,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
 import org.apache.wicket.markup.repeater.Item;
-import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.model.*;
 
 public abstract class DropDownChoiceColumn<T, S> extends AbstractColumn<T, S> {
 
@@ -21,7 +20,7 @@ public abstract class DropDownChoiceColumn<T, S> extends AbstractColumn<T, S> {
 	}
 
 	@Override
-	public void populateItem(Item<ICellPopulator<T>> item, String componentId, final IModel<T> rowModel) {
+	public void populateItem(Item<ICellPopulator<T>> item, String componentId, IModel<T> rowModel) {
 		item.add(new DropDownChoicePanel(componentId, new PropertyModel<String>(rowModel, propertyExpression),
 				getDisplayModel(rowModel)) {
 

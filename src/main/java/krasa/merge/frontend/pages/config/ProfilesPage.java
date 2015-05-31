@@ -32,7 +32,7 @@ public class ProfilesPage extends BasePage {
 
 	private void init() {
 		initActualProfileModel();
-		final Form<Profile> form = new Form<>("form");
+		Form<Profile> form = new Form<>("form");
 		queue(form);
 		form.add(new Button("newProfile") {
 

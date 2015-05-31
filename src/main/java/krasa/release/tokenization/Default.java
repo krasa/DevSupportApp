@@ -30,8 +30,7 @@ public class Default {
 		map.put("new.sac.db.version", "14100");
 		map.put("new.pit.db.version", "14100");
 		map.put("new.pom.version", "14.1.0");
-		TokenizationJobParameters tokenizationJobParameters = new TokenizationJobParameters(replacementDefinitions,
-				map);
+		TokenizationJobParameters tokenizationJobParameters = new TokenizationJobParameters(replacementDefinitions, map);
 		String s1 = tokenizationJobParameters.toJson(tokenizationJobParameters);
 
 		return loadFromJson(s1);
@@ -91,10 +90,10 @@ public class Default {
 		ReplacementDefinition definition = new ReplacementDefinition();
 		replacementDefinitions.add(definition);
 
-		final List<String> includes = definition.getIncludes();
+		List<String> includes = definition.getIncludes();
 		includes.add("**/.project");
 
-		final List<Replacement> replacements = definition.getReplacements();
+		List<Replacement> replacements = definition.getReplacements();
 		replacements.add(new Replacement("<name>portal-{old.version}</name>", "<name>portal-{new.version}</name>"));
 	}
 
@@ -102,7 +101,7 @@ public class Default {
 		ReplacementDefinition definition = new ReplacementDefinition();
 		replacementDefinitions.add(definition);
 
-		final List<String> includes = definition.getIncludes();
+		List<String> includes = definition.getIncludes();
 		includes.add("**/*.properties");
 		// eclipse
 		includes.add("**/.project");
@@ -110,7 +109,7 @@ public class Default {
 		includes.add("**/*.sql");
 		includes.add("**/PartnerContractDataProviderTest.java");
 
-		final List<Replacement> replacements = definition.getReplacements();
+		List<Replacement> replacements = definition.getReplacements();
 		replacements.add(new Replacement("build.number=${old.version}", "build.number=" + "${new.build.version}"));
 		replacements.add(new Replacement("<name>portal-${old.version}</name>", "<name>portal-${new.version}</name>"));
 		replacements.add(new Replacement("pit${old.version}", "pit" + "${new.pit.db.version}"));

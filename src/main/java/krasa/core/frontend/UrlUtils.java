@@ -10,23 +10,23 @@ import org.apache.wicket.request.resource.SharedResourceReference;
  * @author Vojtech Krasa
  */
 public class UrlUtils {
-	public static String getAbsoluteUrl(final SharedResourceReference reference) {
+	public static String getAbsoluteUrl(SharedResourceReference reference) {
 		RequestCycle requestCycle = RequestCycle.get();
 		assert requestCycle != null;
 		CharSequence resetUrl = requestCycle.urlFor(reference, null);
 		assert resetUrl != null;
 		String abs = RequestUtils.toAbsolutePath("/", "../intellijPlugin");
-		final Url url = Url.parse(abs);
+		Url url = Url.parse(abs);
 		return requestCycle.getUrlRenderer().renderFullUrl(url);
 	}
 
-	public static String getAbsoluteUrl(final Class<? extends Page> reference) {
+	public static String getAbsoluteUrl(Class<? extends Page> reference) {
 		RequestCycle requestCycle = RequestCycle.get();
 		assert requestCycle != null;
 		CharSequence resetUrl = requestCycle.urlFor(reference, null);
 		assert resetUrl != null;
 		String abs = RequestUtils.toAbsolutePath("/", resetUrl.toString());
-		final Url url = Url.parse(abs);
+		Url url = Url.parse(abs);
 		return requestCycle.getUrlRenderer().renderFullUrl(url);
 	}
 }

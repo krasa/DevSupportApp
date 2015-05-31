@@ -13,7 +13,7 @@ public class TagItTextFieldPanel extends Panel {
 	@SpringBean
 	private Facade facade;
 
-	public TagItTextFieldPanel(String componentId, final String path, final Model<String> of) {
+	public TagItTextFieldPanel(String componentId, String path, Model<String> of) {
 		super(componentId, of);
 		// add(new TagItTextField<SvnFolder>("input", of) {
 		//

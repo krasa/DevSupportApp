@@ -46,7 +46,7 @@ public class SvnFolder extends AbstractEntity implements Displayable {
 	public SvnFolder() {
 	}
 
-	public SvnFolder(SVNDirEntry entry, final String path, Type type) {
+	public SvnFolder(SVNDirEntry entry, String path, Type type) {
 		name = entry.getName();
 		this.path = path;
 		setType(type);
@@ -173,7 +173,7 @@ public class SvnFolder extends AbstractEntity implements Displayable {
 		return getName();
 	}
 
-	public boolean nameMatches(final List<String> regex) {
+	public boolean nameMatches(List<String> regex) {
 		for (String s : regex) {
 			if (getName().matches(s)) {
 				return true;

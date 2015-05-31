@@ -1,13 +1,9 @@
 package krasa.merge.backend.service.automerge;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.*;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.EvictingQueue;
@@ -31,7 +27,7 @@ public class MergeJobsHolder {
 	}
 
 	public void remove(String AutoMergeProcess) {
-		final AutoMergeProcess remove = runningTasks.remove(AutoMergeProcess);
+		AutoMergeProcess remove = runningTasks.remove(AutoMergeProcess);
 		finished.add(remove);
 	}
 

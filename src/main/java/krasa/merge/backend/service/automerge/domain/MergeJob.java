@@ -57,7 +57,7 @@ public class MergeJob extends AbstractEntity implements ProcessStatusListener {
 	}
 
 	public MergeJob(String from, String to, String fromPath, String toPath, String repository, long revision,
-			String caller, final AutoMergeJobMode all) {
+			String caller, AutoMergeJobMode all) {
 		this.from = from;
 		this.to = to;
 		this.fromPath = fromPath;
@@ -70,7 +70,7 @@ public class MergeJob extends AbstractEntity implements ProcessStatusListener {
 	}
 
 	public static MergeJob create(MergeInfoResultItem mergeInfoResultItem, SVNLogEntry svnLogEntry,
-			final AutoMergeJobMode mergeJobMode) {
+			AutoMergeJobMode mergeJobMode) {
 		String from = mergeInfoResultItem.getFrom();
 		String to = mergeInfoResultItem.getTo();
 		String fromPath = mergeInfoResultItem.getFromPath();
@@ -151,9 +151,9 @@ public class MergeJob extends AbstractEntity implements ProcessStatusListener {
 
 	@Win
 	public String getRevisionDiff() throws SVNException {
-		final ByteArrayOutputStream out = new ByteArrayOutputStream();
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		SVNClientManager clientManager = getSvnClientManager();
-		final SVNDiffClient diffClient = getDiffClient(clientManager);
+		SVNDiffClient diffClient = getDiffClient(clientManager);
 		diffClient.doDiff(getFromUrl(), getSvnRevisionRange().getStartRevision(), getFromUrl(),
 				getSvnRevisionRange().getEndRevision(), SVNDepth.INFINITY, true, out);
 		return out.toString();
@@ -185,7 +185,7 @@ public class MergeJob extends AbstractEntity implements ProcessStatusListener {
 
 	private String getCommitMessage(SVNClientManager clientManager, SVNURL from, SVNRevisionRange rangeToMerge,
 			String caller) throws SVNException {
-		final MyISVNLogEntryHandler handler = new MyISVNLogEntryHandler();
+		MyISVNLogEntryHandler handler = new MyISVNLogEntryHandler();
 		clientManager.getLogClient().doLog(from, new String[] {}, getSvnRevisionRange().getEndRevision(),
 				rangeToMerge.getEndRevision(), rangeToMerge.getEndRevision(), false, false, 1, handler);
 		String message = handler.message;
@@ -216,7 +216,7 @@ public class MergeJob extends AbstractEntity implements ProcessStatusListener {
 	}
 
 	private SVNDiffClient getDiffClient(SVNClientManager clientManager) {
-		final SVNDiffClient diffClient = clientManager.getDiffClient();
+		SVNDiffClient diffClient = clientManager.getDiffClient();
 		// if (getJobMode() == AutoMergeJobMode.ONLY_SVN_MERGE_INFO) {
 		// DefaultSVNOptions options = (DefaultSVNOptions) diffClient.getOptions();
 		// //This way we set a conflict handler which will automatically resolve conflicts for those
@@ -228,7 +228,7 @@ public class MergeJob extends AbstractEntity implements ProcessStatusListener {
 
 	protected void merge(SVNURL from, File workingCopy, SVNRevisionRange rangeToMerge, SVNDiffClient diffClient)
 			throws SVNException {
-		final boolean recordOnly = jobMode == AutoMergeJobMode.ONLY_MERGE_INFO;
+		boolean recordOnly = jobMode == AutoMergeJobMode.ONLY_MERGE_INFO;
 		log.info("merging from " + from.getPath() + " into " + workingCopy.getAbsolutePath() + " revision "
 				+ rangeToMerge.getStartRevision() + "-" + rangeToMerge.getEndRevision() + " recordOnly=" + recordOnly);
 

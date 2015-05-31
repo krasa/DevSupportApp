@@ -36,8 +36,8 @@ public abstract class AbstractDAO<T extends AbstractEntity> implements DAO<T> {
 
 	@Override
 	public List<T> findBy(Object... propertyAndValue) {
-		final Session session = getSession();
-		final Criteria crit = session.createCriteria(getEntityClass());
+		Session session = getSession();
+		Criteria crit = session.createCriteria(getEntityClass());
 		for (int i = 0; i < propertyAndValue.length - 1; i = i + 2) {
 			crit.add(Restrictions.eq((String) propertyAndValue[i], propertyAndValue[i + 1]));
 		}
@@ -46,8 +46,8 @@ public abstract class AbstractDAO<T extends AbstractEntity> implements DAO<T> {
 
 	@Override
 	public T findOneBy(Object... propertyAndValue) {
-		final Session session = getSession();
-		final Criteria crit = session.createCriteria(getEntityClass());
+		Session session = getSession();
+		Criteria crit = session.createCriteria(getEntityClass());
 		for (int i = 0; i < propertyAndValue.length - 1; i = i + 2) {
 			crit.add(Restrictions.eq((String) propertyAndValue[i], propertyAndValue[i + 1]));
 		}
@@ -96,7 +96,7 @@ public abstract class AbstractDAO<T extends AbstractEntity> implements DAO<T> {
 
 	@Override
 	public List<T> findLast(int count) {
-		final Query query = getSession().createQuery(" from " + getEntityName() + " order by id desc");
+		Query query = getSession().createQuery(" from " + getEntityName() + " order by id desc");
 		query.setMaxResults(count);
 		return query.list();
 	}

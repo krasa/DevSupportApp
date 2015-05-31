@@ -60,7 +60,7 @@ public class CurrentlyBuildingLeftPanel extends Panel {
 		ListView<BuildJobDto> runningBuildJobDtoListView = new ListView<BuildJobDto>("item", currentlyBuildingModel) {
 
 			@Override
-			protected void populateItem(final ListItem<BuildJobDto> listItem) {
+			protected void populateItem(ListItem<BuildJobDto> listItem) {
 				LabeledBookmarkablePageLink link = new LabeledBookmarkablePageLink("link", LogPage.class,
 						LogPage.params(listItem.getModelObject()));
 				link.add(new Label("prefix", new RunningJobLabelModel(listItem)));

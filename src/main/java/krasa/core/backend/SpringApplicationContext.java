@@ -3,8 +3,7 @@ package krasa.core.backend;
 import java.io.IOException;
 
 import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.*;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +19,7 @@ public class SpringApplicationContext implements ApplicationContextAware {
 	 * @param context
 	 *            a reference to the ApplicationContext.
 	 */
+	@Override
 	public void setApplicationContext(ApplicationContext context) throws BeansException {
 		CONTEXT = context;
 	}

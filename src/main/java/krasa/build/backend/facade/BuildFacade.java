@@ -181,8 +181,8 @@ public class BuildFacade {
 	}
 
 	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER)
-	public void deleteComponentById(final Integer id) {
-		final BuildableComponent byId = buildableComponentDAO.findById(id);
+	public void deleteComponentById(Integer id) {
+		BuildableComponent byId = buildableComponentDAO.findById(id);
 		byId.getEnvironment().getBuildableComponents().remove(byId);
 		buildableComponentDAO.delete(byId);
 		buildableComponentDAO.flush();

@@ -24,7 +24,7 @@ public class SvnFolderProvider {
 		this.repository = new SVNConnector().connect(repository);
 	}
 
-	public SvnFolderProvider(Repository repository, final SVNRepository connection) {
+	public SvnFolderProvider(Repository repository, SVNRepository connection) {
 		indexTrunk = repository.isIndexTrunk();
 		this.repository = connection;
 	}
@@ -56,7 +56,7 @@ public class SvnFolderProvider {
 	public List<SvnFolder> getProjectContent(SvnFolder project, Boolean loadTags) {
 		log.debug("getBranches start");
 		List<SvnFolder> result = new ArrayList<>();
-		final String projectPath = project.getPath();
+		String projectPath = project.getPath();
 		result.addAll(getBranches(project));
 		if (loadTags) {
 			result.addAll(getTags(projectPath));
@@ -73,7 +73,7 @@ public class SvnFolderProvider {
 		return getFolders(project.getPath(), Type.BRANCH, "branch", "branches");
 	}
 
-	private List<SvnFolder> getFolders(String projectName, final Type type, final String... folderNames) {
+	private List<SvnFolder> getFolders(String projectName, Type type, String... folderNames) {
 		List<SvnFolder> result = new ArrayList<>();
 		try {
 			Collection projectDirs = repository.getDir(projectName, -1, null, (Collection) null);
@@ -148,7 +148,7 @@ public class SvnFolderProvider {
 		return trunk;
 	}
 
-	private List<SvnFolder> iterateFolder(final String pathToParentDir, final Type type) throws SVNException {
+	private List<SvnFolder> iterateFolder(String pathToParentDir, Type type) throws SVNException {
 		List<SvnFolder> result = new ArrayList<>();
 		Collection branches = repository.getDir(pathToParentDir, -1, null, (Collection) null);
 		Iterator iterator = branches.iterator();
@@ -164,7 +164,7 @@ public class SvnFolderProvider {
 		return result;
 	}
 
-	private static boolean isDirWithName(SVNDirEntry entry, final String... folderNames) {
+	private static boolean isDirWithName(SVNDirEntry entry, String... folderNames) {
 		boolean isDir = entry.getKind() == SVNNodeKind.DIR;
 		return isDir && containsName(entry, folderNames);
 	}

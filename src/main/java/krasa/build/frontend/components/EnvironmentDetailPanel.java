@@ -66,9 +66,8 @@ public class EnvironmentDetailPanel extends BasePanel {
 	}
 
 	private BranchAutocompleteFormPanel createAddComponentFormPanel() {
-		final BranchAutocompleteFormPanel autocomplete = new BranchAutocompleteFormPanel("addComponent",
-				new ResourceModel(
-						"componentName")) {
+		BranchAutocompleteFormPanel autocomplete = new BranchAutocompleteFormPanel("addComponent", new ResourceModel(
+				"componentName")) {
 
 			@Override
 			protected BranchAutoCompletePanel createAutoCompletePanel(String id) {

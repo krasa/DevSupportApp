@@ -10,7 +10,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 
 public abstract class ButtonPanel extends Panel {
 
-	public ButtonPanel(String id, final String label) {
+	public ButtonPanel(String id, String label) {
 		super(id);
 		addButton(label, null);
 	}
@@ -20,7 +20,7 @@ public abstract class ButtonPanel extends Panel {
 		addButton(label, image);
 	}
 
-	private void addButton(final String label, StaticImage image) {
+	private void addButton(String label, StaticImage image) {
 		AjaxButton button = new AjaxButton("button") {
 
 			@Override

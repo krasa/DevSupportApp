@@ -2,8 +2,7 @@ package krasa.core.frontend.commons;
 
 import krasa.core.frontend.utils.Strings;
 
-import org.apache.wicket.markup.ComponentTag;
-import org.apache.wicket.markup.MarkupStream;
+import org.apache.wicket.markup.*;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.model.IModel;
 
@@ -22,7 +21,7 @@ public class SpanMultiLineLabel extends MultiLineLabel {
 	}
 
 	@Override
-	public void onComponentTagBody(final MarkupStream markupStream, final ComponentTag openTag) {
+	public void onComponentTagBody(MarkupStream markupStream, ComponentTag openTag) {
 		CharSequence body = Strings.toMultilineMarkup(getDefaultModelObjectAsString());
 		replaceComponentTagBody(markupStream, openTag, body);
 	}

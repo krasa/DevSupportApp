@@ -52,16 +52,16 @@ public class RepositoryConfigurationPanel extends BasePanel {
 	}
 
 	private AjaxFallbackDefaultDataTable<Repository, String> createList() {
-		final List<IColumn<Repository, String>> columns = new ArrayList<>();
+		List<IColumn<Repository, String>> columns = new ArrayList<>();
 
 		columns.add(new PropertyColumn<Repository, String>(new Model<String>("url"), "url"));
 		columns.add(new LabelColumn<Repository>(new Model<String>("default")) {
 
 			@Override
 			protected Object getModel(IModel<Repository> rowModel) {
-				final GlobalSettings object = globalSettings.getObject();
+				GlobalSettings object = globalSettings.getObject();
 
-				final Repository defaultRepository = object.getDefaultRepository();
+				Repository defaultRepository = object.getDefaultRepository();
 				if (defaultRepository == null) {
 					return null;
 				}
@@ -85,8 +85,8 @@ public class RepositoryConfigurationPanel extends BasePanel {
 
 					@Override
 					public List<String> getObject() {
-						final RepositoryStructure[] values = RepositoryStructure.values();
-						final ArrayList<String> strings = new ArrayList<>();
+						RepositoryStructure[] values = RepositoryStructure.values();
+						ArrayList<String> strings = new ArrayList<>();
 						for (RepositoryStructure value : values) {
 							strings.add(value.name());
 						}
@@ -97,7 +97,7 @@ public class RepositoryConfigurationPanel extends BasePanel {
 
 			@Override
 			protected void onUpdate(AjaxRequestTarget target, PropertyModel<String> itemModel) {
-				final Object innermostModelOrObject = itemModel.getInnermostModelOrObject();
+				Object innermostModelOrObject = itemModel.getInnermostModelOrObject();
 				facade.saveRepository((Repository) innermostModelOrObject);
 			}
 		});
@@ -111,7 +111,7 @@ public class RepositoryConfigurationPanel extends BasePanel {
 			}
 		});
 
-		final DummyModelDataProvider<Repository> provider = new DummyModelDataProvider<>(getRepositoriesModel());
+		DummyModelDataProvider<Repository> provider = new DummyModelDataProvider<>(getRepositoriesModel());
 		AjaxFallbackDefaultDataTable<Repository, String> repositories = new AjaxFallbackDefaultDataTable<>(
 				"repositories", columns, provider, 100);
 		return repositories;

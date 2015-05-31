@@ -43,7 +43,7 @@ public class TokenizationExecutor {
 	}
 
 	public Collection<TokenizationProcess> getProcesses() {
-		final Collection<TokenizationProcess> values = runningTasks.getAll();
+		Collection<TokenizationProcess> values = runningTasks.getAll();
 		return values;
 	}
 

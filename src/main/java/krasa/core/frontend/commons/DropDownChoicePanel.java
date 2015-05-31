@@ -10,10 +10,9 @@ import org.apache.wicket.model.*;
 
 public abstract class DropDownChoicePanel extends Panel {
 
-	public DropDownChoicePanel(String componentId, final PropertyModel<String> model,
-			final IModel<List<String>> displayModel) {
+	public DropDownChoicePanel(String componentId, final PropertyModel<String> model, IModel<List<String>> displayModel) {
 		super(componentId, model);
-		final DropDownChoice<String> models = new DropDownChoice<>("drop", model, displayModel);
+		DropDownChoice<String> models = new DropDownChoice<>("drop", model, displayModel);
 		models.setNullValid(true);
 		models.setOutputMarkupId(true);
 		models.add(new AjaxFormComponentUpdatingBehavior("change") {

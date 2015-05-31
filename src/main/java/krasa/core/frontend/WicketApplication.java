@@ -82,6 +82,7 @@ public class WicketApplication extends WebApplication {
 		// add your configuration here
 		getComponentInstantiationListeners().add(new IComponentInstantiationListener() {
 
+			@Override
 			public void onInstantiation(Component component) {
 				if (component instanceof IComponentResolver) {
 					return;
@@ -106,6 +107,7 @@ public class WicketApplication extends WebApplication {
 			this.rootFolder = rootFolder;
 		}
 
+		@Override
 		public void respond(Attributes attributes) {
 			PageParameters parameters = attributes.getParameters();
 			String fileName = parameters.get(0).toString();

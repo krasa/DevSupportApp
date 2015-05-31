@@ -2,24 +2,20 @@ package krasa.merge.frontend.pages.mergeinfo;
 
 import java.util.List;
 
-import krasa.merge.backend.dto.MergeInfoResult;
-import krasa.merge.backend.dto.MergeInfoResultItem;
+import krasa.merge.backend.dto.*;
 import krasa.merge.frontend.component.table.SVNLogEntryTablePanel;
 
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.list.ListItem;
-import org.apache.wicket.markup.html.list.ListView;
+import org.apache.wicket.markup.html.list.*;
 import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.model.AbstractReadOnlyModel;
-import org.apache.wicket.model.LoadableDetachableModel;
-import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.model.*;
 
 /**
  * @author Vojtech Krasa
  */
 public class MergeInfoResultPanel extends Panel {
 
-	public MergeInfoResultPanel(String id, final LoadableDetachableModel<MergeInfoResult> loadableDetachableModel) {
+	public MergeInfoResultPanel(String id, LoadableDetachableModel<MergeInfoResult> loadableDetachableModel) {
 		super(id);
 		setOutputMarkupId(true);
 		add(createResultList(loadableDetachableModel));

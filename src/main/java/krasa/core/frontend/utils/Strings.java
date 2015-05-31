@@ -11,17 +11,17 @@ public class Strings {
 	 * @return String with all single occurrences of newline replaced with &lt;br/&gt; and all multiple occurrences of
 	 *         newline replaced with &lt;p&gt;.
 	 */
-	public static CharSequence toMultilineMarkup(final CharSequence s) {
+	public static CharSequence toMultilineMarkup(CharSequence s) {
 		if (s == null) {
 			return null;
 		}
 
-		final AppendingStringBuffer buffer = new AppendingStringBuffer();
+		AppendingStringBuffer buffer = new AppendingStringBuffer();
 		int newlineCount = 0;
 
 		buffer.append("<span>");
 		for (int i = 0; i < s.length(); i++) {
-			final char c = s.charAt(i);
+			char c = s.charAt(i);
 
 			switch (c) {
 			case '\n':

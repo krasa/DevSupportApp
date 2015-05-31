@@ -62,7 +62,7 @@ public class BuildFacadeTest extends FullTest {
 		buildFacade.onStatusChanged(build, new ProcessStatus());
 
 		flush();
-		final BuildJob buildJobById = buildFacade.getBuildJobById(build.getId());
+		BuildJob buildJobById = buildFacade.getBuildJobById(build.getId());
 		assertNull(buildJobById.getProcess());
 		assertEquals("fooBar", buildJobById.getBuildLog().getLogContent());
 		assertEquals("fooBar", buildJobById.getLog().getText());

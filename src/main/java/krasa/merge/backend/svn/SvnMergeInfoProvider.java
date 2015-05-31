@@ -1,22 +1,15 @@
 package krasa.merge.backend.svn;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
-import krasa.merge.backend.domain.Repository;
-import krasa.merge.backend.domain.SvnFolder;
+import krasa.merge.backend.domain.*;
 import krasa.merge.backend.svn.connection.SVNConnector;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.tmatesoft.svn.core.ISVNLogEntryHandler;
-import org.tmatesoft.svn.core.SVNException;
-import org.tmatesoft.svn.core.SVNLogEntry;
-import org.tmatesoft.svn.core.SVNURL;
+import org.slf4j.*;
+import org.tmatesoft.svn.core.*;
 import org.tmatesoft.svn.core.internal.wc.DefaultSVNOptions;
 import org.tmatesoft.svn.core.io.SVNRepository;
-import org.tmatesoft.svn.core.wc.SVNDiffClient;
-import org.tmatesoft.svn.core.wc.SVNRevision;
+import org.tmatesoft.svn.core.wc.*;
 
 /**
  * @author Vojtech Krasa
@@ -38,7 +31,7 @@ public class SvnMergeInfoProvider {
 	public List<SVNLogEntry> getMerges(SvnFolder from, SvnFolder to) throws SVNException {
 		log.debug("finding merges from {} to {}", from.getName(), to.getName());
 
-		final List<SVNLogEntry> svnLogEntries = new ArrayList<>();
+		List<SVNLogEntry> svnLogEntries = new ArrayList<>();
 		SVNDiffClient svnDiffClient = new SVNDiffClient(repository.getAuthenticationManager(), new DefaultSVNOptions());
 		svnDiffClient.doGetLogEligibleMergeInfo(getUrl(to), SVNRevision.HEAD, getUrl(from), SVNRevision.HEAD, true,
 				null, new SVNLogEntryHandler(svnLogEntries));
@@ -49,7 +42,7 @@ public class SvnMergeInfoProvider {
 
 		log.debug("finding merges from {} to {} for folder " + commonFolder, from.getName(), to.getName());
 
-		final List<SVNLogEntry> svnLogEntries = new ArrayList<>();
+		List<SVNLogEntry> svnLogEntries = new ArrayList<>();
 		SVNDiffClient svnDiffClient = new SVNDiffClient(repository.getAuthenticationManager(), new DefaultSVNOptions());
 		svnDiffClient.doGetLogEligibleMergeInfo(getUrl(to, commonFolder), SVNRevision.HEAD, getUrl(from, commonFolder),
 				SVNRevision.HEAD, false, null, new SVNLogEntryHandler(svnLogEntries));
