@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>krasa</groupId>
 	<artifactId>SVNMergeInfo</artifactId>
-	<packaging>pom</packaging>
+	<packaging>jar</packaging>
 	<version>1.1-SNAPSHOT</version>
 	<name>SVNMergeInfo</name>
 	<description></description>
