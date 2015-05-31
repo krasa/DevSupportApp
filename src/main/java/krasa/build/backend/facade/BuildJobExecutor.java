@@ -12,7 +12,7 @@ import com.netflix.hystrix.contrib.javanica.command.AsyncResult;
 @Service
 public class BuildJobExecutor {
 
-	@HystrixCommand(fallbackMethod = "failBuild", commandProperties = { @HystrixProperty(name = "execution.timeout.enabled", value = "false") }, threadPoolProperties = {
+	@HystrixCommand(fallbackMethod = "fail", commandProperties = { @HystrixProperty(name = "execution.timeout.enabled", value = "false") }, threadPoolProperties = {
 			@HystrixProperty(name = "coreSize", value = "3"), @HystrixProperty(name = "maxQueueSize", value = "5"),
 			@HystrixProperty(name = "keepAliveTimeMinutes", value = "2"),
 			@HystrixProperty(name = "queueSizeRejectionThreshold", value = "5"),
@@ -23,13 +23,13 @@ public class BuildJobExecutor {
 
 			@Override
 			public Void invoke() {
-				buildJob.getProcess().run();
+				buildJob.getBuildJobProcess().execute();
 				return null;
 			}
 		};
 	}
 
-	private void failBuild(BuildJob buildJob) {
+	private void fail(BuildJob buildJob) {
 		buildJob.kill("hystrix fallback");
 	}
 }

@@ -29,6 +29,5 @@ public class PocessKillButton extends AjaxButton {
 		model.getObject().kill("killed manually");
 		this.setEnabled(false);
 		target.add(this);
-		super.onSubmit();
 	}
 }

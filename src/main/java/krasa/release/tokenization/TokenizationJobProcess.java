@@ -14,9 +14,9 @@ import org.slf4j.*;
 import org.tmatesoft.svn.core.*;
 import org.tmatesoft.svn.core.wc.*;
 
-public class TokenizationJobCommand {
+public class TokenizationJobProcess {
 
-	protected static final Logger log = LoggerFactory.getLogger(TokenizationJobCommand.class);
+	protected static final Logger log = LoggerFactory.getLogger(TokenizationJobProcess.class);
 	protected final File tempDir;
 	private String commitMessage;
 	private Integer id;
@@ -25,7 +25,7 @@ public class TokenizationJobCommand {
 	private String svnRepoUrl;
 	private boolean commit = false;
 
-	public TokenizationJobCommand(Integer id, TokenizationJobParameters tokenizationJobParameters, String svnRepoUrl,
+	public TokenizationJobProcess(Integer id, TokenizationJobParameters tokenizationJobParameters, String svnRepoUrl,
 			File tempDir, List<String> branchNamePattern, String commitMessage) {
 		this.id = id;
 		this.tokenizationJobParameters = tokenizationJobParameters;

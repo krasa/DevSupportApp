@@ -4,10 +4,8 @@ import java.util.Date;
 
 import javax.persistence.*;
 
-import krasa.build.backend.dto.Result;
 import krasa.build.backend.execution.ProcessStatus;
 import krasa.build.backend.execution.process.*;
-import krasa.build.backend.execution.process.Process;
 import krasa.build.backend.facade.BuildFacade;
 import krasa.core.backend.SpringApplicationContext;
 import krasa.core.backend.domain.AbstractEntity;
@@ -33,18 +31,15 @@ public class BuildJob extends AbstractEntity implements ProcessStatusListener {
 	public Date endTime;
 	@Column(length = 1000)
 	public String command;
-	@OneToOne(cascade = CascadeType.ALL, mappedBy = "buildJob")
-	private BuildLog buildLog;
 	@Column
 	private String caller;
 	@Transient
-	protected Process process;
+	protected BuildJobProcess buildJobProcess;
 
 	protected BuildJob() {
 	}
 
 	public BuildJob(BuildableComponent buildableComponent) {
-		this.process = process;
 		this.buildableComponent = buildableComponent;
 		scheduledTime = new Date();
 	}
@@ -69,10 +64,6 @@ public class BuildJob extends AbstractEntity implements ProcessStatusListener {
 		this.caller = caller;
 	}
 
-	public BuildLog getBuildLog() {
-		return buildLog;
-	}
-
 	public String getCommand() {
 		return command;
 	}
@@ -81,12 +72,8 @@ public class BuildJob extends AbstractEntity implements ProcessStatusListener {
 		this.command = command;
 	}
 
-	public void setBuildLog(BuildLog buildLog) {
-		this.buildLog = buildLog;
-	}
-
-	public void setProcess(Process process) {
-		this.process = process;
+	public void setBuildJobProcess(BuildJobProcess buildJobProcess) {
+		this.buildJobProcess = buildJobProcess;
 	}
 
 	public Status getStatus() {
@@ -121,15 +108,15 @@ public class BuildJob extends AbstractEntity implements ProcessStatusListener {
 		this.startTime = startTime;
 	}
 
-	public Process getProcess() {
-		return process;
+	public BuildJobProcess getBuildJobProcess() {
+		return buildJobProcess;
 	}
 
 	public boolean isProcessAlive() {
-		if (process == null) {
+		if (buildJobProcess == null) {
 			return false;
 		}
-		return process.getStatus().isAlive();
+		return buildJobProcess.getStatus().isAlive();
 	}
 
 	public boolean isNotFinished() {
@@ -138,7 +125,7 @@ public class BuildJob extends AbstractEntity implements ProcessStatusListener {
 
 	public void kill(String reason) {
 		log.info("Killing");
-		process.stop(reason);
+		buildJobProcess.stop(reason);
 		log.info("Process stopped");
 	}
 
@@ -151,43 +138,10 @@ public class BuildJob extends AbstractEntity implements ProcessStatusListener {
 		}
 	}
 
-	public Result getLog() {
-		if (process == null) {
-			if (buildLog == null) {
-				return Result.empty(0);
-			}
-			return new Result(buildLog.getLogContent().length(), buildLog.getLogContent());
-		}
-		return process.getProcessLog().getNext(0);
-	}
-
-	public Result getNextLog(int length) {
-		if (process == null) {
-			return Result.empty(length);
-		}
-		return process.getProcessLog().getNext(length);
-	}
-
-	public void onBeforeSave() {
-		fillBuildLogFromProcessLog();
-	}
-
-	private void fillBuildLogFromProcessLog() {
-		if (getProcess() != null) {
-			BuildLog buildLog = this.buildLog;
-			if (buildLog == null) {
-				buildLog = new BuildLog();
-				buildLog.setBuildJob(this);
-				setBuildLog(buildLog);
-			}
-			buildLog.setLogContent(getProcess().getProcessLog().getContent());
-		}
-	}
-
 	@Override
 	public String toString() {
 		return Objects.toStringHelper(this).add("id", id).add("command", command).add("buildableComponent",
-				buildableComponent).add("process", process).add("status", status).add("startTime", startTime).add(
+				buildableComponent).add("process", buildJobProcess).add("status", status).add("startTime", startTime).add(
 				"endTime", endTime).toString();
 	}
 }

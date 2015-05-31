@@ -123,16 +123,16 @@ public class TokenizationJob extends AbstractEntity implements Serializable {
 		this.logName = logName;
 	}
 
-	public TokenizationJobCommand prepareCommand(File tempDir, boolean commit) {
+	public TokenizationJobProcess prepareProcess(File tempDir, boolean commit) {
 		Assert.notNull(jobParameters);
 		Assert.notNull(svnUrl);
 		Assert.notNull(getId());
 		Assert.notNull(branchNamePattern);
 		Assert.notEmpty(branchNamePattern);
-		TokenizationJobCommand tokenizationJobCommand = new TokenizationJobCommand(getId(), jobParameters, svnUrl,
+		TokenizationJobProcess tokenizationJobProcess = new TokenizationJobProcess(getId(), jobParameters, svnUrl,
 				getUniqueTempDir(tempDir), branchNamePattern, commitMessage);
-		tokenizationJobCommand.setCommit(commit);
-		return tokenizationJobCommand;
+		tokenizationJobProcess.setCommit(commit);
+		return tokenizationJobProcess;
 	}
 
 	private File getUniqueTempDir(File tempDir) {

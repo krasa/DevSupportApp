@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 public class DummyProcessBuilder extends ProcessBuilder {
 
 	@Override
-	protected AbstractProcess getBuildProcess(ProcessLog stringBufferTail, List<String> command, BuildJob buildJob) {
-		return new DummyProcess(stringBufferTail, command, buildJob);
+	protected BuildJobProcess getBuildProcess(List<String> command, BuildJob buildJob) {
+		return new DummyProcess(command, buildJob);
 	}
 }

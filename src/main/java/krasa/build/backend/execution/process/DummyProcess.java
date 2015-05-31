@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.List;
 
 import krasa.build.backend.domain.*;
-import krasa.core.backend.utils.MdcUtils;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.*;
@@ -15,8 +14,8 @@ public class DummyProcess extends SshjBuildProcess {
 
 	protected static final Logger log = LoggerFactory.getLogger(DummyProcess.class);
 
-	public DummyProcess(ProcessLog stringBufferTail, List<String> command, BuildJob buildJob) {
-		super(stringBufferTail, command, buildJob);
+	public DummyProcess(List<String> command, BuildJob buildJob) {
+		super(command, buildJob);
 	}
 
 	@Override
@@ -24,8 +23,7 @@ public class DummyProcess extends SshjBuildProcess {
 		int i = 0;
 		Integer integer = Integer.valueOf(RandomStringUtils.randomNumeric(3));
 		while (i < integer && processStatus.getStatus() != Status.KILLED) {
-			log.trace(String.valueOf(++i));
-			processLog.append(String.valueOf(++i)).newLine();
+			sshOutput.info(String.valueOf(++i));
 			try {
 				Thread.sleep(100);
 			} catch (InterruptedException e) {
@@ -35,7 +33,6 @@ public class DummyProcess extends SshjBuildProcess {
 		if (processStatus.getStatus() == Status.RUNNING) {
 			processStatus.setStatus(Status.SUCCESS);
 		}
-		MdcUtils.removeLogName();
 		return 0;
 	}
 

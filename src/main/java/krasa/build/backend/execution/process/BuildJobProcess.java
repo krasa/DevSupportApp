@@ -10,22 +10,16 @@ import org.slf4j.*;
 
 import com.google.common.base.Objects;
 
-public abstract class AbstractProcess implements Process {
+public abstract class BuildJobProcess {
 
 	protected final Logger log = LoggerFactory.getLogger(getClass());
 
 	protected ProcessStatus processStatus = new ProcessStatus(Status.PENDING);
 	protected List<ProcessStatusListener> processStatusListeners = new ArrayList<>();
-	protected ProcessLog processLog;
-	private BuildJob buildJob;
+	protected BuildJob buildJob;
 
-	public AbstractProcess(BuildJob buildJob) {
+	public BuildJobProcess(BuildJob buildJob) {
 		this.buildJob = buildJob;
-	}
-
-	@Override
-	public ProcessLog getProcessLog() {
-		return processLog;
 	}
 
 	public boolean addListener(ProcessStatusListener processStatusListener) {
@@ -36,11 +30,10 @@ public abstract class AbstractProcess implements Process {
 		log.info("process complete. " + this.toString());
 	}
 
-	@Override
-	public void run() {
-		MdcUtils.putLogName(buildJob.getLogFileName());
-		onStart();
+	public void execute() {
 		try {
+			MdcUtils.putLogName(buildJob.getLogFileName());
+			onStart();
 			runInternal();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -56,7 +49,11 @@ public abstract class AbstractProcess implements Process {
 				processStatus.setException(e);
 				processStatus.setStatus(Status.EXCEPTION);
 			}
-			notifyListeners();
+			try {
+				notifyListeners();
+			} finally {
+				MdcUtils.removeLogName();
+			}
 		}
 	}
 
@@ -73,17 +70,19 @@ public abstract class AbstractProcess implements Process {
 		}
 	}
 
-	@Override
 	public void stop(String reason) {
-		processLog.newLine();
-		processLog.append(reason);
-		processStatus.setStatus(Status.KILLED);
-		processStatus.setException(new RuntimeException());
-		releaseResources();
-		notifyListeners();
+		try {
+			MdcUtils.putLogName(buildJob.getLogFileName());
+			log.info("process stopped, {}", reason);
+			processStatus.setStatus(Status.KILLED);
+			processStatus.setException(new RuntimeException());
+			releaseResources();
+			notifyListeners();
+		} finally {
+			MdcUtils.removeLogName();
+		}
 	}
 
-	@Override
 	public ProcessStatus getStatus() {
 		return processStatus;
 	}

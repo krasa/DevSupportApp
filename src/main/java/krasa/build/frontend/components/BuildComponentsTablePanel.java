@@ -7,7 +7,7 @@ import krasa.build.backend.domain.Environment;
 import krasa.build.backend.dto.BuildableComponentDto;
 import krasa.build.backend.exception.ProcessAlreadyRunning;
 import krasa.build.backend.facade.*;
-import krasa.build.frontend.pages.LogPage;
+import krasa.build.frontend.pages.BuildLogPage;
 import krasa.core.frontend.StaticImage;
 import krasa.core.frontend.commons.*;
 import krasa.core.frontend.commons.table.*;
@@ -132,8 +132,8 @@ public class BuildComponentsTablePanel extends BasePanel {
 					@Override
 					protected Link getComponent(String id, IModel<String> labelModel,
 							final IModel<BuildableComponentDto> rowModel) {
-						LabeledBookmarkablePageLink link = new LabeledBookmarkablePageLink(id, LogPage.class,
-								LogPage.params(rowModel.getObject()), labelModel) {
+						LabeledBookmarkablePageLink link = new LabeledBookmarkablePageLink(id, BuildLogPage.class,
+								BuildLogPage.params(rowModel.getObject()), labelModel) {
 
 							@Override
 							public void onComponentTagBody(MarkupStream markupStream, ComponentTag openTag) {

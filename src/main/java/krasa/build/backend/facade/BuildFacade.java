@@ -15,7 +15,6 @@ import krasa.svn.backend.domain.*;
 import krasa.svn.backend.facade.SvnFacade;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hibernate.*;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.*;
@@ -234,7 +233,6 @@ public class BuildFacade {
 			}
 			runningCurrentBuildJobsHolder.remove(buildJob);
 		}
-		buildJob.onBeforeSave();
 		buildJobDAO.save(buildJob);
 		eventService.sendRefresh(buildJob);
 	}
@@ -282,31 +280,14 @@ public class BuildFacade {
 		for (BuildableComponent buildableComponent : buildableComponents) {
 			BuildJob lastBuildJob = buildableComponent.getLastBuildJob();
 			if (lastBuildJob != null) {
-				BuildJob buildJob = runningCurrentBuildJobsHolder.get(lastBuildJob);
-				if (lastBuildJob.isNotFinished() && buildJob == null) {
+				BuildJob runningBuildJob = runningCurrentBuildJobsHolder.get(lastBuildJob);
+				if (lastBuildJob.isNotFinished() && runningBuildJob == null) {
 					lastBuildJob.setStatus(Status.KILLED);
 					buildJobDAO.save(lastBuildJob);
-				} else if (lastBuildJob.isNotFinished() && buildJob != null
-						&& !buildJob.getProcess().getStatus().isAlive()) {
-					lastBuildJob.setStatus(buildJob.getProcess().getStatus().getStatus());
-					BuildLog buildLog = lastBuildJob.getBuildLog();
-					if (buildLog == null) {
-						// todo wtf
-						buildLog = new BuildLog();
-						lastBuildJob.setBuildLog(buildLog);
-					}
-					String logContent = buildLog.getLogContent();
-					krasa.build.backend.execution.process.Process process = buildJob.getProcess();
-					ProcessStatus status = process.getStatus();
-					Exception exception = status.getException();
-					String stackTrace = "";
-					if (exception != null) {
-						stackTrace = ExceptionUtils.getStackTrace(exception);
-					} else {
-						stackTrace = "NO STACKTRACE!!";
-
-					}
-					buildLog.setLogContent(logContent + "\n-------------------\nProcess died\n" + stackTrace);
+				} else if (lastBuildJob.isNotFinished() && runningBuildJob != null
+						&& !runningBuildJob.getBuildJobProcess().getStatus().isAlive()) {
+					// fallback
+					lastBuildJob.setStatus(runningBuildJob.getBuildJobProcess().getStatus().getStatus());
 					buildJobDAO.save(lastBuildJob);
 				}
 			}

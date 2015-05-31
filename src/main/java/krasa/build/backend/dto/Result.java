@@ -3,21 +3,25 @@ package krasa.build.backend.dto;
 import java.io.Serializable;
 
 public class Result implements Serializable {
-	private final int length;
+	private final int offset;
 	private final String text;
 
 	public Result() {
-		length = 0;
+		offset = 0;
 		text = "";
 	}
 
-	public Result(int length, String text) {
-		this.length = length;
+	public Result(int offset, String text) {
+		this.offset = offset;
 		this.text = text;
 	}
 
-	public int getLength() {
-		return length;
+	public Result(String s) {
+		this(s.length(), s);
+	}
+
+	public int getOffset() {
+		return offset;
 	}
 
 	public String getText() {
@@ -34,6 +38,6 @@ public class Result implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Result{" + "length=" + length + ", text='" + text + '\'' + '}';
+		return "Result{" + "length=" + offset + ", text='" + text + '\'' + '}';
 	}
 }

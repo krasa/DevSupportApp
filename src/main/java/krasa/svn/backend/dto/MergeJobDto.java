@@ -23,7 +23,7 @@ public class MergeJobDto implements Serializable, Comparable<MergeJobDto> {
 	private long revision;
 	private String status;
 	private Integer mergeJobId;
-	private Object logName;
+	private String logName;
 
 	public AutoMergeJobMode getAutoMergeJobMode() {
 		return autoMergeJobMode;
@@ -128,11 +128,11 @@ public class MergeJobDto implements Serializable, Comparable<MergeJobDto> {
 		return HashCodeBuilder.reflectionHashCode(this);
 	}
 
-	public Object getLogName() {
+	public String getLogName() {
 		return logName;
 	}
 
-	public void setLogName(Object logName) {
+	public void setLogName(String logName) {
 		this.logName = logName;
 	}
 }

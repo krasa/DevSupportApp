@@ -1,21 +1,25 @@
 package krasa.build.backend.execution.process;
 
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
 import krasa.build.backend.domain.*;
 import krasa.build.backend.execution.ProcessStatus;
 import krasa.build.backend.execution.ssh.SCPInfo;
+import krasa.core.frontend.pages.FileSystemLogUtils;
 import net.schmizz.sshj.SSHClient;
+import net.schmizz.sshj.common.IOUtils;
 import net.schmizz.sshj.connection.channel.direct.Session;
 import net.schmizz.sshj.transport.verification.PromiscuousVerifier;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.slf4j.*;
 import org.springframework.beans.factory.annotation.Value;
 
-public class SshjBuildProcess extends AbstractProcess {
-
+public class SshjBuildProcess extends BuildJobProcess {
+	private static final Logger log = LoggerFactory.getLogger(SshjBuildProcess.class);
+	protected static final Logger sshOutput = LoggerFactory.getLogger("");
 	@Value("${ssh.username}")
 	String userName;
 	@Value("${ssh.password}")
@@ -25,10 +29,10 @@ public class SshjBuildProcess extends AbstractProcess {
 	protected List<String> command;
 	private Session session;
 	private SSHClient ssh;
+	private volatile boolean stop;
 
-	public SshjBuildProcess(ProcessLog stringBufferTail, List<String> command, BuildJob buildJob) {
+	public SshjBuildProcess(List<String> command, BuildJob buildJob) {
 		super(buildJob);
-		this.processLog = stringBufferTail;
 		this.command = command;
 	}
 
@@ -41,11 +45,11 @@ public class SshjBuildProcess extends AbstractProcess {
 	@Override
 	public void runInternal() throws Exception {
 		try {
-			processLog.newLine().append("--- PROCESS STARTED ---\n");
+			log.info("--- PROCESS STARTED ---\n");
 			doWork();
 		} catch (Exception e) {
-			processLog.newLine().append("--- PROCESS FAILED ---");
-			processLog.newLine().append(ExceptionUtils.getStackTrace(e));
+			log.info("--- PROCESS FAILED ---");
+			log.info("", e);
 			throw e;
 		}
 	}
@@ -53,8 +57,8 @@ public class SshjBuildProcess extends AbstractProcess {
 	protected int doWork() throws IOException {
 		connect();
 		Session.Command cmd = session.exec(getCommand());
-		processLog.receiveUntilLineEquals(cmd.getInputStream(), "logout");
-		processLog.readFully(cmd.getErrorStream());
+		receiveUntilLineEquals(cmd.getInputStream(), "logout");
+		sshOutput.warn(IOUtils.readFully(cmd.getErrorStream()).toString());
 
 		log.info("disconnecting channel");
 		session.close();
@@ -64,18 +68,32 @@ public class SshjBuildProcess extends AbstractProcess {
 			exitStatus = -1;
 		}
 		log.info("exit status: " + exitStatus);
-		exitStatus = getExitStatusFromLog(exitStatus, processLog.getContent());
+		exitStatus = getExitStatusFromLog(exitStatus,
+				FileUtils.readFileToString(FileSystemLogUtils.getLogFileByName(buildJob.getLogFileName())));
 
 		if (exitStatus == 0) {
-			processLog.newLine().append("--- PROCESS FINISHED ---");
+			log.info("--- PROCESS FINISHED ---");
 			processStatus.setStatus(Status.SUCCESS);
 		} else {
 			if (processStatus.getStatus() == Status.RUNNING) {
 				processStatus.setStatus(Status.FAILED);
 			}
-			processLog.newLine().append("--- PROCESS FAILED ---");
+			log.info("--- PROCESS FAILED ---");
 		}
 		return exitStatus;
+	}
+
+	public void receiveUntilLineEquals(InputStream inputStream, String until) throws IOException {
+		BufferedReader r = new BufferedReader(new InputStreamReader(inputStream));
+		String line;
+		while (keepReceiving() && (line = r.readLine()) != null) {
+			sshOutput.info(line);
+			if (until.equals(line)) {
+				log.trace("until condition received: " + line);
+				return;
+			}
+		}
+		log.debug("receiving done");
 	}
 
 	private String getCommand() {
@@ -141,10 +159,16 @@ public class SshjBuildProcess extends AbstractProcess {
 			if (!session.isOpen() && processStatus.getStatus() == Status.RUNNING) {
 				log.error("channel was disconnected");
 				processStatus.setStatus(Status.DISCONNECTED);
-				processLog.stop();
+				stop = true;
 			}
 		}
 		return processStatus;
 	}
 
+	private boolean keepReceiving() {
+		if (stop) {
+			log.warn("#keepReceiving stop=true");
+		}
+		return !stop;
+	}
 }

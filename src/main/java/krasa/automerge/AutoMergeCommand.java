@@ -7,14 +7,15 @@ import krasa.build.backend.domain.Status;
 
 import org.slf4j.*;
 
-public class AutoMergeProcess implements Runnable {
+public class AutoMergeCommand {
 
 	protected final Logger log = LoggerFactory.getLogger(getClass());
 
 	private MergeJob mergeJob;
 	private AutoMergeService autoMergeService;
+	private volatile boolean stop;
 
-	public AutoMergeProcess(@NotNull MergeJob mergeJob, AutoMergeService autoMergeService) {
+	public AutoMergeCommand(@NotNull MergeJob mergeJob, AutoMergeService autoMergeService) {
 		this.mergeJob = mergeJob;
 		this.autoMergeService = autoMergeService;
 	}
@@ -23,8 +24,10 @@ public class AutoMergeProcess implements Runnable {
 		return mergeJob;
 	}
 
-	@Override
-	public void run() {
+	public void execute() {
+		if (stop) {// just to be sure
+			return;
+		}
 		try {
 			updateStatus(Status.RUNNING);
 			mergeJob.merge();
@@ -41,4 +44,9 @@ public class AutoMergeProcess implements Runnable {
 		autoMergeService.statusUpdated(mergeJob);
 	}
 
+	public void failedToExecute(String s) {
+		stop = true;
+		updateStatus(Status.KILLED);
+		autoMergeService.jobFinished(this, new RuntimeException(s));
+	}
 }

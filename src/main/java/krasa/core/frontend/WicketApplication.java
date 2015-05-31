@@ -65,7 +65,7 @@ public class WicketApplication extends WebApplication {
 		getApplicationSettings().setUploadProgressUpdatesEnabled(true);
 		getComponentInstantiationListeners().add(new SpringComponentInjector(this));
 		mountPage("build", BuildPage.class);
-		mountPage("buildLog", LogPage.class);
+		mountPage("buildLog", BuildLogPage.class);
 		mountPage("IntelliJPluginRepository", IntelliJEnterprisePluginRepositoryPage.class);
 
 		pluginsFolder = new File(INTELLIJ_PLUGIN_REPO_PLUGINS);

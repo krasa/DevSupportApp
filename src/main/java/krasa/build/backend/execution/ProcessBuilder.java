@@ -20,15 +20,14 @@ public class ProcessBuilder {
 	BuildCommandBuilderStrategy buildCommandBuilderStrategy;
 
 	public BuildJob create(BuildableComponent buildableComponent, String author) {
-		ProcessLog stringBufferTail = new ProcessLog();
 		List<String> command = buildableComponent.buildCommand(buildCommandBuilderStrategy);
 
 		BuildJob buildJob = new BuildJob(buildableComponent);
 		buildJob.setCommand(Arrays.toString(command.toArray()));
 		buildJob.setCaller(author);
 
-		AbstractProcess process = getBuildProcess(stringBufferTail, command, buildJob);
-		buildJob.setProcess(process);
+		BuildJobProcess process = getBuildProcess(command, buildJob);
+		buildJob.setBuildJobProcess(process);
 
 		process.addListener(buildJob);
 
@@ -37,9 +36,9 @@ public class ProcessBuilder {
 		return buildJob;
 	}
 
-	protected AbstractProcess getBuildProcess(ProcessLog stringBufferTail, List<String> command, BuildJob buildJob) {
+	protected BuildJobProcess getBuildProcess(List<String> command, BuildJob buildJob) {
 		// return new JschSshBuildProcess(stringBufferTail, command);
-		return new SshjBuildProcess(stringBufferTail, command, buildJob);
+		return new SshjBuildProcess(command, buildJob);
 	}
 
 }

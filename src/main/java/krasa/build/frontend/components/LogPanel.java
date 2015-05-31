@@ -3,10 +3,8 @@ package krasa.build.frontend.components;
 import krasa.build.backend.dto.Result;
 import krasa.core.frontend.commons.SpanMultiLineLabel;
 
-import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
-import org.apache.wicket.markup.html.panel.EmptyPanel;
-import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.ajax.*;
+import org.apache.wicket.markup.html.panel.*;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.util.time.Duration;
 
@@ -42,8 +40,8 @@ public class LogPanel extends Panel {
 		final LoadableDetachableModel<String> model = new LoadableDetachableModel<String>() {
 			@Override
 			protected String load() {
-				int length = last.getLength();
-				last = LogPanel.this.model.getNextLog(length);
+				int offset = last.getOffset();
+				last = LogPanel.this.model.getNextLog(offset);
 				String text = last.getText();
 				text = text.replaceAll("\n", "\n</br>");
 				return text;

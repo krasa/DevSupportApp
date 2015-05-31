@@ -5,7 +5,7 @@ import java.util.*;
 import krasa.build.backend.dto.*;
 import krasa.build.backend.exception.ProcessAlreadyRunning;
 import krasa.build.backend.facade.*;
-import krasa.build.frontend.pages.LogPage;
+import krasa.build.frontend.pages.BuildLogPage;
 import krasa.core.frontend.StaticImage;
 import krasa.core.frontend.commons.*;
 
@@ -66,8 +66,8 @@ public class LastBuildsLeftPanel extends Panel {
 			protected void populateItem(ListItem<BuildJobDto> listItem) {
 
 				BuildJobDto modelObject = listItem.getModelObject();
-				LabeledBookmarkablePageLink link = new LabeledBookmarkablePageLink("link", LogPage.class,
-						LogPage.params(modelObject));
+				LabeledBookmarkablePageLink link = new LabeledBookmarkablePageLink("link", BuildLogPage.class,
+						BuildLogPage.params(modelObject));
 
 				PropertyModel<Object> status = new PropertyModel<>(listItem.getModel(), "status");
 				link.add(new StyledLabel("status", status));

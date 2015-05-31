@@ -56,7 +56,7 @@ public class MergeJob extends AbstractEntity implements ProcessStatusListener {
 	private MergeJob() {
 	}
 
-	public MergeJob(String from, String to, String fromPath, String toPath, String repository, long revision,
+	protected MergeJob(String from, String to, String fromPath, String toPath, String repository, long revision,
 			String caller, AutoMergeJobMode all) {
 		this.from = from;
 		this.to = to;

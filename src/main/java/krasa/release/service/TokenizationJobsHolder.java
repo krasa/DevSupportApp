@@ -10,28 +10,28 @@ import com.google.common.collect.EvictingQueue;
 
 @Component
 public class TokenizationJobsHolder {
-	private static Map<Integer, TokenizationProcess> runningTasks = new ConcurrentHashMap<>();
-	private static EvictingQueue<TokenizationProcess> finished = EvictingQueue.create(10);
+	private static Map<Integer, TokenizationJobCommand> runningTasks = new ConcurrentHashMap<>();
+	private static EvictingQueue<TokenizationJobCommand> finished = EvictingQueue.create(10);
 	protected final Logger log = LoggerFactory.getLogger(getClass());
 
-	public TokenizationProcess get(Integer id) {
+	public TokenizationJobCommand get(Integer id) {
 		return runningTasks.get(id);
 	}
 
-	public List<TokenizationProcess> getFinished() {
-		return Arrays.asList(finished.toArray(new TokenizationProcess[finished.size()]));
+	public List<TokenizationJobCommand> getFinished() {
+		return Arrays.asList(finished.toArray(new TokenizationJobCommand[finished.size()]));
 	}
 
-	public void remove(TokenizationProcess tokenizationProcess) {
-		TokenizationProcess remove = runningTasks.remove(tokenizationProcess.getJob().getId());
+	public void remove(TokenizationJobCommand tokenizationJobCommand) {
+		TokenizationJobCommand remove = runningTasks.remove(tokenizationJobCommand.getJob().getId());
 		finished.add(remove);
 	}
 
-	public Collection<TokenizationProcess> getAll() {
+	public Collection<TokenizationJobCommand> getAll() {
 		return runningTasks.values();
 	}
 
-	public void put(TokenizationProcess tokenizationProcess) {
-		runningTasks.put(tokenizationProcess.getJob().getId(), tokenizationProcess);
+	public void put(TokenizationJobCommand tokenizationJobCommand) {
+		runningTasks.put(tokenizationJobCommand.getJob().getId(), tokenizationJobCommand);
 	}
 }

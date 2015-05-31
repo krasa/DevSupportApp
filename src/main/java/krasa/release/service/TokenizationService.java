@@ -7,6 +7,7 @@ import krasa.build.backend.domain.Status;
 import krasa.build.backend.facade.*;
 import krasa.core.backend.config.MainConfig;
 import krasa.core.backend.dao.*;
+import krasa.core.frontend.pages.FileSystemLogUtils;
 import krasa.release.domain.*;
 import krasa.release.tokenization.*;
 import krasa.svn.backend.domain.Repository;
@@ -48,7 +49,7 @@ public class TokenizationService {
 	public TokenizationResult tokenizeSynchronously(TokenizationPageModel json) {
 		TokenizationJob tokenizationJob = createJob(json);
 
-		TokenizationJobCommand jobCommand = tokenizationJob.prepareCommand(new File(tempDir), commit);
+		TokenizationJobProcess jobCommand = tokenizationJob.prepareProcess(new File(tempDir), commit);
 		String logName = jobCommand.getLogName();
 		try {
 			tokenizationJob.setLogName(logName);
@@ -67,7 +68,7 @@ public class TokenizationService {
 			save(tokenizationJob);
 		}
 
-		File logFileByName = TokenizationFileUtils.getLogFileByName(logName);
+		File logFileByName = FileSystemLogUtils.getLogFileByName(logName);
 		return new TokenizationResult(logFileByName, tokenizationJob.getStatus());
 	}
 
@@ -78,7 +79,7 @@ public class TokenizationService {
 	public File tokenizeAsync(TokenizationPageModel json) {
 		TokenizationJob tokenizationJob = createJob(json);
 
-		TokenizationJobCommand jobCommand = tokenizationJob.prepareCommand(new File(tempDir), commit);
+		TokenizationJobProcess jobCommand = tokenizationJob.prepareProcess(new File(tempDir), commit);
 		String logName = jobCommand.getLogName();
 		tokenizationJob.setLogName(logName);
 		tokenizationJob.setStatus(Status.PENDING);
@@ -86,7 +87,7 @@ public class TokenizationService {
 
 		tokenizationExecutor.schedule(tokenizationJob);
 
-		return TokenizationFileUtils.getLogFileByName(logName);
+		return FileSystemLogUtils.getLogFileByName(logName);
 	}
 
 	protected TokenizationJob createJob(TokenizationPageModel json) {

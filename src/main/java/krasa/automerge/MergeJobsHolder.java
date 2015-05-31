@@ -10,24 +10,24 @@ import com.google.common.collect.EvictingQueue;
 
 @Component
 public class MergeJobsHolder {
-	private static Map<String, AutoMergeProcess> runningTasks = new ConcurrentHashMap<>();
-	private static EvictingQueue<AutoMergeProcess> finished = EvictingQueue.create(10);
+	private static Map<String, AutoMergeCommand> runningTasks = new ConcurrentHashMap<>();
+	private static EvictingQueue<AutoMergeCommand> finished = EvictingQueue.create(10);
 	protected final Logger log = LoggerFactory.getLogger(getClass());
 
 	public boolean containsKey(String toPath) {
 		return runningTasks.containsKey(toPath);
 	}
 
-	public AutoMergeProcess get(String id) {
+	public AutoMergeCommand get(String id) {
 		return runningTasks.get(id);
 	}
 
-	public List<AutoMergeProcess> getLastFinished() {
-		return Arrays.asList(finished.toArray(new AutoMergeProcess[finished.size()]));
+	public List<AutoMergeCommand> getLastFinished() {
+		return Arrays.asList(finished.toArray(new AutoMergeCommand[finished.size()]));
 	}
 
 	public void remove(String AutoMergeProcess) {
-		AutoMergeProcess remove = runningTasks.remove(AutoMergeProcess);
+		AutoMergeCommand remove = runningTasks.remove(AutoMergeProcess);
 		finished.add(remove);
 	}
 
@@ -45,11 +45,11 @@ public class MergeJobsHolder {
 	// }
 	// }
 
-	public Collection<AutoMergeProcess> getAll() {
+	public Collection<AutoMergeCommand> getAll() {
 		return runningTasks.values();
 	}
 
-	public void put(String toPath, AutoMergeProcess autoMergeProcess) {
-		runningTasks.put(toPath, autoMergeProcess);
+	public void put(String toPath, AutoMergeCommand autoMergeCommand) {
+		runningTasks.put(toPath, autoMergeCommand);
 	}
 }

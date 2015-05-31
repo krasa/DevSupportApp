@@ -4,7 +4,7 @@ import java.util.List;
 
 import krasa.build.backend.dto.BuildJobDto;
 import krasa.build.backend.facade.*;
-import krasa.build.frontend.pages.LogPage;
+import krasa.build.frontend.pages.BuildLogPage;
 import krasa.core.frontend.commons.LabeledBookmarkablePageLink;
 
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -61,8 +61,8 @@ public class CurrentlyBuildingLeftPanel extends Panel {
 
 			@Override
 			protected void populateItem(ListItem<BuildJobDto> listItem) {
-				LabeledBookmarkablePageLink link = new LabeledBookmarkablePageLink("link", LogPage.class,
-						LogPage.params(listItem.getModelObject()));
+				LabeledBookmarkablePageLink link = new LabeledBookmarkablePageLink("link", BuildLogPage.class,
+						BuildLogPage.params(listItem.getModelObject()));
 				link.add(new Label("prefix", new RunningJobLabelModel(listItem)));
 				link.add(new Label("component", new PropertyModel<>(listItem.getModel(), "component")));
 				link.add(new Label("environment", new PropertyModel<>(listItem.getModel(), "environment")));

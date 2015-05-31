@@ -42,17 +42,17 @@ public class AutoMergeService {
 		if (runningTasks.containsKey(toPath)) {
 			autoMergeQueue.put(mergeJob);
 		} else {
-			AutoMergeProcess autoMergeProcess = new AutoMergeProcess(mergeJob, AutoMergeService.this);
-			runningTasks.put(toPath, autoMergeProcess);
-			autoMergeExecutor.executeAutoMerge(autoMergeProcess);
+			AutoMergeCommand autoMergeCommand = new AutoMergeCommand(mergeJob, AutoMergeService.this);
+			runningTasks.put(toPath, autoMergeCommand);
+			autoMergeExecutor.executeAutoMerge(autoMergeCommand);
 		}
 	}
 
-	public void jobFinished(AutoMergeProcess autoMergeProcess, Throwable e) {
+	public void jobFinished(AutoMergeCommand autoMergeCommand, Throwable e) {
 		if (e != null) {
 			log.error("", e);
 		}
-		MergeJob mergeJob1 = autoMergeProcess.getMergeJob();
+		MergeJob mergeJob1 = autoMergeCommand.getMergeJob();
 		runningTasks.remove(mergeJob1.getToPath());
 		MergeJob mergeJob = autoMergeQueue.getAndRemove(mergeJob1);
 		if (mergeJob != null) {
@@ -61,12 +61,12 @@ public class AutoMergeService {
 	}
 
 	public List<MergeJobDto> getRunningMergeJobs() {
-		Collection<AutoMergeProcess> values = runningTasks.getAll();
-		Collection<MergeJob> lastFinished = Collections2.transform(values, new Function<AutoMergeProcess, MergeJob>() {
+		Collection<AutoMergeCommand> values = runningTasks.getAll();
+		Collection<MergeJob> lastFinished = Collections2.transform(values, new Function<AutoMergeCommand, MergeJob>() {
 
 			@Nullable
 			@Override
-			public MergeJob apply(@Nullable AutoMergeProcess input) {
+			public MergeJob apply(@Nullable AutoMergeCommand input) {
 				return input.getMergeJob();
 			}
 		});

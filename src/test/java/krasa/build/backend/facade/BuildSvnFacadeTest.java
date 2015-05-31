@@ -4,7 +4,6 @@ import static org.junit.Assert.*;
 
 import krasa.build.backend.dao.CommonBuildDao;
 import krasa.build.backend.domain.*;
-import krasa.build.backend.execution.ProcessStatus;
 
 import org.junit.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,21 +52,6 @@ public class BuildSvnFacadeTest extends FullTest {
 		flush();
 	}
 
-	@Test
-	public void testBuildLog() throws Exception {
-		BuildJob build = buildFacade.createAndSaveBuildJob(buildableComponent, "author");
-		build.getProcess().getProcessLog().append("fooBar");
-		flush();
-
-		buildFacade.onStatusChanged(build, new ProcessStatus());
-
-		flush();
-		BuildJob buildJobById = buildFacade.getBuildJobById(build.getId());
-		assertNull(buildJobById.getProcess());
-		assertEquals("fooBar", buildJobById.getBuildLog().getLogContent());
-		assertEquals("fooBar", buildJobById.getLog().getText());
-		assertEquals("", buildJobById.getNextLog(0).getText());
-	}
 
 	@Test
 	public void testTwoBuilds() throws Exception {

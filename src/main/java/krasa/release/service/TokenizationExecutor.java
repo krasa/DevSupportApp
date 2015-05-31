@@ -27,13 +27,13 @@ public class TokenizationExecutor {
 	private ThreadPoolTaskExecutor taskExecutor;
 
 	public synchronized void schedule(TokenizationJob autoMergeJob) {
-		TokenizationProcess tokenizationProcess = new TokenizationProcess(autoMergeJob, this);
-		taskExecutor.execute(tokenizationProcess);
-		runningTasks.put(tokenizationProcess);
+		TokenizationJobCommand tokenizationJobCommand = new TokenizationJobCommand(autoMergeJob, this);
+		taskExecutor.execute(tokenizationJobCommand);
+		runningTasks.put(tokenizationJobCommand);
 	}
 
 	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER)
-	public void jobFinished(TokenizationProcess process, Throwable e) {
+	public void jobFinished(TokenizationJobCommand process, Throwable e) {
 		TokenizationJob tokenizationJob = process.getJob();
 		if (e != null) {
 			e.printStackTrace();
@@ -42,8 +42,8 @@ public class TokenizationExecutor {
 		tokenizationService.update(tokenizationJob);
 	}
 
-	public Collection<TokenizationProcess> getProcesses() {
-		Collection<TokenizationProcess> values = runningTasks.getAll();
+	public Collection<TokenizationJobCommand> getProcesses() {
+		Collection<TokenizationJobCommand> values = runningTasks.getAll();
 		return values;
 	}
 

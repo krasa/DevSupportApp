@@ -7,18 +7,18 @@ import javax.validation.constraints.NotNull;
 
 import krasa.build.backend.domain.Status;
 import krasa.release.domain.TokenizationJob;
-import krasa.release.tokenization.TokenizationJobCommand;
+import krasa.release.tokenization.TokenizationJobProcess;
 
 import org.slf4j.*;
 
-public class TokenizationProcess implements Runnable {
+public class TokenizationJobCommand implements Runnable {
 
 	protected final Logger log = LoggerFactory.getLogger(getClass());
 
 	private TokenizationJob job;
 	private TokenizationExecutor executor;
 
-	public TokenizationProcess(@NotNull TokenizationJob job, TokenizationExecutor autoMergeExecutor) {
+	public TokenizationJobCommand(@NotNull TokenizationJob job, TokenizationExecutor autoMergeExecutor) {
 		this.job = job;
 		this.executor = autoMergeExecutor;
 	}
@@ -31,9 +31,9 @@ public class TokenizationProcess implements Runnable {
 	public void run() {
 		Throwable e1 = null;
 		try {
-			TokenizationJobCommand tokenizationJobCommand = job.prepareCommand(new File(executor.getTempDir()),
+			TokenizationJobProcess tokenizationJobProcess = job.prepareProcess(new File(executor.getTempDir()),
 					executor.getCommit());
-			tokenizationJobCommand.run();
+			tokenizationJobProcess.run();
 			job.setStatus(Status.SUCCESS);
 			job.setEnd(new Date());
 		} catch (Throwable e) {

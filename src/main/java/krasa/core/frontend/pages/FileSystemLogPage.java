@@ -1,16 +1,14 @@
 package krasa.core.frontend.pages;
 
-import java.io.*;
+import java.io.File;
 
 import krasa.core.frontend.commons.LabelPanel;
 import krasa.core.frontend.components.BaseEmptyPanel;
 import krasa.release.domain.TokenizationJob;
 import krasa.release.frontend.TokenizationLeftPanel;
-import krasa.release.service.TokenizationFileUtils;
 import krasa.svn.backend.dto.MergeJobDto;
 import krasa.svn.frontend.component.merge.MergesPanel;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.*;
 import org.apache.wicket.extensions.ajax.markup.html.AjaxLazyLoadPanel;
@@ -31,7 +29,7 @@ public class FileSystemLogPage extends BasePage {
 
 	public FileSystemLogPage(PageParameters parameters) {
 		super(parameters);
-		logFile = TokenizationFileUtils.getLogFileByName(parameters.get(NAME).toString());
+		logFile = FileSystemLogUtils.getLogFileByName(parameters.get(NAME).toString());
 		type = parameters.get(TYPE).toEnum(Type.class);
 		lastLength = logFile.length();
 		queue(new AjaxLazyLoadPanel("logPanel") {
@@ -42,14 +40,7 @@ public class FileSystemLogPage extends BasePage {
 
 					@Override
 					protected String load() {
-						try {
-							if (!logFile.exists()) {
-								return "File does not exists: " + logFile.getAbsolutePath();
-							}
-							return FileUtils.readFileToString(logFile);
-						} catch (IOException e) {
-							throw new RuntimeException(e);
-						}
+						return FileSystemLogUtils.readFile(FileSystemLogPage.this.logFile);
 
 					}
 				};

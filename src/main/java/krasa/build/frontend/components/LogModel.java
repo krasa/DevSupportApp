@@ -12,7 +12,7 @@ public abstract class LogModel implements Serializable {
 
 	public abstract Result getLog();
 
-	public abstract Result getNextLog(int length);
+	public abstract Result getNextLog(int offset);
 
 	public abstract boolean exists();
 }

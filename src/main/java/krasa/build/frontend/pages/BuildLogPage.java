@@ -1,11 +1,14 @@
 package krasa.build.frontend.pages;
 
+import java.io.*;
+
 import krasa.build.backend.domain.BuildJob;
 import krasa.build.backend.dto.*;
 import krasa.build.backend.facade.BuildFacade;
 import krasa.build.frontend.components.*;
-import krasa.core.frontend.pages.BasePage;
+import krasa.core.frontend.pages.*;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.behavior.Behavior;
@@ -18,7 +21,7 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.util.string.StringValue;
 import org.slf4j.*;
 
-public class LogPage extends BasePage {
+public class BuildLogPage extends BasePage {
 
 	public static final String COMPONENT_ID = "componentId";
 	public static final String ID = "buildJobId";
@@ -34,7 +37,7 @@ public class LogPage extends BasePage {
 	private PocessRerunButton rerun1;
 	private PocessRerunButton rerun2;
 
-	public LogPage(PageParameters parameters) {
+	public BuildLogPage(PageParameters parameters) {
 		super(parameters);
 		initializeJobId();
 
@@ -114,22 +117,35 @@ public class LogPage extends BasePage {
 
 			@Override
 			public boolean isAlive() {
-				return model.getObject().isProcessAlive();
+				BuildJob buildJob = model.getObject();
+				return buildJob.isProcessAlive();
 			}
 
 			@Override
 			public Result getLog() {
-				return model.getObject().getLog();
+				BuildJob buildJob = model.getObject();
+				File logFileByName = FileSystemLogUtils.getLogFileByName(buildJob.getLogFileName());
+				return new Result(FileSystemLogUtils.readFile(logFileByName));
 			}
 
 			@Override
-			public Result getNextLog(int length) {
-				return model.getObject().getNextLog(length);
+			public Result getNextLog(int offset) {
+				BuildJob buildJob = model.getObject();
+
+				File logFileByName = FileSystemLogUtils.getLogFileByName(buildJob.getLogFileName());
+				try (BufferedReader reader = new BufferedReader(new FileReader(logFileByName))) {
+					reader.skip(offset);
+					String s = IOUtils.toString(reader);
+					return new Result(s.length() + offset, s);
+				} catch (Exception e) {
+					throw new RuntimeException(e.getMessage(), e);
+				}
 			}
 
 			@Override
 			public boolean exists() {
-				return model.getObject() != null;
+				BuildJob buildJob = model.getObject();
+				return buildJob != null;
 			}
 		}) {
 
