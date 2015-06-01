@@ -1,4 +1,4 @@
-<configuration scan="true" scanPeriod="60 seconds">
+<configuration scan="true" scanPeriod="60 seconds" debug="true">
 	<appender name="SIFT" class="ch.qos.logback.classic.sift.SiftingAppender">
 		<!-- in the absence of the class attribute, it is assumed that the
 				desired discriminator type is
@@ -11,9 +11,19 @@
 			<appender name="FILE-${logName}" class="ch.qos.logback.core.FileAppender">
 				<file>logs/${logName}.log</file>
 				<append>false</append>
-				<layout class="ch.qos.logback.classic.PatternLayout">
-					<pattern>%d{HH:mm:ss} %5p %c{1} [%t]: - %m%n</pattern>
-				</layout>
+				<encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+					<layout class="krasa.core.backend.RoutingLayout">
+						<layoutRoute>
+							<loggerName>build.output</loggerName>
+							<layout class="ch.qos.logback.classic.PatternLayout">
+								<pattern>%d{HH:mm:ss}: - %m%n</pattern>
+							</layout>
+						</layoutRoute>
+						<defaultLayout class="ch.qos.logback.classic.PatternLayout">
+							<pattern>%d{HH:mm:ss} %5p %c{1} [%t]: - %m%n</pattern>
+						</defaultLayout>
+					</layout>
+				</encoder>
 				<filter class="ch.qos.logback.classic.filter.LevelFilter">
 					<level>DEBUG</level>
 					<onMatch>DENY</onMatch>
@@ -45,8 +55,13 @@
 
 	<root level="info">
 		<appender-ref ref="STDOUT"/>
-		<appender-ref ref="${APPENDER}"/>
+		<appender-ref ref="SIFT"/>
 	</root>
+
+	<logger name="build.output" additivity="false">
+		<appender-ref ref="SIFT"/>
+	</logger>
+
 
 	<logger name="krasa" level="debug"/>
 	<logger name="krasa.build.backend.execution.adapter.CurrentBuildJobsHolder" level="info" />

@@ -19,7 +19,7 @@ import org.springframework.beans.factory.annotation.Value;
 
 public class SshjBuildProcess extends BuildJobProcess {
 	private static final Logger log = LoggerFactory.getLogger(SshjBuildProcess.class);
-	protected static final Logger sshOutput = LoggerFactory.getLogger("");
+	protected static final Logger sshOutput = LoggerFactory.getLogger("build.output");
 	@Value("${ssh.username}")
 	String userName;
 	@Value("${ssh.password}")

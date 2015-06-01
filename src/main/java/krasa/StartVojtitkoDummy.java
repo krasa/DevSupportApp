@@ -12,7 +12,6 @@ public class StartVojtitkoDummy {
 
 	public static void main(String[] args) throws IOException {
 		System.setProperty("spring.profiles.active", "DUMMY, LOCAL_OVERNIGHT");
-		System.setProperty("APPENDER", "SIFT");
 		ConfigurableApplicationContext applicationContext = StartVojtitko.start(args);
 		System.in.read();
 		SpringApplication.exit(applicationContext);

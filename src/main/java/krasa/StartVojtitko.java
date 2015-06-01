@@ -29,7 +29,6 @@ public class StartVojtitko extends SpringBootServletInitializer implements WebSo
 	}
 
 	public static ConfigurableApplicationContext start(String[] args) {
-		System.setProperty("APPENDER", "SIFT");
 		SpringApplication springApplication = new SpringApplication(StartVojtitko.class);
 		springApplication.addListeners(new ApplicationPidFileWriter());
 		springApplication.addListeners(new EmbeddedServerPortFileWriter());
