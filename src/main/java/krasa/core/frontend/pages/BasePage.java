@@ -17,9 +17,11 @@ public abstract class BasePage extends WebPage {
 	public static final String FEEDBACK = "feedback";
 	public static final String LEFT = "left";
 	public static final String CURRENT = "current";
+	protected static final String CENTER_COLUMN = "center-column";
+
 	@SpringBean
 	protected SvnFacade facade;
-	protected WebMarkupContainer centerColumn = new WebMarkupContainer("center-column");
+	protected WebMarkupContainer centerColumn = new WebMarkupContainer(CENTER_COLUMN);
 
 	// public abstract IModel getPageTitle();
 
@@ -52,7 +54,7 @@ public abstract class BasePage extends WebPage {
 		// keywords.add(new AttributeAppender("content", getKeywords(), " "));
 		// addOrReplace(keywords);
 
-		if (get("center-column") == null) {
+		if (get(CENTER_COLUMN) == null) {
 			queue(centerColumn);
 		}
 		if (get("DebugBar") == null) {
@@ -111,4 +113,7 @@ public abstract class BasePage extends WebPage {
 		return super.add(childs);
 	}
 
+	protected Component getCenterColumn() {
+		return this.get(CENTER_COLUMN);
+	}
 }

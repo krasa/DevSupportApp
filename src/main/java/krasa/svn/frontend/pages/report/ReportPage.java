@@ -62,7 +62,7 @@ public class ReportPage extends BasePage {
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
 				ReportResult report = facade.getReport();
 				ReportResultPanel result = new ReportResultPanel(RESULT, new Model<>(report));
-				getParent().get(RESULT).replaceWith(result);
+				getCenterColumn().get(RESULT).replaceWith(result);
 				target.add(result);
 			}
 
@@ -76,7 +76,7 @@ public class ReportPage extends BasePage {
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
 				ReportResult report = facade.getReport();
 				NotTaggedCommitsPanel result = new NotTaggedCommitsPanel(RESULT, new Model<>(report));
-				getParent().get(RESULT).replaceWith(result);
+				getCenterColumn().get(RESULT).replaceWith(result);
 				target.add(result);
 			}
 
@@ -92,7 +92,7 @@ public class ReportPage extends BasePage {
 				String result = reportService.runRns(current.getName());
 				resultLabel = new MultiLineLabel(RESULT, new Model<Serializable>(result));
 				resultLabel.setOutputMarkupPlaceholderTag(true);
-				getParent().get(RESULT).replaceWith(resultLabel);
+				getCenterColumn().get(RESULT).replaceWith(resultLabel);
 				target.add(resultLabel);
 			}
 
@@ -114,7 +114,7 @@ public class ReportPage extends BasePage {
 				String result = reportService.runVersionsOnPrgens();
 				resultLabel = new MultiLineLabel(RESULT, new Model<Serializable>(result));
 				resultLabel.setOutputMarkupPlaceholderTag(true);
-				getParent().get(RESULT).replaceWith(resultLabel);
+				getCenterColumn().get(RESULT).replaceWith(resultLabel);
 				target.add(resultLabel);
 			}
 
@@ -130,7 +130,7 @@ public class ReportPage extends BasePage {
 				String result = reportService.runSvnHeadVsLastTag(current.getName());
 				resultLabel = new MultiLineLabel("result", new Model<Serializable>(result));
 				resultLabel.setOutputMarkupPlaceholderTag(true);
-				getParent().get(RESULT).replaceWith(resultLabel);
+				getCenterColumn().get(RESULT).replaceWith(resultLabel);
 				target.add(resultLabel);
 			}
 
@@ -167,6 +167,7 @@ public class ReportPage extends BasePage {
 		// });
 		return form;
 	}
+
 
 	private BranchAutocompleteFormPanel createAddBranchIntoProfileFormPanel() {
 		return new BranchAutocompleteFormPanel("addBranchPanel") {
