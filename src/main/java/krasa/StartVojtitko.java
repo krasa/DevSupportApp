@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.config.annotation.*;
 import org.springframework.web.socket.server.standard.ServerEndpointExporter;
 
+/** use StartVojtitkoDummy, this class needs some special configuration... */
 @Configuration
 @EnableAutoConfiguration(exclude = { HibernateJpaAutoConfiguration.class, DataSourceAutoConfiguration.class,
 		DataSourceTransactionManagerAutoConfiguration.class })
