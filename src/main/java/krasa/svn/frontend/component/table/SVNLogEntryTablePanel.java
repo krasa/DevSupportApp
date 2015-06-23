@@ -60,7 +60,8 @@ public class SVNLogEntryTablePanel extends Panel {
 	}
 
 	protected void createTable(ArrayList<IColumn<SVNLogEntry, String>> columns, DataProvider dataProvider) {
-		table = new AjaxFallbackDefaultDataTable<SVNLogEntry, String>("merges", columns, dataProvider, 100) {
+		table = new AjaxFallbackDefaultDataTable<SVNLogEntry, String>("merges", columns, dataProvider,
+				Integer.MAX_VALUE) {
 
 			@Override
 			protected Item<SVNLogEntry> newRowItem(String id, int index, IModel<SVNLogEntry> model) {

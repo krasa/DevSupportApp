@@ -1,6 +1,6 @@
 package krasa.build.frontend.components;
 
-import krasa.build.backend.dto.Result;
+import krasa.build.backend.dto.LogFileDto;
 import krasa.core.frontend.commons.SpanMultiLineLabel;
 
 import org.apache.wicket.ajax.*;
@@ -11,7 +11,7 @@ import org.apache.wicket.util.time.Duration;
 public class LogPanel extends Panel {
 
 	private final LogModel model;
-	protected Result last;
+	protected LogFileDto last;
 
 	public LogPanel(String id, LogModel model) {
 		super(id);
@@ -28,6 +28,7 @@ public class LogPanel extends Panel {
 
 	private SpanMultiLineLabel createLogData() {
 		return new SpanMultiLineLabel("logData", new LoadableDetachableModel<String>() {
+
 			@Override
 			protected String load() {
 				last = model.getLog();
@@ -38,6 +39,7 @@ public class LogPanel extends Panel {
 
 	private SpanMultiLineLabel createNextLog() {
 		final LoadableDetachableModel<String> model = new LoadableDetachableModel<String>() {
+
 			@Override
 			protected String load() {
 				int offset = last.getOffset();

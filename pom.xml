@@ -75,9 +75,16 @@
 		<replacer.version>1.5.3</replacer.version>
 		<annotations.version>3.0.0</annotations.version>
 		<maven-enforcer-plugin.version>1.4</maven-enforcer-plugin.version>
+		<commons-collections.version>3.2.1</commons-collections.version>
 	</properties>
 
 	<dependencies>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-collections4</artifactId>
+			<version>4.0</version>
+		</dependency>
+
 		<dependency>
 			<groupId>com.netflix.hystrix</groupId>
 			<artifactId>hystrix-metrics-event-stream</artifactId>

@@ -40,7 +40,8 @@ public class FileSystemLogPage extends BasePage {
 
 					@Override
 					protected String load() {
-						return FileSystemLogUtils.readFile(FileSystemLogPage.this.logFile);
+						return FileSystemLogUtils.readLogFileWithSizeLimit(FileSystemLogPage.this.logFile,
+								FileSystemLogUtils.BUFFER_SIZE).getText();
 
 					}
 				};

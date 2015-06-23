@@ -61,7 +61,7 @@ public class BuildComponentsTablePanel extends BasePanel {
 				if (message instanceof ComponentChangedEvent) {
 					ComponentChangedEvent changedEvent = (ComponentChangedEvent) message;
 					if (changedEvent.getBuildableComponentDto().getEnvironmentId().equals(environmentId)) {
-						log.info("ComponentChangedEvent " + changedEvent.getBuildableComponentDto());
+						log.debug("ComponentChangedEvent " + changedEvent.getBuildableComponentDto());
 						changedEvent.setTarget(handler);
 						send(table, Broadcast.DEPTH, message);
 					}

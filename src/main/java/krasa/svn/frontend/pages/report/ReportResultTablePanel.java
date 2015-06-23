@@ -20,7 +20,7 @@ public class ReportResultTablePanel extends Panel {
 		super(id, model);
 		ArrayList<IColumn<ReportItem, String>> columns = getColumns();
 		AjaxFallbackDefaultDataTable<ReportItem, String> table = new AjaxFallbackDefaultDataTable<>("merges", columns,
-				new ReportDataProvider2(model), 100);
+				new ReportDataProvider2(model), Integer.MAX_VALUE);
 		add(table);
 	}
 

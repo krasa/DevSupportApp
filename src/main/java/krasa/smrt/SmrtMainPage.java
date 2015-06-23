@@ -39,7 +39,7 @@ public class SmrtMainPage extends BasePage {
 		FilterForm<SmrtConnection> form = new FilterForm<>("form", smrtFilter);
 		queue(form);
 		AjaxFallbackDefaultDataTable<SmrtConnection, String> table = new AjaxFallbackDefaultDataTable<>("table",
-				iColumns, getDataProvider(smrtConnections), 2000);
+				iColumns, getDataProvider(smrtConnections), Integer.MAX_VALUE);
 		form.add(table);
 		table.addTopToolbar(new FilterToolbar(table, form));
 	}

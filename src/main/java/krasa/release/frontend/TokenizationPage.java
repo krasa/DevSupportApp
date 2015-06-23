@@ -154,7 +154,8 @@ public class TokenizationPage extends BasePage {
 						return tokenizationPageModel.getBranchesPatterns();
 					}
 				});
-		return branchesTable = new AjaxFallbackDefaultDataTable<>("branchesTable", iColumns, dataProvider, 50);
+		return branchesTable = new AjaxFallbackDefaultDataTable<>("branchesTable", iColumns, dataProvider,
+				Integer.MAX_VALUE);
 	}
 
 	private LabelColumn<String> nameColumn() {

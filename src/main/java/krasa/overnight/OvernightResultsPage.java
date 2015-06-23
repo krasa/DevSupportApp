@@ -65,7 +65,7 @@ public class OvernightResultsPage extends BasePage {
 
 		ArrayList<IColumn<Result, String>> iColumns = getiColumns();
 
-		table = new AjaxFallbackDefaultDataTable<>("table", iColumns, getSortableDataProvider(), 100);
+		table = new AjaxFallbackDefaultDataTable<>("table", iColumns, getSortableDataProvider(), Integer.MAX_VALUE);
 		queue(table);
 		differenceFromTable = new AjaxFallbackDefaultDataTable<>("differenceFromTable", iColumns,
 				getDifferenceSortableDataProvider(), 100);

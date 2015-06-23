@@ -51,7 +51,7 @@ public class MergeService {
 	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER, readOnly = true)
 	public List<MergeJobDto> getLastMergeJobs() {
 		Set<MergeJob> mergeJobs = new HashSet<>();
-		mergeJobs.addAll(universalDao.findLast(10, MergeJob.class));
+		mergeJobs.addAll(universalDao.findLast(30, MergeJob.class));
 		return MergeJobDto.translate(mergeJobs);
 	}
 

@@ -47,7 +47,7 @@ public class BranchesTablePanel extends BasePanel {
 
 	private AjaxFallbackDefaultDataTable<SvnFolder, String> createTable(ISortableDataProvider dataProvider) {
 		List<IColumn<SvnFolder, String>> columns = createColumns();
-		return new AjaxFallbackDefaultDataTable<>("table", columns, dataProvider, 80);
+		return new AjaxFallbackDefaultDataTable<>("table", columns, dataProvider, Integer.MAX_VALUE);
 	}
 
 	protected List<IColumn<SvnFolder, String>> createColumns() {
@@ -68,6 +68,7 @@ public class BranchesTablePanel extends BasePanel {
 			@Override
 			protected IModel<List<String>> getDisplayModel(final IModel<SvnFolder> rowModel) {
 				return new AbstractReadOnlyModel<List<String>>() {
+
 					@Override
 					public List<String> getObject() {
 						String name = rowModel.getObject().getParent().getName();
@@ -93,10 +94,12 @@ public class BranchesTablePanel extends BasePanel {
 
 	private AbstractColumn<SvnFolder, String> createCheckBoxColumn() {
 		return new AbstractColumn<SvnFolder, String>(new Model<>("")) {
+
 			@Override
 			public void populateItem(Item<ICellPopulator<SvnFolder>> cellItem, String componentId,
 					IModel<SvnFolder> model) {
 				cellItem.add(new CheckBoxPanel<SvnFolder>(componentId, model) {
+
 					@Override
 					public boolean isChecked(IModel<SvnFolder> model) {
 						return selectedBranches.getObject().contains(model.getObject().getName());

@@ -1,14 +1,11 @@
 package krasa.build.frontend.pages;
 
-import java.io.*;
-
 import krasa.build.backend.domain.BuildJob;
 import krasa.build.backend.dto.*;
 import krasa.build.backend.facade.BuildFacade;
 import krasa.build.frontend.components.*;
-import krasa.core.frontend.pages.*;
+import krasa.core.frontend.pages.BasePage;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.behavior.Behavior;
@@ -113,41 +110,7 @@ public class BuildLogPage extends BasePage {
 	}
 
 	private LogPanel getLogPanel() {
-		return new LogPanel("log", new LogModel() {
-
-			@Override
-			public boolean isAlive() {
-				BuildJob buildJob = model.getObject();
-				return buildJob.isProcessAlive();
-			}
-
-			@Override
-			public Result getLog() {
-				BuildJob buildJob = model.getObject();
-				File logFileByName = FileSystemLogUtils.getLogFileByName(buildJob.getLogFileName());
-				return new Result(FileSystemLogUtils.readFile(logFileByName));
-			}
-
-			@Override
-			public Result getNextLog(int offset) {
-				BuildJob buildJob = model.getObject();
-
-				File logFileByName = FileSystemLogUtils.getLogFileByName(buildJob.getLogFileName());
-				try (BufferedReader reader = new BufferedReader(new FileReader(logFileByName))) {
-					reader.skip(offset);
-					String s = IOUtils.toString(reader);
-					return new Result(s.length() + offset, s);
-				} catch (Exception e) {
-					throw new RuntimeException(e.getMessage(), e);
-				}
-			}
-
-			@Override
-			public boolean exists() {
-				BuildJob buildJob = model.getObject();
-				return buildJob != null;
-			}
-		}) {
+		return new LogPanel("log", new BuildLogModel(this.model)) {
 
 			@Override
 			protected void onUpdate(AjaxRequestTarget target) {
@@ -163,4 +126,5 @@ public class BuildLogPage extends BasePage {
 	protected Component newLeftColumnPanel(String id) {
 		return new BuildLeftPanel(id);
 	}
+
 }
