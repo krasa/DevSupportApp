@@ -40,8 +40,7 @@ public class PluginsIndex {
 	public void add(PluginDefinition pluginDefinition) {
 		for (Iterator<PluginDefinition> iterator = pluginDefinitions.iterator(); iterator.hasNext();) {
 			PluginDefinition definition = iterator.next();
-			if (definition.getId().equals(pluginDefinition.getId())
-					&& definition.getVersion().equals(pluginDefinition.getVersion())) {
+			if (definition.getId().equals(pluginDefinition.getId())) {
 				iterator.remove();
 			}
 		}

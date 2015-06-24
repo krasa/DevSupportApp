@@ -61,8 +61,10 @@ public class CurrentBuildJobsHolder {
 	}
 
 	public void remove(BuildJob buildJob) {
-		finished.add(buildJob);
-		buildJobHashMap.remove(buildJob.getId());
+		BuildJob remove = buildJobHashMap.remove(buildJob.getId());
+		if (remove != null) {
+			finished.add(buildJob);
+		}
 	}
 
 	public void checkPreviousBuilds(BuildableComponent buildableComponent) {

@@ -28,6 +28,9 @@ class BuildLogModel extends LogModel {
 	public LogFileDto getLog() {
 		BuildJob buildJob = model.getObject();
 		File logFileByName = FileSystemLogUtils.getLogFileByName(buildJob.getLogFileName());
+		if (!logFileByName.exists()) {
+			return new LogFileDto(-1, "File does not exists: " + logFileByName.getAbsolutePath());
+		}
 		return FileSystemLogUtils.readLogFileWithSizeLimit(logFileByName, FileSystemLogUtils.BUFFER_SIZE);
 	}
 

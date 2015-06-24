@@ -8,7 +8,7 @@ import org.apache.wicket.markup.html.list.*;
 import org.apache.wicket.request.resource.SharedResourceReference;
 
 /**
- * @author V1ojtech Krasa
+ * @author Vojtech Krasa
  */
 public class RepositoryIndexXmlPanel extends BasePanel {
 

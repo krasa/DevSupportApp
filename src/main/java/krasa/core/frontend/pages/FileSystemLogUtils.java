@@ -27,7 +27,7 @@ public class FileSystemLogUtils {
 
 		try {
 			if (!logFile.exists()) {
-				throw new IllegalStateException("File does not exists: " + logFile.getAbsolutePath());
+				throw new FileNotFoundException("File does not exists: " + logFile.getAbsolutePath());
 			}
 			reader = new BufferedReader(new FileReader(logFile));
 			// read first n chars
@@ -48,8 +48,10 @@ public class FileSystemLogUtils {
 
 					if (read < bufferSize) {
 						if (previousBuffer != null) {
-							sb.append("<<<<<<<<<<<<<<<<<<<<< FILE TOO LONG, SKIPPING ").append(charactersSkipped).append(
-									" chars >>>>>>>>>>>>>>>>>>>>>").append("\n");
+							if (charactersSkipped > 0) {
+								sb.append("\n").append("<<<<<<<<<<<<<<<<<<<<< FILE TOO LONG, SKIPPING ").append(
+										charactersSkipped).append(" chars >>>>>>>>>>>>>>>>>>>>>").append("\n");
+							}
 							sb.append(previousBuffer);
 						}
 						sb.append(buffer);

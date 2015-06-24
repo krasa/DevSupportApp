@@ -42,8 +42,8 @@ public class BuildJobDto implements Serializable {
 
 			@Override
 			public int compare(BuildJobDto o1, BuildJobDto o2) {
-				Date start = o1.getStart();
-				Date start1 = o2.getStart();
+				Date start = o1.getEnd();
+				Date start1 = o2.getEnd();
 
 				return DateUtils.compareDates(start, start1);
 			}
