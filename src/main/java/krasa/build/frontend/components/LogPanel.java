@@ -43,6 +43,9 @@ public class LogPanel extends Panel {
 			@Override
 			protected String load() {
 				int offset = last.getOffset();
+				if (offset == -1) {
+					return "";
+				}
 				last = LogPanel.this.model.getNextLog(offset);
 				String text = last.getText();
 				text = text.replaceAll("\n", "\n</br>");
@@ -80,7 +83,7 @@ public class LogPanel extends Panel {
 							+ "if(window.shouldScroll) {window.scroll(0,document.body.scrollHeight);}"
 					// @formatter:on
 
-					);
+						);
 				}
 			}
 		});

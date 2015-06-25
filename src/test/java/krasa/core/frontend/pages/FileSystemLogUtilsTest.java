@@ -1,6 +1,6 @@
 package krasa.core.frontend.pages;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.io.*;
 
@@ -21,6 +21,14 @@ public class FileSystemLogUtilsTest {
 	@After
 	public void tearDown() throws Exception {
 		file.delete();
+		assertFalse(file.exists());
+	}
+
+	@Test
+	public void readEnd() throws Exception {
+		FileUtils.write(file, "12345678901234567890");
+		String s = FileSystemLogUtils.readFromEnd(file, 5);
+		assertEquals("67890", s);
 	}
 
 	@Test

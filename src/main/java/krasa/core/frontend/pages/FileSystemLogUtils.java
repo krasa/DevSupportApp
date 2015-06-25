@@ -5,9 +5,12 @@ import java.util.Arrays;
 
 import krasa.build.backend.dto.LogFileDto;
 
-import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.*;
+import org.slf4j.*;
 
 public class FileSystemLogUtils {
+
+	private static final Logger log = LoggerFactory.getLogger(FileSystemLogUtils.class);
 
 	public static final int BUFFER_SIZE = 10000;
 
@@ -87,4 +90,20 @@ public class FileSystemLogUtils {
 		}
 	}
 
+	public static String readFromEnd(File file, int bytesToReadFromEnd) {
+		try (RandomAccessFile randomAccessFile = new RandomAccessFile(file, "r")) {
+			long length = randomAccessFile.length();
+			int max = (int) Math.max(length - bytesToReadFromEnd, 0);
+			randomAccessFile.seek(max);
+			byte[] b = new byte[(int) (length - max)];
+			randomAccessFile.read(b);
+			return new String(b, Charsets.UTF_8);
+		} catch (FileNotFoundException e) {
+			log.error("", e);
+			return "";
+		} catch (IOException e) {
+			log.error("", e);
+			return "";
+		}
+	}
 }

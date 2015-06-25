@@ -15,6 +15,7 @@ import org.springframework.boot.context.web.SpringBootServletInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.*;
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.socket.config.annotation.*;
 import org.springframework.web.socket.server.standard.ServerEndpointExporter;
 
@@ -82,4 +83,12 @@ public class StartVojtitko extends SpringBootServletInitializer implements WebSo
 		return new MyWicketServerEndpointConfig();
 	}
 
+	@Configuration
+	public static class StaticResourceConfiguration extends WebMvcConfigurerAdapter {
+
+		@Override
+		public void addResourceHandlers(ResourceHandlerRegistry registry) {
+			registry.addResourceHandler("/vojtitkoNG/**").addResourceLocations("file:html5/dist/");
+		}
+	}
 }

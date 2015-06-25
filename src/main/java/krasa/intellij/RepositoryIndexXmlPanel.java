@@ -12,8 +12,12 @@ import org.apache.wicket.request.resource.SharedResourceReference;
  */
 public class RepositoryIndexXmlPanel extends BasePanel {
 
+	// todo
+	public static final String BASE_URL = "http://vojtitko.tmdev/intellijPlugin";
+
 	public RepositoryIndexXmlPanel(String id) {
 		super(id);
+		// returns ip+port :(
 		final String absoluteUrl = UrlUtils.getAbsoluteUrl(new SharedResourceReference(
 				WicketApplication.INTELLIJ_PLUGIN_REPO_RESOURCES));
 
@@ -23,7 +27,7 @@ public class RepositoryIndexXmlPanel extends BasePanel {
 			protected void populateItem(ListItem<PluginDefinition> item) {
 				PluginDefinition modelObject = item.getModelObject();
 				item.add(new AttributeModifier("id", modelObject.getId()));
-				item.add(new AttributeModifier("url", absoluteUrl + "/" + modelObject.getFileName()));
+				item.add(new AttributeModifier("url", BASE_URL + "/" + modelObject.getFileName()));
 				item.add(new AttributeModifier("version", modelObject.getVersion()));
 			}
 		};

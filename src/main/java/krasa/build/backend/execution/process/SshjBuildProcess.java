@@ -12,8 +12,6 @@ import net.schmizz.sshj.common.IOUtils;
 import net.schmizz.sshj.connection.channel.direct.Session;
 import net.schmizz.sshj.transport.verification.PromiscuousVerifier;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.*;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -68,8 +66,8 @@ public class SshjBuildProcess extends BuildJobProcess {
 			exitStatus = -1;
 		}
 		log.info("exit status: " + exitStatus);
-		exitStatus = getExitStatusFromLog(exitStatus,
-				FileUtils.readFileToString(FileSystemLogUtils.getLogFileByName(buildJob.getLogFileName())));
+		File logFileByName = FileSystemLogUtils.getLogFileByName(buildJob.getLogFileName());
+		exitStatus = getExitStatusFromLog(exitStatus, FileSystemLogUtils.readFromEnd(logFileByName, 1000));
 
 		if (exitStatus == 0) {
 			log.info("--- PROCESS FINISHED ---");
@@ -120,16 +118,14 @@ public class SshjBuildProcess extends BuildJobProcess {
 	}
 
 	protected int getExitStatusFromLog(Integer exitStatus, String logContent) {
-		int start1 = logContent.length() - 100;
-		String substring = StringUtils.substring(logContent, start1 > 0 ? start1 : 0);
-		if (substring.contains("returned code [")) {
-			int start = substring.indexOf("returned code [") + "returned code [".length();
-			int end = substring.indexOf("]", start);
-			String substring1 = substring.substring(start, end);
+		if (logContent.contains("returned code [")) {
+			int start = logContent.indexOf("returned code [") + "returned code [".length();
+			int end = logContent.indexOf("]", start);
+			String substring1 = logContent.substring(start, end);
 			exitStatus = Integer.parseInt(substring1.trim());
 			log.info("exit status from log: " + exitStatus);
 		} else {
-			log.warn("unknown result:	" + substring);
+			log.warn("unknown result:	" + logContent);
 		}
 		return exitStatus;
 	}
