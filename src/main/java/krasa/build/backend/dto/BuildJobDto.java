@@ -2,10 +2,18 @@ package krasa.build.backend.dto;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+
+import org.springframework.util.comparator.BooleanComparator;
 
 import krasa.build.backend.DateUtils;
 import krasa.build.backend.domain.BuildJob;
+import krasa.build.backend.domain.Status;
 
 public class BuildJobDto implements Serializable {
 
@@ -45,9 +53,16 @@ public class BuildJobDto implements Serializable {
 				Date start = o1.getEnd();
 				Date start1 = o2.getEnd();
 
-				return DateUtils.compareDates(start, start1);
+				boolean processRunning = Status.RUNNING.name().equals(o1.getStatus());
+				boolean processRunning2 = Status.RUNNING.name().equals(o2.getStatus());
+				int compare = BooleanComparator.TRUE_LOW.compare(processRunning, processRunning2);
+				if (compare == 0) {
+					return DateUtils.compareDates(start, start1);
+				}
+				return compare;
 			}
 		});
+
 		return buildJobs;
 	}
 

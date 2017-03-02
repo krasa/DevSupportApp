@@ -10,7 +10,7 @@ public class OvernightDbModel<T extends AbstractEntity> implements IModel<T> {
 	private final Integer id;
 	private final Class clazz;
 	@SpringBean
-	OvernightDao overnightDao;
+	OvernightFacade overnightFacade;
 
 	private T object;
 
@@ -24,7 +24,7 @@ public class OvernightDbModel<T extends AbstractEntity> implements IModel<T> {
 	@Override
 	public T getObject() {
 		if (object == null) {
-			object = (T) overnightDao.findById(clazz, id);
+			object = (T) overnightFacade.findById(clazz, id);
 		}
 		return object;
 	}

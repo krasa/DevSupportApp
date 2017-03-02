@@ -5,7 +5,7 @@ import java.util.*;
 import krasa.core.frontend.commons.*;
 import krasa.core.frontend.commons.table.ButtonColumn;
 import krasa.svn.backend.dto.MergeInfoResultItem;
-import krasa.svn.backend.service.MergeService;
+import krasa.svn.backend.service.MergeFacade;
 import krasa.svn.frontend.component.merge.DiffPanel;
 
 import org.apache.wicket.Component;
@@ -31,7 +31,7 @@ public class SVNLogEntryTablePanel extends Panel {
 	private static final Logger log = LoggerFactory.getLogger(SVNLogEntryTablePanel.class);
 
 	@SpringBean
-	protected MergeService mergeService;
+	protected MergeFacade mergeFacade;
 
 	protected AjaxFallbackDefaultDataTable<SVNLogEntry, String> table;
 	protected FixedModalWindow modalWindow;
@@ -179,8 +179,8 @@ public class SVNLogEntryTablePanel extends Panel {
 		}
 
 		@Override
-		protected void onSubmit(IModel<SVNLogEntry> revision, AjaxRequestTarget target, Form<?> form) {
-			mergeService.mergeSvnMergeInfoOnly(mergeInfoResultItemWithoutMerges, revision.getObject());
+		protected void onSubmit(IModel<SVNLogEntry> revision, AjaxRequestTarget target) {
+			mergeFacade.mergeSvnMergeInfoOnly(mergeInfoResultItemWithoutMerges, revision.getObject());
 			sendDeletedRowEvent(target, revision.getObject());
 		}
 	}
@@ -192,7 +192,7 @@ public class SVNLogEntryTablePanel extends Panel {
 		}
 
 		@Override
-		protected void onSubmit(IModel<SVNLogEntry> revision, AjaxRequestTarget target, Form<?> form) {
+		protected void onSubmit(IModel<SVNLogEntry> revision, AjaxRequestTarget target) {
 			final SVNLogEntry revisionObject = revision.getObject();
 			modalWindow.setContent(new AjaxLazyLoadPanel(modalWindow.getContentId()) {
 
@@ -226,10 +226,10 @@ public class SVNLogEntryTablePanel extends Panel {
 		}
 
 		@Override
-		protected void onSubmit(IModel<SVNLogEntry> revision, AjaxRequestTarget target, Form<?> form) {
+		protected void onSubmit(IModel<SVNLogEntry> revision, AjaxRequestTarget target) {
 			SVNLogEntry svnLogEntry = revision.getObject();
 			log.info("merge " + svnLogEntry);
-			mergeService.merge(mergeInfoResultItemWithoutMerges, svnLogEntry);
+			mergeFacade.merge(mergeInfoResultItemWithoutMerges, svnLogEntry);
 			sendDeletedRowEvent(target, svnLogEntry);
 		}
 	}

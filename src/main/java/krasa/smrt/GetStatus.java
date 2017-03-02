@@ -4,6 +4,8 @@ import java.util.*;
 import java.util.concurrent.Callable;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
 public class GetStatus implements Callable<List<SmrtConnection>> {
@@ -20,7 +22,12 @@ public class GetStatus implements Callable<List<SmrtConnection>> {
 	@Override
 	public List<SmrtConnection> call() throws Exception {
 		try {
-			ResponseEntity<String> forEntity = new RestTemplate().getForEntity(
+			SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+			requestFactory.setConnectTimeout(1000);
+			requestFactory.setReadTimeout(50000);
+			RestTemplate restTemplate = new RestTemplate(requestFactory);
+
+			ResponseEntity<String> forEntity = restTemplate.getForEntity(
 					url, String.class);
 			String[] split = forEntity.getBody().split("\n");
 

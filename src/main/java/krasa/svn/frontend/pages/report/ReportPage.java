@@ -59,7 +59,7 @@ public class ReportPage extends BasePage {
 		form.add(new IndicatingAjaxButton("getReport") {
 
 			@Override
-			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+			protected void onSubmit(AjaxRequestTarget target) {
 				ReportResult report = facade.getReport();
 				ReportResultPanel result = new ReportResultPanel(RESULT, new Model<>(report));
 				getCenterColumn().get(RESULT).replaceWith(result);
@@ -67,13 +67,13 @@ public class ReportPage extends BasePage {
 			}
 
 			@Override
-			protected void onError(AjaxRequestTarget target, Form<?> form) {
+			protected void onError(AjaxRequestTarget target) {
 			}
 		});
 		form.add(new IndicatingAjaxButton("findNotTagged") {
 
 			@Override
-			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+			protected void onSubmit(AjaxRequestTarget target) {
 				ReportResult report = facade.getReport();
 				NotTaggedCommitsPanel result = new NotTaggedCommitsPanel(RESULT, new Model<>(report));
 				getCenterColumn().get(RESULT).replaceWith(result);
@@ -81,13 +81,13 @@ public class ReportPage extends BasePage {
 			}
 
 			@Override
-			protected void onError(AjaxRequestTarget target, Form<?> form) {
+			protected void onError(AjaxRequestTarget target) {
 			}
 		});
 		form.add(new IndicatingAjaxButton("runRNS") {
 
 			@Override
-			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+			protected void onSubmit(AjaxRequestTarget target) {
 				Profile current = MySession.get().getCurrent();
 				String result = reportService.runRns(current.getName());
 				resultLabel = new MultiLineLabel(RESULT, new Model<Serializable>(result));
@@ -97,7 +97,7 @@ public class ReportPage extends BasePage {
 			}
 
 			@Override
-			protected void onError(AjaxRequestTarget target, Form<?> form) {
+			protected void onError(AjaxRequestTarget target) {
 			}
 
 			@Override
@@ -110,7 +110,7 @@ public class ReportPage extends BasePage {
 		form.add(new IndicatingAjaxButton("runVersionsOnPrgens") {
 
 			@Override
-			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+			protected void onSubmit(AjaxRequestTarget target) {
 				String result = reportService.runVersionsOnPrgens();
 				resultLabel = new MultiLineLabel(RESULT, new Model<Serializable>(result));
 				resultLabel.setOutputMarkupPlaceholderTag(true);
@@ -119,13 +119,13 @@ public class ReportPage extends BasePage {
 			}
 
 			@Override
-			protected void onError(AjaxRequestTarget target, Form<?> form) {
+			protected void onError(AjaxRequestTarget target) {
 			}
 		});
 		form.add(new IndicatingAjaxButton("runSvnHeadVsLastTag") {
 
 			@Override
-			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+			protected void onSubmit(AjaxRequestTarget target) {
 				Profile current = MySession.get().getCurrent();
 				String result = reportService.runSvnHeadVsLastTag(current.getName());
 				resultLabel = new MultiLineLabel("result", new Model<Serializable>(result));
@@ -135,7 +135,7 @@ public class ReportPage extends BasePage {
 			}
 
 			@Override
-			protected void onError(AjaxRequestTarget target, Form<?> form) {
+			protected void onError(AjaxRequestTarget target) {
 			}
 
 			@Override

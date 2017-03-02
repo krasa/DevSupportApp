@@ -1,27 +1,33 @@
 package krasa.intellij;
 
 import static krasa.intellij.IntelliJUtils.unmarshal;
-import static org.apache.commons.io.FileUtils.*;
+import static org.apache.commons.io.FileUtils.copyFile;
+import static org.apache.commons.io.FileUtils.listFiles;
+import static org.apache.commons.io.FileUtils.moveFile;
 import static org.apache.commons.io.filefilter.FileFilterUtils.trueFileFilter;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
 
 import javax.xml.bind.JAXBException;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.NameFileFilter;
+import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.upload.FileUpload;
+import org.apache.wicket.markup.html.form.upload.FileUploadField;
+import org.apache.wicket.util.file.Folder;
+import org.apache.wicket.util.lang.Bytes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.Assert;
 
 import krasa.core.frontend.WicketApplication;
 import krasa.core.frontend.utils.Strings;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.NameFileFilter;
-import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.upload.*;
-import org.apache.wicket.util.file.Folder;
-import org.apache.wicket.util.lang.Bytes;
-import org.slf4j.*;
-import org.springframework.util.Assert;
 
 /**
  * @author Vojtech Krasa
@@ -65,7 +71,7 @@ public class PluginUploadForm extends Form<Void> {
 				saveFile(newFile, pluginDefinition);
 				updateIndex(pluginDefinition);
 				info("saved file: " + upload.getClientFileName());
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				throw new IllegalStateException(e.getMessage(), e);
 			}
 		}

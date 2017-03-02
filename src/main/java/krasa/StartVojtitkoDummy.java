@@ -11,8 +11,8 @@ import org.springframework.context.ConfigurableApplicationContext;
 public class StartVojtitkoDummy {
 
 	public static void main(String[] args) throws IOException {
-		// System.setProperty("spring.profiles.active", "DUMMY, LOCAL_OVERNIGHT");
-		System.setProperty("spring.profiles.active", "LOCAL_OVERNIGHT");
+		System.setProperty("spring.profiles.active", "DUMMY, LOCAL_OVERNIGHT");
+		// System.setProperty("spring.profiles.active", "LOCAL_OVERNIGHT");
 		ConfigurableApplicationContext applicationContext = StartVojtitko.start(args);
 		System.in.read();
 		SpringApplication.exit(applicationContext);

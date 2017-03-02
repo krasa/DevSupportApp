@@ -2,12 +2,15 @@ package krasa.intellij;
 
 import java.io.File;
 
-import javax.xml.bind.*;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import krasa.core.backend.utils.JaxbUtils;
 import krasa.core.frontend.WicketApplication;
-
-import org.slf4j.*;
 
 /**
  * @author Vojtech Krasa
@@ -22,7 +25,7 @@ public class IntelliJUtils {
 	public static <T> T unmarshal(File newFile, JAXBContext jaxbContext) {
 		try {
 			return JaxbUtils.unmarshal(newFile, jaxbContext.createUnmarshaller());
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			throw new RuntimeException(e.getMessage(), e);
 		}
 	}

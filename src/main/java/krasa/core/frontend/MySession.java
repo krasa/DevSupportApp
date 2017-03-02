@@ -3,8 +3,8 @@ package krasa.core.frontend;
 import javax.servlet.http.Cookie;
 
 import krasa.svn.backend.domain.Profile;
-import krasa.svn.backend.facade.SvnFacade;
 
+import krasa.svn.backend.facade.SvnFacade;
 import org.apache.wicket.*;
 import org.apache.wicket.protocol.http.WebSession;
 import org.apache.wicket.request.Request;

@@ -16,19 +16,25 @@ public class BuildCommandBuilderStrategy {
 		String buildMode = buildableComponent.getBuildMode();
 
 		StringBuilder sb = new StringBuilder();
-		sb.append("echo \"ENV ").append(environment);
 		if (buildableComponentName.startsWith("BUILD") || buildableComponentName.startsWith("RUN")) {
+			sb.append("echo \"ENV ").append(environment);
 			sb.append("\n").append(buildableComponentName);
-		} else {
+			sb.append("\"|onbuild -c /dev/stdin");
+		} else if (buildableComponentName.startsWith("PORTAL_")){
+			String[] split = buildableComponentName.split("_");
+			int i = Integer.parseInt(split[1]);
+			sb.append("echo \"RUN_LOCAL '/tdev15/bin/deployPortalApp.sh -b " + i + " -e " + environment + "'");
+			sb.append("\"|onbuild -c /dev/stdin");
+		}else {
+			sb.append("echo \"ENV ").append(environment);
 			String[] split = buildableComponentName.split("_");
 			String name = getName(split);
 			sb.append("\nBUILD ").append(name.toLowerCase()).append(" BRANCH ").append(split[split.length - 1]);
 			if (StringUtils.isNotBlank(buildMode)) {
 				sb.append(" MODE ").append(buildMode.toUpperCase());
 			}
+			sb.append("\"|onbuild -c /dev/stdin");
 		}
-		sb.append("\"|onbuild -c /dev/stdin");
-
 		return Collections.singletonList(sb.toString());
 	}
 

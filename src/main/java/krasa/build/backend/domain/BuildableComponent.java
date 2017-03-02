@@ -11,10 +11,10 @@ import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+import org.apache.commons.lang3.ObjectUtils;
+
 import krasa.build.backend.execution.strategy.BuildCommandBuilderStrategy;
 import krasa.core.backend.domain.AbstractEntity;
-
-import org.apache.commons.lang3.ObjectUtils;
 
 @Entity
 public class BuildableComponent extends AbstractEntity {
@@ -31,6 +31,10 @@ public class BuildableComponent extends AbstractEntity {
 	private Environment environment;
 	@Column
 	public Date lastSuccessBuildDuration;
+	@Column
+	private Integer buildOrder = 0;
+	@Column
+	private Boolean build;
 
 	public BuildableComponent(String componentName) {
 		name = componentName;
@@ -97,7 +101,37 @@ public class BuildableComponent extends AbstractEntity {
 		return buildCommandBuilderStrategy.toCommand(this);
 	}
 
+	public Integer getBuildOrder() {
+		if (buildOrder == null) {
+			if (name.contains("MYSQL_PORTAL_"))
+				setBuildOrder(0);
+			else if (name.contains("MYSQL_"))
+				setBuildOrder(20);
+			else if (name.contains("msc-data"))
+				setBuildOrder(50);
+			else
+				setBuildOrder(100);
+		}
+		return buildOrder;
+	}
+
+	public void setBuildOrder(Integer buildOrder) {
+		this.buildOrder = buildOrder;
+	}
+
+	public Boolean isBuild() {
+		if (build == null) {
+			return false;
+		}
+		return build;
+	}
+
+	public void setBuild(Boolean build) {
+		this.build = build;
+	}
+
 	public static class ComponentBuildComparator implements Comparator<BuildableComponent> {
+
 		@Override
 		public int compare(BuildableComponent o1, BuildableComponent o2) {
 			return ObjectUtils.compare(o1.getName(), o2.getName());

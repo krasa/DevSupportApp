@@ -17,7 +17,7 @@ public class TokenizationExecutor {
 	@Autowired
 	TokenizationJobsHolder runningTasks;
 	@Autowired
-	TokenizationService tokenizationService;
+	TokenizationFacade tokenizationFacade;
 	@Value("${tempDir}")
 	String tempDir;
 	@Value("${tokenization.commit}")
@@ -39,7 +39,7 @@ public class TokenizationExecutor {
 			e.printStackTrace();
 		}
 		runningTasks.remove(process);
-		tokenizationService.update(tokenizationJob);
+		tokenizationFacade.update(tokenizationJob);
 	}
 
 	public Collection<TokenizationJobCommand> getProcesses() {

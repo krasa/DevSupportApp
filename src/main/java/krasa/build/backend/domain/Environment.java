@@ -13,6 +13,7 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 
 import krasa.build.backend.exception.AlreadyExistsException;
+import krasa.core.backend.common.NaturalStringComparator;
 import krasa.core.backend.domain.AbstractEntity;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -21,6 +22,7 @@ import com.google.common.base.Objects;
 
 @Entity
 public class Environment extends AbstractEntity {
+
 	public static Object NAME = "name";
 	@Column(unique = true)
 	protected String name;
@@ -101,9 +103,21 @@ public class Environment extends AbstractEntity {
 
 	public static List<Environment> sortByName(List<Environment> all) {
 		Collections.sort(all, new Comparator<Environment>() {
+
 			@Override
 			public int compare(Environment o1, Environment o2) {
 				return ObjectUtils.compare(o1.getName(), o2.getName());
+			}
+		});
+		return all;
+	}
+
+	public static List<Environment> sortNaturalByName(List<Environment> all) {
+		Collections.sort(all, new Comparator<Environment>() {
+
+			@Override
+			public int compare(Environment o1, Environment o2) {
+				return NaturalStringComparator.compareNatural(o1.getName(), o2.getName());
 			}
 		});
 		return all;

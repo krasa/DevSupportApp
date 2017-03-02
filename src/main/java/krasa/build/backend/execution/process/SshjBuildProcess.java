@@ -1,9 +1,19 @@
 package krasa.build.backend.execution.process;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.List;
+import java.util.Properties;
 
-import krasa.build.backend.domain.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+
+import krasa.build.backend.domain.BuildJob;
+import krasa.build.backend.domain.Status;
 import krasa.build.backend.execution.ProcessStatus;
 import krasa.build.backend.execution.ssh.SCPInfo;
 import krasa.core.frontend.pages.FileSystemLogUtils;
@@ -11,9 +21,6 @@ import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.common.IOUtils;
 import net.schmizz.sshj.connection.channel.direct.Session;
 import net.schmizz.sshj.transport.verification.PromiscuousVerifier;
-
-import org.slf4j.*;
-import org.springframework.beans.factory.annotation.Value;
 
 public class SshjBuildProcess extends BuildJobProcess {
 	private static final Logger log = LoggerFactory.getLogger(SshjBuildProcess.class);
@@ -45,7 +52,7 @@ public class SshjBuildProcess extends BuildJobProcess {
 		try {
 			log.info("--- PROCESS STARTED ---\n");
 			doWork();
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			log.info("--- PROCESS FAILED ---");
 			log.info("", e);
 			throw e;
@@ -135,7 +142,7 @@ public class SshjBuildProcess extends BuildJobProcess {
 		if (session != null) {
 			try {
 				session.close();
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				log.error(String.valueOf(e), e);
 				throw new RuntimeException(e);
 			} finally {

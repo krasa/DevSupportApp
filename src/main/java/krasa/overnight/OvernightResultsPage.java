@@ -29,8 +29,6 @@ public class OvernightResultsPage extends BasePage {
 	private final AjaxFallbackDefaultDataTable<Result, String> differenceFromTable;
 	private final IModel<List<Result>> fromModel;
 	@SpringBean
-	OvernightDao overnightDao;
-	@SpringBean
 	OvernightFacade overnightFacade;
 	private Date date = new Date();
 	private Date differenceFromDate = DateUtils.addDays(new Date(), -1);
@@ -248,7 +246,7 @@ public class OvernightResultsPage extends BasePage {
 
 			@Override
 			protected List<Result> load() {
-				return overnightDao.getResults(DateUtils.truncate(date, Calendar.DAY_OF_MONTH), 1000);
+				return overnightFacade.getResults(DateUtils.truncate(date, Calendar.DAY_OF_MONTH), 1000);
 			}
 		};
 	}
@@ -258,7 +256,7 @@ public class OvernightResultsPage extends BasePage {
 
 			@Override
 			protected List<Result> load() {
-				List<Result> from = overnightDao.getResults(
+				List<Result> from = overnightFacade.getResults(
 						DateUtils.truncate(differenceFromDate, Calendar.DAY_OF_MONTH), 1000);
 
 				Set<String> keys = new HashSet<>();

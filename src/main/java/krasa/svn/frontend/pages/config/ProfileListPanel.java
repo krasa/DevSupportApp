@@ -4,8 +4,8 @@ import java.util.List;
 
 import krasa.core.frontend.commons.links.LabeledAjaxLink;
 import krasa.svn.backend.domain.Profile;
-import krasa.svn.backend.facade.SvnFacade;
 
+import krasa.svn.backend.facade.SvnFacade;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.list.*;

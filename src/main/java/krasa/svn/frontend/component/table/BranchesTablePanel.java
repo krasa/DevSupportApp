@@ -6,8 +6,8 @@ import krasa.core.frontend.commons.CheckBoxPanel;
 import krasa.core.frontend.commons.table.*;
 import krasa.core.frontend.components.BasePanel;
 import krasa.svn.backend.domain.SvnFolder;
-import krasa.svn.backend.facade.SvnFacade;
 
+import krasa.svn.backend.facade.SvnFacade;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackDefaultDataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;

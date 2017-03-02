@@ -1,26 +1,43 @@
 package krasa.build.backend.facade;
 
-import java.util.*;
-
-import krasa.build.backend.dao.CommonBuildDao;
-import krasa.build.backend.domain.*;
-import krasa.build.backend.dto.*;
-import krasa.build.backend.exception.AlreadyExistsException;
-import krasa.build.backend.execution.ProcessStatus;
-import krasa.build.backend.execution.adapter.CurrentBuildJobsHolder;
-import krasa.core.backend.RemoteHostUtils;
-import krasa.core.backend.config.MainConfig;
-import krasa.core.backend.dao.*;
-import krasa.svn.backend.domain.*;
-import krasa.svn.backend.facade.SvnFacade;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.*;
+import org.hibernate.Criteria;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
-import org.slf4j.*;
-import org.springframework.beans.factory.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import krasa.build.backend.dao.CommonBuildDao;
+import krasa.build.backend.domain.BuildJob;
+import krasa.build.backend.domain.BuildableComponent;
+import krasa.build.backend.domain.Environment;
+import krasa.build.backend.domain.Status;
+import krasa.build.backend.dto.BuildJobDto;
+import krasa.build.backend.dto.BuildableComponentDto;
+import krasa.build.backend.exception.AlreadyExistsException;
+import krasa.build.backend.exception.ProcessAlreadyRunning;
+import krasa.build.backend.execution.ProcessStatus;
+import krasa.build.backend.execution.adapter.CurrentBuildJobsHolder;
+import krasa.core.backend.config.MainConfig;
+import krasa.core.backend.dao.GenericDAO;
+import krasa.core.backend.dao.GenericDaoBuilder;
+import krasa.core.frontend.web.CookieUtils;
+import krasa.svn.backend.domain.Displayable;
+import krasa.svn.backend.domain.SvnFolder;
+import krasa.svn.backend.facade.SvnFacade;
 
 @Service
 public class BuildFacade {
@@ -47,14 +64,14 @@ public class BuildFacade {
 	protected SessionFactory sf;
 
 	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER)
-	public void cleanHsqldb() {
+	public int cleanHsqldb() {
 		log.info("cleaning Hsqldb");
 		deleteOldBuildJobs();
-		limitNumberOfBuildJobs();
+		return limitNumberOfBuildJobs();
 	}
 
 	@SuppressWarnings({ "JpaQlInspection", "unchecked" })
-	private void limitNumberOfBuildJobs() {
+	private int limitNumberOfBuildJobs() {
 		List<Long> ids = sf.getCurrentSession().createQuery("select id from BuildJob order by id desc").setMaxResults(
 				200).list();
 		int deleted = 0;
@@ -76,6 +93,7 @@ public class BuildFacade {
 			}
 		}
 		log.info("deleted: {}", deleted);
+		return deleted;
 	}
 
 	private void deleteOldBuildJobs() {
@@ -166,10 +184,10 @@ public class BuildFacade {
 	}
 
 	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER)
-	public BuildableComponentDto buildComponent(BuildableComponentDto object) {
+	public BuildableComponentDto buildComponent(BuildableComponentDto object) throws UsernameException {
 		BuildableComponent buildableComponent = buildableComponentDAO.findById(object.getComponentId());
 
-		BuildJob build = build(buildableComponent, getCaller());
+		BuildJob build = build(buildableComponent, CookieUtils.getValidUsername());
 		return BuildableComponentDto.transform(build.getBuildableComponent());
 	}
 
@@ -200,6 +218,8 @@ public class BuildFacade {
 		BuildableComponent byId = buildableComponentDAO.findById(object.getComponentId());
 		byId.setName(object.getName());
 		byId.setBuildMode(object.getBuildMode());
+		byId.setBuildOrder(object.getBuildOrder());
+		byId.setBuild(object.isBuild());
 		buildableComponentDAO.save(byId);
 		return BuildableComponentDto.transform(byId);
 	}
@@ -253,7 +273,7 @@ public class BuildFacade {
 
 	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER, readOnly = true)
 	public List<Environment> getEnvironments() {
-		return Environment.sortByName(environmentDAO.findAll());
+		return Environment.sortNaturalByName(environmentDAO.findAll());
 	}
 
 	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER)
@@ -302,10 +322,56 @@ public class BuildFacade {
 		this.buildJobDAO = genericDAO.build(BuildJob.class);
 	}
 
-	public static String getCaller() {
-		String remoteHost = RemoteHostUtils.getRemoteHost();
-		remoteHost = remoteHost.replace("0:0:0:0:0:0:0:1", "local");
-		return remoteHost;
+	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER)
+	public void buildAll(Environment object) throws UsernameException {
+		String caller = CookieUtils.getValidUsername();
+		object = environmentDAO.refresh(object);
+		List<BuildableComponent> buildableComponents = object.getBuildableComponents();
+		List<BuildableComponent> toBuild = new ArrayList<>();
+		for (BuildableComponent buildableComponent : buildableComponents) {
+			if (buildableComponent.isBuild()) {
+				toBuild.add(buildableComponent);
+			}
+		}
+
+		Collections.sort(toBuild, new Comparator<BuildableComponent>() {
+
+			@Override
+			public int compare(BuildableComponent o1, BuildableComponent o2) {
+				return o1.getBuildOrder().compareTo(o2.getBuildOrder());
+			}
+		});
+
+		for (BuildableComponent buildableComponent : toBuild) {
+			try {
+				build(buildableComponent, caller);
+			} catch (ProcessAlreadyRunning e) {
+				log.info(e.getMessage());
+			}
+		}
 	}
 
+	public void killAll() {
+		Collection<BuildJob> all = runningCurrentBuildJobsHolder.getAll();
+		for (BuildJob buildJob : all) {
+			if (buildJob.isProcessAlive()) {
+				buildJob.kill("kill all button");
+			}
+		}
+	}
+
+	@Transactional(value = MainConfig.HSQLDB_TX_MANAGER)
+	public void checkBuildAll(Environment object) {
+		object = environmentDAO.refresh(object);
+		List<BuildableComponent> buildableComponents = object.getBuildableComponents();
+		boolean allMarked = true;
+		for (BuildableComponent buildableComponent : buildableComponents) {
+			allMarked = allMarked && buildableComponent.isBuild();
+		}
+
+		for (BuildableComponent buildableComponent : buildableComponents) {
+			buildableComponent.setBuild(!allMarked);
+			buildableComponentDAO.save(buildableComponent);
+		}
+	}
 }

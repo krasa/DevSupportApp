@@ -130,11 +130,4 @@ public class Default {
 		src.getReplacements().add(new Replacement("${old.pom.version}", "${new.pom.version}"));
 	}
 
-	public static void main(String[] args) throws InterruptedException {
-		while (true) {
-			Thread.sleep(10);
-
-			new RuntimeException().printStackTrace();
-		}
-	}
 }

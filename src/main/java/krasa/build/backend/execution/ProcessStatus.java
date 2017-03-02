@@ -1,12 +1,12 @@
 package krasa.build.backend.execution;
 
-import krasa.build.backend.domain.Status;
-
 import com.google.common.base.Objects;
+
+import krasa.build.backend.domain.Status;
 
 public class ProcessStatus {
 	private Status status;
-	private Exception exception;
+	private Throwable exception;
 
 	public ProcessStatus() {
 	}
@@ -19,7 +19,7 @@ public class ProcessStatus {
 		return status;
 	}
 
-	public Exception getException() {
+	public Throwable getException() {
 		return exception;
 	}
 
@@ -27,11 +27,15 @@ public class ProcessStatus {
 		return status == Status.RUNNING || status == Status.PENDING;
 	}
 
+	public boolean isRunning() {
+		return status == Status.RUNNING;
+	}
+
 	public void setStatus(Status status1) {
 		this.status = status1;
 	}
 
-	public void setException(Exception exception) {
+	public void setException(Throwable exception) {
 		this.exception = exception;
 	}
 

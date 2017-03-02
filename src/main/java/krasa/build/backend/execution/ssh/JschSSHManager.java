@@ -37,7 +37,7 @@ public class JschSSHManager {
 				shellStream.flush();
 			}
 			return channel;
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -51,12 +51,12 @@ public class JschSSHManager {
 	public void close() {
 		try {
 			channel.disconnect();
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			e.printStackTrace();
 		}
 		try {
 			session.disconnect();
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			e.printStackTrace();
 		}
 	}

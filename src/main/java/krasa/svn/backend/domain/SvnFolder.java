@@ -1,16 +1,25 @@
 package krasa.svn.backend.domain;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import javax.persistence.*;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Enumerated;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import krasa.core.backend.domain.AbstractEntity;
-
-import org.hibernate.annotations.*;
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.tmatesoft.svn.core.SVNDirEntry;
+
+import krasa.core.backend.domain.AbstractEntity;
 
 /**
  * @author Vojtech Krasa
@@ -35,7 +44,7 @@ public class SvnFolder extends AbstractEntity implements Displayable {
 	private String path;
 	@Enumerated
 	private Type type;
-	@OneToMany(mappedBy = "parent")
+	@OneToMany(mappedBy = "parent", orphanRemoval = true)
 	@Cascade(CascadeType.DELETE)
 	private List<SvnFolder> childs;
 	@ManyToOne

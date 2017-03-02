@@ -1,14 +1,19 @@
 package krasa.build.backend.execution.process;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.locks.ReentrantLock;
 
-import krasa.build.backend.domain.*;
-import krasa.build.backend.execution.ProcessStatus;
-import krasa.core.backend.utils.MdcUtils;
-
-import org.slf4j.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Objects;
+
+import krasa.build.backend.domain.BuildJob;
+import krasa.build.backend.domain.Status;
+import krasa.build.backend.execution.ProcessStatus;
+import krasa.core.backend.utils.MdcUtils;
 
 public abstract class BuildJobProcess {
 
@@ -30,20 +35,25 @@ public abstract class BuildJobProcess {
 		log.info("process complete. " + this.toString());
 	}
 
-	public void execute() {
+	public void execute(ReentrantLock reentrantLock, Semaphore semaphore) {
 		try {
+			reentrantLock.lock();
+			semaphore.acquire();
+
 			MdcUtils.putLogName(buildJob.getLogFileName());
 			onStart();
 			runInternal();
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			e.printStackTrace();
 			log.error("process failed", e);
 			processStatus.setException(e);
 			processStatus.setStatus(Status.EXCEPTION);
 		} finally {
+			semaphore.release();
+			reentrantLock.unlock();
 			try {
 				releaseResources();
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				e.printStackTrace();
 				log.error("process #finally failed", e);
 				processStatus.setException(e);
@@ -66,7 +76,7 @@ public abstract class BuildJobProcess {
 
 	protected void notifyListeners() {
 		for (ProcessStatusListener processStatusListener : processStatusListeners) {
-			processStatusListener.onStatusChanged(processStatus);
+			processStatusListener.onStatusChanged(buildJob, processStatus);
 		}
 	}
 

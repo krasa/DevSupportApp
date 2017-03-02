@@ -1,26 +1,57 @@
 package krasa.automerge.domain;
 
-import java.io.*;
-import java.util.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
 
-import javax.persistence.*;
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 
-import krasa.automerge.*;
-import krasa.build.backend.domain.Status;
-import krasa.build.backend.execution.ProcessStatus;
-import krasa.build.backend.execution.process.ProcessStatusListener;
-import krasa.build.backend.facade.BuildFacade;
-import krasa.core.backend.domain.AbstractEntity;
-import krasa.core.backend.utils.MdcUtils;
-import krasa.svn.backend.dto.*;
-
-import org.apache.commons.lang3.builder.*;
-import org.slf4j.*;
-import org.tmatesoft.svn.core.*;
-import org.tmatesoft.svn.core.wc.*;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+import org.apache.http.HttpStatus;
+import org.apache.wicket.request.http.flow.AbortWithHttpErrorCodeException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.tmatesoft.svn.core.ISVNLogEntryHandler;
+import org.tmatesoft.svn.core.SVNCancelException;
+import org.tmatesoft.svn.core.SVNDepth;
+import org.tmatesoft.svn.core.SVNException;
+import org.tmatesoft.svn.core.SVNLogEntry;
+import org.tmatesoft.svn.core.SVNURL;
+import org.tmatesoft.svn.core.wc.ISVNEventHandler;
+import org.tmatesoft.svn.core.wc.SVNClientManager;
+import org.tmatesoft.svn.core.wc.SVNDiffClient;
+import org.tmatesoft.svn.core.wc.SVNEvent;
+import org.tmatesoft.svn.core.wc.SVNRevision;
+import org.tmatesoft.svn.core.wc.SVNRevisionRange;
+import org.tmatesoft.svn.core.wc.SVNStatusType;
+import org.tmatesoft.svn.core.wc.SVNUpdateClient;
 
 import com.google.gag.annotation.remark.Win;
 import com.google.gag.enumeration.Outcome;
+
+import krasa.automerge.AutoMergeJobMode;
+import krasa.automerge.CommitCommand;
+import krasa.automerge.DiffCommand;
+import krasa.build.backend.domain.BuildJob;
+import krasa.build.backend.domain.Status;
+import krasa.build.backend.execution.ProcessStatus;
+import krasa.build.backend.execution.process.ProcessStatusListener;
+import krasa.core.backend.domain.AbstractEntity;
+import krasa.core.backend.utils.MdcUtils;
+import krasa.svn.backend.dto.MergeInfoResultItem;
+import krasa.svn.backend.dto.MergeJobDto;
 
 @Entity
 @Access(AccessType.FIELD)
@@ -70,15 +101,17 @@ public class MergeJob extends AbstractEntity implements ProcessStatusListener {
 	}
 
 	public static MergeJob create(MergeInfoResultItem mergeInfoResultItem, SVNLogEntry svnLogEntry,
-			AutoMergeJobMode mergeJobMode) {
+			AutoMergeJobMode mergeJobMode, String userName) {
 		String from = mergeInfoResultItem.getFrom();
 		String to = mergeInfoResultItem.getTo();
 		String fromPath = mergeInfoResultItem.getFromPath();
 		String toPath = mergeInfoResultItem.getToPath();
 		String repository = mergeInfoResultItem.getRepository();
 		long revision = svnLogEntry.getRevision();
-		String author = BuildFacade.getCaller();
-		return new MergeJob(from, to, fromPath, toPath, repository, revision, author, mergeJobMode);
+		if (StringUtils.isBlank(userName)) {
+			throw new AbortWithHttpErrorCodeException(HttpStatus.SC_PAYMENT_REQUIRED, "Fill your user name!");
+		}
+		return new MergeJob(from, to, fromPath, toPath, repository, revision, userName, mergeJobMode);
 	}
 
 	public static void sort(List<MergeJob> mergeJobs) {
@@ -151,6 +184,7 @@ public class MergeJob extends AbstractEntity implements ProcessStatusListener {
 
 	@Win
 	public String getRevisionDiff() throws SVNException {
+		log.info("getting diff");
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		SVNClientManager clientManager = getSvnClientManager();
 		SVNDiffClient diffClient = getDiffClient(clientManager);
@@ -160,7 +194,7 @@ public class MergeJob extends AbstractEntity implements ProcessStatusListener {
 	}
 
 	@Override
-	public void onStatusChanged(ProcessStatus processStatus) {
+	public void onStatusChanged(BuildJob buildJob, ProcessStatus processStatus) {
 
 	}
 
@@ -196,14 +230,13 @@ public class MergeJob extends AbstractEntity implements ProcessStatusListener {
 		if (message.startsWith("##")) {
 			message = message.substring(2);
 		}
+		String suffix = " from " + this.from + " by " + caller + " " + message + " ( date=" + handler.date + " rev=" + rangeToMerge.getEndRevision() + " author=" + handler.author + ")";;
+
 		String commitMessage;
 		if (jobMode == AutoMergeJobMode.ONLY_MERGE_INFO) {
-			commitMessage = "##merge mergeinfo by " + caller + " from " + this.from + " rev="
-					+ rangeToMerge.getEndRevision() + "; " + message;
+			commitMessage = "##merge mergeinfo" + suffix;
 		} else {
-			commitMessage = "##merge by " + caller + ", from " + this.from + ", rev=" + rangeToMerge.getEndRevision()
-					+ "; " + message;
-
+			commitMessage = "##merge" + suffix;
 		}
 		return commitMessage;
 	}
@@ -296,10 +329,14 @@ public class MergeJob extends AbstractEntity implements ProcessStatusListener {
 	private static class MyISVNLogEntryHandler implements ISVNLogEntryHandler {
 
 		protected String message;
+		protected String author;
+		protected Date date;
 
 		@Override
 		public void handleLogEntry(SVNLogEntry logEntry) throws SVNException {
 			message = logEntry.getMessage();
+			date = logEntry.getDate();
+			author = logEntry.getAuthor();
 		}
 	}
 

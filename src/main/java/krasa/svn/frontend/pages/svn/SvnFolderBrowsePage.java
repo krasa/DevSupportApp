@@ -4,7 +4,7 @@ import krasa.core.frontend.commons.StandaloneAjaxCheckBox;
 import krasa.core.frontend.pages.BasePage;
 import krasa.svn.backend.domain.SvnFolder;
 import krasa.svn.backend.dto.MergeInfoResult;
-import krasa.svn.backend.service.SvnFolderRefreshService;
+import krasa.svn.backend.service.SvnFolderRefreshFacade;
 import krasa.svn.frontend.component.table.BranchesTablePanel;
 import krasa.svn.frontend.pages.mergeinfo.*;
 
@@ -25,7 +25,7 @@ import org.apache.wicket.util.string.StringValue;
 public class SvnFolderBrowsePage extends BasePage {
 
 	@SpringBean
-	private SvnFolderRefreshService svnFolderResfreshService;
+	private SvnFolderRefreshFacade svnFolderResfreshService;
 
 	public static final String PATH_PARAMETER = "path";
 	public static final String MERGE_INFO = "mergeInfo";
@@ -66,7 +66,7 @@ public class SvnFolderBrowsePage extends BasePage {
 		form.add(new IndicatingAjaxButton("refreshProjectBraches") {
 
 			@Override
-			protected void onSubmit(AjaxRequestTarget ajaxRequestTarget, Form<?> components) {
+			protected void onSubmit(AjaxRequestTarget ajaxRequestTarget) {
 				svnFolderResfreshService.refreshProjectByName(path);
 				ajaxRequestTarget.add(form);
 				ajaxRequestTarget.add(branchesTablePanel);
@@ -74,7 +74,7 @@ public class SvnFolderBrowsePage extends BasePage {
 			}
 
 			@Override
-			protected void onError(AjaxRequestTarget ajaxRequestTarget, Form<?> components) {
+			protected void onError(AjaxRequestTarget ajaxRequestTarget) {
 				error("Error");
 			}
 		});
@@ -83,7 +83,7 @@ public class SvnFolderBrowsePage extends BasePage {
 		queue(new IndicatingAjaxButton("findMerges", form) {
 
 			@Override
-			protected void onSubmit(AjaxRequestTarget ajaxRequestTarget, Form<?> components) {
+			protected void onSubmit(AjaxRequestTarget ajaxRequestTarget) {
 				MergeInfoResultPanel resultPanel = new MergeInfoResultPanel(MERGE_INFO,
 						new LoadableDetachableModel<MergeInfoResult>() {
 
@@ -98,7 +98,7 @@ public class SvnFolderBrowsePage extends BasePage {
 			}
 
 			@Override
-			protected void onError(AjaxRequestTarget ajaxRequestTarget, Form<?> components) {
+			protected void onError(AjaxRequestTarget ajaxRequestTarget) {
 				error("Error");
 			}
 		});

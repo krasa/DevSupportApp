@@ -1,33 +1,42 @@
 package krasa.release.service;
 
 import java.io.File;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
 
-import krasa.build.backend.domain.Status;
-import krasa.build.backend.facade.*;
-import krasa.core.backend.config.MainConfig;
-import krasa.core.backend.dao.*;
-import krasa.core.frontend.pages.FileSystemLogUtils;
-import krasa.release.domain.*;
-import krasa.release.tokenization.*;
-import krasa.svn.backend.domain.Repository;
-import krasa.svn.backend.facade.SvnFacade;
-
-import org.slf4j.*;
-import org.springframework.beans.factory.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
+
+import krasa.build.backend.domain.Status;
+import krasa.build.backend.facade.EventService;
+import krasa.build.backend.facade.UsernameException;
+import krasa.core.backend.config.MainConfig;
+import krasa.core.backend.dao.GenericDAO;
+import krasa.core.backend.dao.GenericDaoBuilder;
+import krasa.core.frontend.pages.FileSystemLogUtils;
+import krasa.core.frontend.web.CookieUtils;
+import krasa.release.domain.TokenizationJob;
+import krasa.release.domain.TokenizationPageModel;
+import krasa.release.tokenization.TokenizationJobParameters;
+import krasa.release.tokenization.TokenizationJobProcess;
+import krasa.release.tokenization.TokenizationResult;
+import krasa.svn.backend.domain.Repository;
+import krasa.svn.backend.facade.SvnFacade;
 
 /**
  * @author Vojtech Krasa
  */
 @Service
 @Transactional(value = MainConfig.HSQLDB_TX_MANAGER)
-public class TokenizationService {
+public class TokenizationFacade {
 
-	private static final Logger log = LoggerFactory.getLogger(TokenizationService.class);
+	private static final Logger log = LoggerFactory.getLogger(TokenizationFacade.class);
 
 	protected GenericDAO<TokenizationJob> tokenizationJobGenericDAO;
 	@Value("${tempDir}")
@@ -46,7 +55,7 @@ public class TokenizationService {
 		tokenizationJobGenericDAO = genericDAO.build(TokenizationJob.class);
 	}
 
-	public TokenizationResult tokenizeSynchronously(TokenizationPageModel json) {
+	public TokenizationResult tokenizeSynchronously(TokenizationPageModel json) throws UsernameException {
 		TokenizationJob tokenizationJob = createJob(json);
 
 		TokenizationJobProcess jobCommand = tokenizationJob.prepareProcess(new File(tempDir), commit);
@@ -61,7 +70,7 @@ public class TokenizationService {
 			tokenizationJob.setStatus(Status.SUCCESS);
 			tokenizationJob.setEnd(new Date());
 			save(tokenizationJob);
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			log.error(String.valueOf(e.getMessage()), e);
 			tokenizationJob.setStatus(Status.EXCEPTION);
 			tokenizationJob.setEnd(new Date());
@@ -76,7 +85,7 @@ public class TokenizationService {
 		return tokenizationJobGenericDAO.save(tokenizationJob);
 	}
 
-	public File tokenizeAsync(TokenizationPageModel json) {
+	public File tokenizeAsync(TokenizationPageModel json) throws UsernameException {
 		TokenizationJob tokenizationJob = createJob(json);
 
 		TokenizationJobProcess jobCommand = tokenizationJob.prepareProcess(new File(tempDir), commit);
@@ -90,11 +99,11 @@ public class TokenizationService {
 		return FileSystemLogUtils.getLogFileByName(logName);
 	}
 
-	protected TokenizationJob createJob(TokenizationPageModel json) {
+	protected TokenizationJob createJob(TokenizationPageModel json) throws UsernameException {
 		String svnUrl = getSvnUrl();
 		TokenizationJobParameters jobParameters = new Gson().fromJson(json.getJson(), TokenizationJobParameters.class);
 		TokenizationJob tokenizationJobCommand = new TokenizationJob(jobParameters, svnUrl, json.getBranchesPatterns(),
-				BuildFacade.getCaller(), json.getCommitMessage());
+				CookieUtils.getValidUsername(), json.getCommitMessage());
 		save(tokenizationJobCommand);
 		return tokenizationJobCommand;
 	}

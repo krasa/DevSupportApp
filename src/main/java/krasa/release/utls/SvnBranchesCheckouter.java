@@ -1,22 +1,31 @@
 package krasa.release.utls;
 
 import java.io.File;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
 
-import krasa.svn.backend.domain.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.tmatesoft.svn.core.SVNDepth;
+import org.tmatesoft.svn.core.SVNDirEntry;
+import org.tmatesoft.svn.core.SVNException;
+import org.tmatesoft.svn.core.SVNURL;
+import org.tmatesoft.svn.core.wc.SVNClientManager;
+import org.tmatesoft.svn.core.wc.SVNRevision;
+import org.tmatesoft.svn.core.wc.SVNUpdateClient;
+
+import krasa.svn.backend.domain.Repository;
+import krasa.svn.backend.domain.SvnFolder;
+import krasa.svn.backend.domain.Type;
 import krasa.svn.backend.service.SvnFolderProvider;
-
-import org.slf4j.*;
-import org.tmatesoft.svn.core.*;
-import org.tmatesoft.svn.core.wc.*;
 
 public class SvnBranchesCheckouter {
 
 	protected static final Logger log = LoggerFactory.getLogger(SvnBranchesCheckouter.class);
 
-	public static final String SVN = "http://svn/sdp";
-	public static final String TARGET = "D:/workspace/_projekty/_T-Mobile/";
-	public static final int INT = 90001;
+	public static final String SVN = "http://svn.tmdev/sdp";
+	public static final String TARGET = "C:/workspace/_projekty/_tmobile/";
+	public static final int INT = 17100;
 
 	public static void main(String[] args) throws SVNException {
 		new SvnBranchesCheckouter().checkout(SVN, new File(TARGET + INT), Arrays.asList(".*_" + INT));

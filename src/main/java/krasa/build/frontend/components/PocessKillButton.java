@@ -25,7 +25,7 @@ public class PocessKillButton extends AjaxButton {
 	}
 
 	@Override
-	protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+	protected void onSubmit(AjaxRequestTarget target) {
 		model.getObject().kill("killed manually");
 		this.setEnabled(false);
 		target.add(this);

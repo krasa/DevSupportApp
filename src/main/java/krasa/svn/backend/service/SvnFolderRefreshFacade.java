@@ -19,7 +19,7 @@ import org.tmatesoft.svn.core.SVNDirEntry;
  */
 @Component
 @Transactional(value = MainConfig.HSQLDB_TX_MANAGER)
-public class SvnFolderRefreshService {
+public class SvnFolderRefreshFacade {
 
 	@Autowired
 	private SvnFolderDAO svnFolderDAO;
@@ -28,11 +28,11 @@ public class SvnFolderRefreshService {
 	@Autowired
 	private GlobalSettingsProvider globalSettingsProvider;
 
-	public SvnFolderRefreshService() {
+	public SvnFolderRefreshFacade() {
 	}
 
 	@Autowired
-	public SvnFolderRefreshService(GenericDaoBuilder genericDaoBuilder) {
+	public SvnFolderRefreshFacade(GenericDaoBuilder genericDaoBuilder) {
 		repositoryGenericDAO = genericDaoBuilder.build(Repository.class);
 	}
 

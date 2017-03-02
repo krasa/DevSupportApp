@@ -1,14 +1,16 @@
 package krasa.build.frontend.pages;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.wicket.model.IModel;
 
 import krasa.build.backend.domain.BuildJob;
 import krasa.build.backend.dto.LogFileDto;
 import krasa.build.frontend.components.LogModel;
 import krasa.core.frontend.pages.FileSystemLogUtils;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.wicket.model.IModel;
 
 class BuildLogModel extends LogModel {
 
@@ -43,7 +45,7 @@ class BuildLogModel extends LogModel {
 			reader.skip(offset);
 			String s = IOUtils.toString(reader);
 			return new LogFileDto(s.length() + offset, s);
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			throw new RuntimeException(e.getMessage(), e);
 		}
 	}

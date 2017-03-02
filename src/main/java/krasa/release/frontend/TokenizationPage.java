@@ -1,19 +1,9 @@
 package krasa.release.frontend;
 
-import java.io.*;
-import java.util.*;
-
-import krasa.core.frontend.StaticImage;
-import krasa.core.frontend.commons.LabelPanel;
-import krasa.core.frontend.commons.table.*;
-import krasa.core.frontend.pages.*;
-import krasa.release.domain.TokenizationPageModel;
-import krasa.release.service.TokenizationService;
-import krasa.release.tokenization.TokenizationResult;
-import krasa.svn.backend.domain.*;
-import krasa.svn.backend.facade.SvnFacade;
-import krasa.svn.frontend.component.BranchAutocompleteFormPanel;
-import krasa.svn.frontend.component.table.FixedModalWindow;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.wicket.Component;
@@ -25,10 +15,36 @@ import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTe
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackDefaultDataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
-import org.apache.wicket.markup.html.form.*;
-import org.apache.wicket.model.*;
+import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.RequiredTextField;
+import org.apache.wicket.markup.html.form.TextArea;
+import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.model.AbstractReadOnlyModel;
+import org.apache.wicket.model.CompoundPropertyModel;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.LoadableDetachableModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+
+import krasa.build.backend.facade.UsernameException;
+import krasa.core.frontend.StaticImage;
+import krasa.core.frontend.commons.LabelPanel;
+import krasa.core.frontend.commons.table.ButtonColumn;
+import krasa.core.frontend.commons.table.LabelColumn;
+import krasa.core.frontend.commons.table.SortableModelDataProvider;
+import krasa.core.frontend.pages.BasePage;
+import krasa.core.frontend.pages.FileSystemLogPage;
+import krasa.core.frontend.web.CookieUtils;
+import krasa.release.domain.TokenizationPageModel;
+import krasa.release.service.TokenizationFacade;
+import krasa.release.tokenization.TokenizationResult;
+import krasa.svn.backend.domain.Displayable;
+import krasa.svn.backend.domain.Profile;
+import krasa.svn.backend.domain.SvnFolder;
+import krasa.svn.backend.facade.SvnFacade;
+import krasa.svn.frontend.component.BranchAutocompleteFormPanel;
+import krasa.svn.frontend.component.table.FixedModalWindow;
 
 /**
  * @author Vojtech Krasa
@@ -36,7 +52,7 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 public class TokenizationPage extends BasePage {
 
 	@SpringBean
-	TokenizationService tokenizationService;
+	TokenizationFacade tokenizationFacade;
 	@SpringBean
 	SvnFacade facade;
 
@@ -97,47 +113,60 @@ public class TokenizationPage extends BasePage {
 		return new AjaxButton("executeSynchronously") {
 
 			@Override
-			protected void onError(AjaxRequestTarget target, Form<?> form) {
+			protected void onError(AjaxRequestTarget target) {
 				target.add(getFeedbackPanel());
 			}
 
 			@Override
-			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-				modalWindow.setContent(new AjaxLazyLoadPanel(modalWindow.getContentId()) {
+			protected void onSubmit(AjaxRequestTarget target) {
+				try {
+					CookieUtils.getValidUsername();
+					modalWindow.setContent(new AjaxLazyLoadPanel(modalWindow.getContentId()) {
 
-					private TokenizationResult result;
+						private TokenizationResult result;
 
-					@Override
-					public Component getLazyLoadComponent(String markupId) {
-						if (result == null) {
-							setAsDefault();
-							result = tokenizationService.tokenizeSynchronously(tokenizationPageModel);
-						}
-						LoadableDetachableModel<String> labelModel = new LoadableDetachableModel<String>() {
-
-							@Override
-							protected String load() {
+						@Override
+						public Component getLazyLoadComponent(String markupId) {
+							if (result == null) {
+								setAsDefault();
 								try {
-									if (!result.getLogFile().exists()) {
-										return "File does not exists";
-									}
-									return FileUtils.readFileToString(result.getLogFile());
-								} catch (IOException e) {
-									throw new RuntimeException(e);
+									result = tokenizationFacade.tokenizeSynchronously(tokenizationPageModel);
+								} catch (UsernameException e) {
+									error(e.getMessage());
+									target.add(TokenizationPage.this.getFeedbackPanel());
+									target.appendJavaScript("alert('" + e.getMessage() + "');");
 								}
-
 							}
-						};
-						return new LabelPanel<String>(markupId, labelModel) {
+							LoadableDetachableModel<String> labelModel = new LoadableDetachableModel<String>() {
 
-							@Override
-							protected Component getComponent(String id, IModel<String> labelModel) {
-								return new MultiLineLabel(id, labelModel);
-							}
-						};
-					}
-				});
-				modalWindow.show(target);
+								@Override
+								protected String load() {
+									try {
+										if (!result.getLogFile().exists()) {
+											return "File does not exists";
+										}
+										return FileUtils.readFileToString(result.getLogFile());
+									} catch (IOException e) {
+										throw new RuntimeException(e);
+									}
+
+								}
+							};
+							return new LabelPanel<String>(markupId, labelModel) {
+
+								@Override
+								protected Component getComponent(String id, IModel<String> labelModel) {
+									return new MultiLineLabel(id, labelModel);
+								}
+							};
+						}
+					});
+					modalWindow.show(target);
+				} catch (UsernameException e) {
+					error(e.getMessage());
+					target.add(TokenizationPage.this.getFeedbackPanel());
+					target.appendJavaScript("alert('" + e.getMessage() + "');");
+				}
 			}
 		};
 	}
@@ -172,7 +201,7 @@ public class TokenizationPage extends BasePage {
 		return new ButtonColumn<String>(new Model<>(""), null, StaticImage.DELETE) {
 
 			@Override
-			protected void onSubmit(IModel<String> model, AjaxRequestTarget target, Form<?> form) {
+			protected void onSubmit(IModel<String> model, AjaxRequestTarget target) {
 				tokenizationPageModel.getBranchesPatterns().remove(model.getObject());
 				{
 					target.add(branchesTable);
@@ -215,17 +244,23 @@ public class TokenizationPage extends BasePage {
 		AjaxButton button = new AjaxButton("execute") {
 
 			@Override
-			protected void onError(AjaxRequestTarget target, Form<?> form) {
+			protected void onError(AjaxRequestTarget target) {
 				target.add(getFeedbackPanel());
 			}
 
 			@Override
-			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+			protected void onSubmit(AjaxRequestTarget target) {
 				// setAsDefault();
-				File logFile = tokenizationService.tokenizeAsync(tokenizationPageModel);
-				String tokenize = logFile.getName();
-				PageParameters parameters = FileSystemLogPage.getTokenizationPageParameters(tokenize);
-				setResponsePage(FileSystemLogPage.class, parameters);
+				try {
+					File logFile = tokenizationFacade.tokenizeAsync(tokenizationPageModel);
+					String tokenize = logFile.getName();
+					PageParameters parameters = FileSystemLogPage.getTokenizationPageParameters(tokenize);
+					setResponsePage(FileSystemLogPage.class, parameters);
+				} catch (UsernameException e) {
+					error(e.getMessage());
+					target.add(TokenizationPage.this.getFeedbackPanel());
+					target.appendJavaScript("alert('" + e.getMessage() + "');");
+				}
 			}
 		};
 		// button.setDefaultFormProcessing(false);
@@ -236,7 +271,7 @@ public class TokenizationPage extends BasePage {
 		AjaxButton reset = new AjaxButton("reset") {
 
 			@Override
-			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+			protected void onSubmit(AjaxRequestTarget target) {
 				form.clearInput();
 				tokenizationPageModel.importFrom(new TokenizationPageModel());
 				target.add(TokenizationPage.this);
@@ -250,14 +285,14 @@ public class TokenizationPage extends BasePage {
 		AjaxButton generateJson = new AjaxButton("generateJson") {
 
 			@Override
-			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+			protected void onSubmit(AjaxRequestTarget target) {
 				tokenizationPageModel.regenerateJson();
 				jsonTextArea.modelChanged();
 				target.add(jsonTextArea);
 			}
 
 			@Override
-			protected void onError(AjaxRequestTarget target, Form<?> form) {
+			protected void onError(AjaxRequestTarget target) {
 				target.add(getFeedbackPanel());
 			}
 		};

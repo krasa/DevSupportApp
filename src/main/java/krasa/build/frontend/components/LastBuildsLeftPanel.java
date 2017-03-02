@@ -1,25 +1,38 @@
 package krasa.build.frontend.components;
 
-import java.util.*;
-
-import krasa.build.backend.dto.*;
-import krasa.build.backend.exception.ProcessAlreadyRunning;
-import krasa.build.backend.facade.*;
-import krasa.build.frontend.pages.BuildLogPage;
-import krasa.core.frontend.StaticImage;
-import krasa.core.frontend.commons.*;
+import java.util.Date;
+import java.util.List;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.list.*;
+import org.apache.wicket.markup.html.list.ListItem;
+import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.model.*;
-import org.apache.wicket.protocol.ws.api.*;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.LoadableDetachableModel;
+import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.protocol.ws.api.WebSocketBehavior;
+import org.apache.wicket.protocol.ws.api.WebSocketRequestHandler;
 import org.apache.wicket.protocol.ws.api.message.IWebSocketPushMessage;
 import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.slf4j.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import krasa.build.backend.dto.BuildJobDto;
+import krasa.build.backend.dto.BuildableComponentDto;
+import krasa.build.backend.exception.ProcessAlreadyRunning;
+import krasa.build.backend.facade.BuildFacade;
+import krasa.build.backend.facade.ComponentChangedEvent;
+import krasa.build.backend.facade.UsernameException;
+import krasa.build.frontend.pages.BuildLogPage;
+import krasa.core.frontend.StaticImage;
+import krasa.core.frontend.commons.ButtonPanel;
+import krasa.core.frontend.commons.DateModel;
+import krasa.core.frontend.commons.LabeledBookmarkablePageLink;
+import krasa.core.frontend.commons.StyledLabel;
+import krasa.core.frontend.pages.BasePage;
 
 public class LastBuildsLeftPanel extends Panel {
 
@@ -82,12 +95,16 @@ public class LastBuildsLeftPanel extends Panel {
 				form.add(new ButtonPanel("rerun", "Rerun", StaticImage.RERUN2) {
 
 					@Override
-					protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+					protected void onSubmit(AjaxRequestTarget target) {
 						BuildJobDto modelObject1 = (BuildJobDto) form.getModelObject();
 						BuildableComponentDto transform = BuildableComponentDto.byId(modelObject1.getComponentId());
 						try {
 							facade.buildComponent(transform);
 						} catch (ProcessAlreadyRunning e) {
+						} catch (UsernameException e) {
+							error(e.getMessage());
+							target.add(((BasePage) this.getPage()).getFeedbackPanel());
+							target.appendJavaScript("alert('" + e.getMessage() + "');");
 						}
 					}
 				});

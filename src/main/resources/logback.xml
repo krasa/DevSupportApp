@@ -69,5 +69,6 @@
 	<logger name="org.apache.http" level="info"/>
 	<!--<logger name="org.hibernate.SQL" level="debug"/>-->
 	<logger name="org.apache.wicket.atmosphere.EventBus" level="warn"/>
+	<logger name="krasa.core.backend.config.CommonConfig" level="debug"/>
 
 </configuration>

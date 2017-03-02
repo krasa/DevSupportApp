@@ -3,8 +3,8 @@ package krasa.svn.frontend.component.table;
 import java.util.*;
 
 import krasa.svn.backend.domain.SvnFolder;
-import krasa.svn.backend.facade.SvnFacade;
 
+import krasa.svn.backend.facade.SvnFacade;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.ISortState;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.ISortableDataProvider;
 import org.apache.wicket.extensions.markup.html.repeater.util.SingleSortState;

@@ -1,17 +1,20 @@
 package krasa.svn.frontend.component.merge;
 
-import krasa.core.frontend.components.BasePanel;
-import krasa.svn.backend.dto.MergeInfoResultItem;
-import krasa.svn.backend.service.MergeService;
-
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.model.*;
+import org.apache.wicket.markup.html.panel.FeedbackPanel;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.tmatesoft.svn.core.SVNLogEntry;
+
+import krasa.core.frontend.components.BasePanel;
+import krasa.core.frontend.pages.BasePage;
+import krasa.svn.backend.dto.MergeInfoResultItem;
+import krasa.svn.backend.service.MergeFacade;
 
 /**
  * @author Vojtech Krasa
@@ -19,7 +22,7 @@ import org.tmatesoft.svn.core.SVNLogEntry;
 public class DiffPanel extends BasePanel {
 
 	@SpringBean
-	protected MergeService mergeService;
+	protected MergeFacade mergeFacade;
 	private ModalWindow modal;
 
 	public DiffPanel(String markupId, ModalWindow modal1, MergeInfoResultItem mergeInfoResultItem,
@@ -37,7 +40,7 @@ public class DiffPanel extends BasePanel {
 		form.add(new AjaxButton("close") {
 
 			@Override
-			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+			protected void onSubmit(AjaxRequestTarget target) {
 				modal.close(target);
 			}
 		});
@@ -48,7 +51,7 @@ public class DiffPanel extends BasePanel {
 
 			@Override
 			protected String load() {
-				return mergeService.getDiff(mergeInfoResultItem, svnLogEntry);
+				return mergeFacade.getDiff(mergeInfoResultItem, svnLogEntry);
 			}
 		};
 		return diff;
@@ -70,9 +73,16 @@ public class DiffPanel extends BasePanel {
 		}
 
 		@Override
-		protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-			mergeService.merge(mergeInfoResultItem, revisionObject);
-			onMerged(revisionObject, target);
+		protected void onSubmit(AjaxRequestTarget target) {
+			try {
+				mergeFacade.merge(mergeInfoResultItem, revisionObject);
+				onMerged(revisionObject, target);
+			} catch (Throwable e) {
+				BasePage s = (BasePage) this.getPage();
+				FeedbackPanel feedbackPanel = s.getFeedbackPanel();
+				feedbackPanel.error(e.getMessage());
+				target.add(feedbackPanel);
+			}
 			modal.close(target);
 		}
 	}
@@ -89,9 +99,16 @@ public class DiffPanel extends BasePanel {
 		}
 
 		@Override
-		protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-			mergeService.mergeSvnMergeInfoOnly(mergeInfoResultItem, revisionObject);
-			onMerged(revisionObject, target);
+		protected void onSubmit(AjaxRequestTarget target) {
+			try {
+				mergeFacade.mergeSvnMergeInfoOnly(mergeInfoResultItem, revisionObject);
+				onMerged(revisionObject, target);
+			} catch (Throwable e) {
+				BasePage s = (BasePage) this.getPage();
+				FeedbackPanel feedbackPanel = s.getFeedbackPanel();
+				feedbackPanel.error(e.getMessage());
+				target.add(feedbackPanel);
+			}
 			modal.close(target);
 		}
 	}

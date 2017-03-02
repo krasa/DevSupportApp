@@ -1,18 +1,26 @@
 package krasa.core.frontend.pages;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.io.Reader;
 import java.util.Arrays;
 
-import krasa.build.backend.dto.LogFileDto;
+import org.apache.commons.io.Charsets;
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import org.apache.commons.io.*;
-import org.slf4j.*;
+import krasa.build.backend.dto.LogFileDto;
 
 public class FileSystemLogUtils {
 
 	private static final Logger log = LoggerFactory.getLogger(FileSystemLogUtils.class);
 
-	public static final int BUFFER_SIZE = 10000;
+	public static final int BUFFER_SIZE = 128000;
 
 	public static File getLogFileByName(String logName) {
 		if (!logName.endsWith(".log")) {

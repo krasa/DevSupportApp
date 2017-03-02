@@ -87,7 +87,7 @@ public class Shell {
 
 			// channel.connect();
 			channel.connect(3 * 1000);
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			System.out.println(e);
 		}
 	}

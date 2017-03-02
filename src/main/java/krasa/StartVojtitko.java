@@ -2,39 +2,28 @@ package krasa;
 
 import java.io.IOException;
 
-import org.apache.wicket.protocol.ws.javax.MyWicketServerEndpointConfig;
-import org.eclipse.jetty.server.*;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.actuate.system.*;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.*;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
-import org.springframework.boot.context.embedded.*;
-import org.springframework.boot.context.embedded.jetty.*;
-import org.springframework.boot.context.web.SpringBootServletInitializer;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.*;
-import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.config.annotation.*;
-import org.springframework.web.socket.config.annotation.*;
-import org.springframework.web.socket.server.standard.ServerEndpointExporter;
+import org.springframework.context.annotation.ComponentScan;
 
 /** use StartVojtitkoDummy, this class needs some special configuration... */
-@Configuration
+@SpringBootApplication
 @EnableAutoConfiguration(exclude = { HibernateJpaAutoConfiguration.class, DataSourceAutoConfiguration.class,
 		DataSourceTransactionManagerAutoConfiguration.class })
 @ComponentScan(basePackages = "krasa")
-public class StartVojtitko extends SpringBootServletInitializer implements WebSocketConfigurer {
+public class StartVojtitko {
 
 	public static void main(String[] args) throws IOException {
 		start(args);
 	}
 
 	public static ConfigurableApplicationContext start(String[] args) {
-		SpringApplication springApplication = new SpringApplication(StartVojtitko.class);
-		springApplication.addListeners(new ApplicationPidFileWriter());
-		springApplication.addListeners(new EmbeddedServerPortFileWriter());
-		return springApplication.run(args);
+		return new SpringApplicationBuilder().sources(StartVojtitko.class).run(args);
 		// System.out.println("Let's inspect the beans provided by Spring Boot:");
 		//
 		// String[] beanNames = ctx.getBeanDefinitionNames();
@@ -44,51 +33,4 @@ public class StartVojtitko extends SpringBootServletInitializer implements WebSo
 		// }
 	}
 
-	@Override
-	public void registerWebSocketHandlers(WebSocketHandlerRegistry webSocketHandlerRegistry) {
-
-	}
-
-	@Component
-	public static class JettyCustomizer implements EmbeddedServletContainerCustomizer {
-
-		@Override
-		public void customize(ConfigurableEmbeddedServletContainer container) {
-			if (container instanceof JettyEmbeddedServletContainerFactory) {
-				configureJetty((JettyEmbeddedServletContainerFactory) container);
-			}
-		}
-
-		private void configureJetty(JettyEmbeddedServletContainerFactory jettyFactory) {
-			jettyFactory.addServerCustomizers(new JettyServerCustomizer() {
-
-				@Override
-				public void customize(Server server) {
-					ServerConnector serverConnector = new ServerConnector(server);
-					serverConnector.setPort(8765);
-					server.addConnector(serverConnector);
-				}
-			});
-		}
-
-	}
-
-	@Bean
-	public ServerEndpointExporter serverEndpointExporter() {
-		return new ServerEndpointExporter();
-	}
-
-	@Bean
-	public MyWicketServerEndpointConfig myWicketServerEndpointConfig() {
-		return new MyWicketServerEndpointConfig();
-	}
-
-	@Configuration
-	public static class StaticResourceConfiguration extends WebMvcConfigurerAdapter {
-
-		@Override
-		public void addResourceHandlers(ResourceHandlerRegistry registry) {
-			registry.addResourceHandler("/vojtitkoNG/**").addResourceLocations("file:html5/dist/");
-		}
-	}
 }

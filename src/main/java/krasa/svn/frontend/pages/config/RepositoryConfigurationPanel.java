@@ -7,8 +7,8 @@ import krasa.core.frontend.commons.EntityModelWrapper;
 import krasa.core.frontend.commons.table.*;
 import krasa.core.frontend.components.BasePanel;
 import krasa.svn.backend.domain.*;
-import krasa.svn.backend.facade.SvnFacade;
 
+import krasa.svn.backend.facade.SvnFacade;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackDefaultDataTable;
@@ -35,7 +35,7 @@ public class RepositoryConfigurationPanel extends BasePanel {
 		form.add(new AjaxButton("add") {
 
 			@Override
-			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+			protected void onSubmit(AjaxRequestTarget target) {
 				facade.saveRepository((Repository) form.getModelObject());
 				repositoryEntityModelWrapper.setWrappedModel(newRepository());
 				refresh(target);
@@ -70,7 +70,7 @@ public class RepositoryConfigurationPanel extends BasePanel {
 		});
 		// columns.add(new ButtonColumn<Repository>(new Model<String>("edit")) {
 		// @Override
-		// protected void onSubmit(IModel<Repository> model, AjaxRequestTarget target, Form<?> form) {
+		// protected void onSubmit(IModel<Repository> model, AjaxRequestTarget target) {
 		// repositoryEntityModelWrapper.setWrappedModel(model);
 		// target.add(form);
 		// }
@@ -105,7 +105,7 @@ public class RepositoryConfigurationPanel extends BasePanel {
 		columns.add(new ButtonColumn<Repository>(new Model<String>("delete")) {
 
 			@Override
-			protected void onSubmit(IModel<Repository> model, AjaxRequestTarget target, Form<?> form) {
+			protected void onSubmit(IModel<Repository> model, AjaxRequestTarget target) {
 				facade.deleteRepository(model.getObject().getId());
 				refresh(target);
 			}

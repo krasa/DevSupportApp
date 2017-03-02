@@ -4,8 +4,8 @@ import java.util.*;
 import java.util.logging.Logger;
 
 import krasa.svn.backend.domain.Displayable;
-import krasa.svn.backend.facade.SvnFacade;
 
+import krasa.svn.backend.facade.SvnFacade;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.*;
 import org.apache.wicket.markup.html.panel.Panel;

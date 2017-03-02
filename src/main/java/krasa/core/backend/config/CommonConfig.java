@@ -1,10 +1,13 @@
 package krasa.core.backend.config;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 
 public abstract class CommonConfig {
 
+	private static final Logger log = LoggerFactory.getLogger(CommonConfig.class);
 	@Autowired
 	protected Environment environment;
 
@@ -13,7 +16,11 @@ public abstract class CommonConfig {
 	}
 
 	public String get(String key) {
-		return environment.getRequiredProperty(key);
+		String requiredProperty = environment.getRequiredProperty(key);
+
+		System.out.println("key=" + key + " result=" + requiredProperty);
+		log.info("key={} result={}", key, requiredProperty);
+		return requiredProperty;
 	}
 
 	public String getOptional(String key) {

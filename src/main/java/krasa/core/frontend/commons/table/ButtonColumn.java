@@ -35,12 +35,12 @@ public abstract class ButtonColumn<T> extends AbstractColumn<T, String> {
 	protected ButtonPanel createButtonPanel(String id, final IModel<T> model, String displayModel) {
 		return new ButtonPanel(id, displayModel, image) {
 			@Override
-			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-				ButtonColumn.this.onSubmit(model, target, form);
+			protected void onSubmit(AjaxRequestTarget target) {
+				ButtonColumn.this.onSubmit(model,target);
 			}
 		};
 	}
 
-	abstract protected void onSubmit(IModel<T> model, AjaxRequestTarget target, Form<?> form);
+	abstract protected void onSubmit(IModel<T> model, AjaxRequestTarget target);
 
 }

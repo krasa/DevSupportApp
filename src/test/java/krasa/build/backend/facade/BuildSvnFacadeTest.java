@@ -7,7 +7,7 @@ import krasa.build.backend.domain.*;
 
 import org.junit.*;
 import org.springframework.beans.factory.annotation.Autowired;
-
+@Ignore
 public class BuildSvnFacadeTest extends FullTest {
 
 	public static final String ENV = "env";

@@ -2,17 +2,26 @@ package krasa.build.backend.domain;
 
 import java.util.Date;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Objects;
 
 import krasa.build.backend.execution.ProcessStatus;
-import krasa.build.backend.execution.process.*;
+import krasa.build.backend.execution.process.BuildJobProcess;
+import krasa.build.backend.execution.process.ProcessStatusListener;
 import krasa.build.backend.facade.BuildFacade;
 import krasa.core.backend.SpringApplicationContext;
 import krasa.core.backend.domain.AbstractEntity;
-
-import org.slf4j.*;
-
-import com.google.common.base.Objects;
 
 @Entity
 public class BuildJob extends AbstractEntity implements ProcessStatusListener {
@@ -130,7 +139,7 @@ public class BuildJob extends AbstractEntity implements ProcessStatusListener {
 	}
 
 	@Override
-	public void onStatusChanged(ProcessStatus processStatus) {
+	public void onStatusChanged(BuildJob buildJob, ProcessStatus processStatus) {
 		try {
 			SpringApplicationContext.getBean(BuildFacade.class).onStatusChanged(this, processStatus);
 		} catch (Throwable e) {
@@ -140,7 +149,7 @@ public class BuildJob extends AbstractEntity implements ProcessStatusListener {
 
 	@Override
 	public String toString() {
-		return Objects.toStringHelper(this).add("id", id).add("command", command).add("buildableComponent",
+		return Objects.toStringHelper(this).add("caller", caller).add("id", id).add("command", command).add("buildableComponent",
 				buildableComponent).add("process", buildJobProcess).add("status", status).add("startTime", startTime).add(
 				"endTime", endTime).toString();
 	}

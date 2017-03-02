@@ -1,27 +1,34 @@
 package krasa.build.backend.execution.adapter;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentSkipListMap;
 
-import javax.annotation.*;
+import javax.annotation.Nullable;
+import javax.annotation.PostConstruct;
 
-import krasa.build.backend.domain.*;
-import krasa.build.backend.exception.ProcessAlreadyRunning;
-import krasa.build.backend.facade.*;
-
-import org.slf4j.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.EvictingQueue;
 
+import krasa.build.backend.domain.BuildJob;
+import krasa.build.backend.domain.BuildableComponent;
+import krasa.build.backend.exception.ProcessAlreadyRunning;
+import krasa.build.backend.facade.CurrentlyBuildingUpdate;
+import krasa.build.backend.facade.EventService;
+
 @Component
 public class CurrentBuildJobsHolder {
 
 	protected final Logger log = LoggerFactory.getLogger(getClass());
 
-	private static Map<Integer, BuildJob> buildJobHashMap = new ConcurrentHashMap<>();
+	private static Map<Integer, BuildJob> buildJobHashMap = new ConcurrentSkipListMap<>();
 	private static EvictingQueue<BuildJob> finished = EvictingQueue.create(10);
 	@Autowired
 	private EventService eventService;
@@ -102,7 +109,7 @@ public class CurrentBuildJobsHolder {
 						eventService.sendEvent(CurrentlyBuildingUpdate.INSTANCE);
 						wasEmpty = empty;
 					}
-				} catch (Exception e) {
+				} catch (Throwable e) {
 					if (!broken) {
 						log.error("", e);
 					}

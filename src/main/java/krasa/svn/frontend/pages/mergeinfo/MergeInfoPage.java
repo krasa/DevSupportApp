@@ -52,7 +52,7 @@ public class MergeInfoPage extends BasePage {
 		form.add(new IndicatingAjaxButton("findMerges") {
 
 			@Override
-			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+			protected void onSubmit(AjaxRequestTarget target) {
 				MergeInfoResultPanel result = new MergeInfoResultPanel(RESULT,
 						new LoadableDetachableModel<MergeInfoResult>() {
 
@@ -68,7 +68,7 @@ public class MergeInfoPage extends BasePage {
 			}
 
 			@Override
-			protected void onError(AjaxRequestTarget target, Form<?> form) {
+			protected void onError(AjaxRequestTarget target) {
 			}
 		});
 		return form;
@@ -101,7 +101,7 @@ public class MergeInfoPage extends BasePage {
 			}
 
 			@Override
-			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+			protected void onSubmit(AjaxRequestTarget target) {
 				facade.replaceSearchFrom();
 				update(target);
 			}
@@ -116,7 +116,7 @@ public class MergeInfoPage extends BasePage {
 			}
 
 			@Override
-			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+			protected void onSubmit(AjaxRequestTarget target) {
 				facade.replaceSearchFromToTrunk();
 				update(target);
 			}

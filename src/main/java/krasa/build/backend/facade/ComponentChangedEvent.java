@@ -1,15 +1,14 @@
 package krasa.build.backend.facade;
 
-import java.io.Serializable;
-
 import krasa.build.backend.dto.BuildableComponentDto;
-
-import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.core.request.handler.IPartialPageRequestHandler;
 import org.apache.wicket.protocol.ws.api.message.IWebSocketPushMessage;
+
+import java.io.Serializable;
 
 public class ComponentChangedEvent implements Serializable, IWebSocketPushMessage {
 
-	private AjaxRequestTarget target;
+	private IPartialPageRequestHandler handler;
 	private BuildableComponentDto buildableComponentDto;
 
 	public ComponentChangedEvent(BuildableComponentDto buildableComponentDto) {
@@ -20,11 +19,11 @@ public class ComponentChangedEvent implements Serializable, IWebSocketPushMessag
 		return buildableComponentDto;
 	}
 
-	public AjaxRequestTarget getTarget() {
-		return target;
+	public IPartialPageRequestHandler getHandler() {
+		return handler;
 	}
 
-	public void setTarget(AjaxRequestTarget target) {
-		this.target = target;
+	public void setHandler(IPartialPageRequestHandler handler) {
+		this.handler = handler;
 	}
 }

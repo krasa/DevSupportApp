@@ -2,13 +2,19 @@ package krasa.core.backend.dao;
 
 import java.util.List;
 
-import krasa.core.backend.domain.AbstractEntity;
-
-import org.hibernate.*;
+import org.hibernate.Criteria;
+import org.hibernate.HibernateException;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
-import org.slf4j.*;
-import org.springframework.beans.factory.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+
+import krasa.core.backend.domain.AbstractEntity;
 
 @Service
 public abstract class AbstractDAO<T extends AbstractEntity> implements DAO<T> {
@@ -132,7 +138,7 @@ public abstract class AbstractDAO<T extends AbstractEntity> implements DAO<T> {
 	protected Query query(String query) {
 		try {
 			return getSession().createQuery(query);
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			throw new HibernateException("Error while creating query: " + query, e);
 		}
 	}
@@ -151,7 +157,7 @@ public abstract class AbstractDAO<T extends AbstractEntity> implements DAO<T> {
 			List result = query.list();
 			log.debug("Created list of records: [{}]", result);
 			return result;
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			throw new HibernateException("Error while listing query: " + query, e);
 		}
 	}
@@ -166,7 +172,7 @@ public abstract class AbstractDAO<T extends AbstractEntity> implements DAO<T> {
 			Object result = criteria.uniqueResult();
 			log.debug("Obtained unique result: [{}]", result);
 			return result;
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			throw new HibernateException("Error while getting unique result: " + criteria, e);
 		}
 	}

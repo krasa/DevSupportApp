@@ -5,8 +5,9 @@ import krasa.build.backend.domain.BuildJob;
 public class ProcessAlreadyRunning extends RuntimeException {
 	private BuildJob progress;
 
-	public ProcessAlreadyRunning(BuildJob progress) {
-		this.progress = progress;
+	public ProcessAlreadyRunning(BuildJob job) {
+		super("already building " + job.getBuildableComponent().getName());
+		this.progress = job;
 	}
 
 	public BuildJob getProgress() {
@@ -16,4 +17,5 @@ public class ProcessAlreadyRunning extends RuntimeException {
 	public void setProgress(BuildJob progress) {
 		this.progress = progress;
 	}
+
 }

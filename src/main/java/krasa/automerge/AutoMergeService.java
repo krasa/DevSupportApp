@@ -7,7 +7,7 @@ import javax.annotation.Nullable;
 import krasa.automerge.domain.MergeJob;
 import krasa.build.backend.facade.EventService;
 import krasa.svn.backend.dto.MergeJobDto;
-import krasa.svn.backend.service.MergeService;
+import krasa.svn.backend.service.MergeFacade;
 
 import org.slf4j.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +29,7 @@ public class AutoMergeService {
 	private AutoMergeQueue autoMergeQueue;
 
 	@Autowired
-	private MergeService mergeService;
+	private MergeFacade mergeFacade;
 
 	@Autowired
 	EventService eventService;
@@ -75,7 +75,7 @@ public class AutoMergeService {
 	}
 
 	public void statusUpdated(MergeJob mergeJob) {
-		mergeService.update(mergeJob);
+		mergeFacade.update(mergeJob);
 		sendMergeEvent();
 	}
 

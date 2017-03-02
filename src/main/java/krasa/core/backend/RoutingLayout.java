@@ -1,9 +1,12 @@
 package krasa.core.backend;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.*;
+import ch.qos.logback.core.CoreConstants;
+import ch.qos.logback.core.Layout;
+import ch.qos.logback.core.LayoutBase;
 
 public class RoutingLayout extends LayoutBase<ILoggingEvent> {
 
@@ -36,7 +39,7 @@ public class RoutingLayout extends LayoutBase<ILoggingEvent> {
 			} else {
 				return event.getMessage();
 			}
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			addError(e.getMessage(), e);
 			return e.toString();
 		}

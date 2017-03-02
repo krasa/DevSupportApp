@@ -10,7 +10,12 @@
         <input wicket:id="clearSvn" type="submit"
                wicket:message="value:clearSvn"/>
         <input wicket:id="cleanHsqldb" value="cleanHsqldb" type="submit"/>
-
+        <input wicket:id="shutdown" value="shutdown" type="submit"/>
+        <br/>
+        <div>
+            <input wicket:id="addUser" value="addUser" type="submit"/>
+            <table wicket:id="users" class="dataview"></table>
+        </div>
     </form>
     <div wicket:id="repositories"></div>
 

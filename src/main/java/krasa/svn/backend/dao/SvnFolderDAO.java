@@ -1,13 +1,18 @@
 package krasa.svn.backend.dao;
 
-import java.util.*;
-
-import krasa.core.backend.dao.AbstractDAO;
-import krasa.svn.backend.domain.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import org.hibernate.Query;
 import org.springframework.stereotype.Repository;
 import org.tmatesoft.svn.core.SVNDirEntry;
+
+import krasa.core.backend.dao.AbstractDAO;
+import krasa.svn.backend.domain.Branch;
+import krasa.svn.backend.domain.SvnFolder;
+import krasa.svn.backend.domain.Type;
 
 /**
  * @author Vojtech Krasa
@@ -150,9 +155,11 @@ public class SvnFolderDAO extends AbstractDAO<SvnFolder> {
 	}
 
 	public void deleteAllBy(krasa.svn.backend.domain.Repository repository) {
-		Query query = getSession().createQuery("delete from " + getEntityName() + " where repository = :repository").setParameter(
-				"repository", repository);
-		query.executeUpdate();
+		getSession().delete(repository);
+		// Query query = getSession().createQuery("delete from " + getEntityName() + " where repository =
+		// :repository").setParameter(
+		// "repository", repository);
+		// query.executeUpdate();
 
 	}
 }

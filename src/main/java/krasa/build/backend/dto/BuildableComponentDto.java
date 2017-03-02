@@ -1,16 +1,25 @@
 package krasa.build.backend.dto;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
 
-import krasa.build.backend.DateUtils;
-import krasa.build.backend.domain.*;
-import krasa.core.frontend.commons.table.CustomIdTableItem;
-
-import org.apache.commons.lang3.builder.*;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
+
+import krasa.build.backend.DateUtils;
+import krasa.build.backend.domain.BuildJob;
+import krasa.build.backend.domain.BuildableComponent;
+import krasa.build.backend.domain.Status;
+import krasa.core.frontend.commons.table.CustomIdTableItem;
 
 public class BuildableComponentDto implements Serializable, CustomIdTableItem {
 
@@ -18,6 +27,8 @@ public class BuildableComponentDto implements Serializable, CustomIdTableItem {
 	private String name;
 
 	private Integer environmentId;
+	private Boolean build;
+	private Integer buildOrder;
 
 	private String buildMode;
 	private Integer buildJobId;
@@ -39,6 +50,8 @@ public class BuildableComponentDto implements Serializable, CustomIdTableItem {
 		name = component.getName();
 		environmentId = component.getEnvironment().getId();
 		buildMode = component.getBuildMode();
+		build = component.isBuild();
+		buildOrder = component.getBuildOrder();
 		if (buildJob != null) {
 			buildJobId = buildJob.getId();
 			buildEndTime = buildJob.getEndTime();
@@ -91,6 +104,22 @@ public class BuildableComponentDto implements Serializable, CustomIdTableItem {
 
 	public static BuildableComponentDto transform(BuildableComponent component) {
 		return new BuildableComponentDto(component);
+	}
+
+	public boolean isBuild() {
+		return build != null && build;
+	}
+
+	public void setBuild(boolean build) {
+		this.build = build;
+	}
+
+	public Integer getBuildOrder() {
+		return buildOrder;
+	}
+
+	public void setBuildOrder(Integer buildOrder) {
+		this.buildOrder = buildOrder;
 	}
 
 	public Integer getComponentId() {

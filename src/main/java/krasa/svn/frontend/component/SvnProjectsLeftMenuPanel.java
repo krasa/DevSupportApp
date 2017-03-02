@@ -4,8 +4,8 @@ import java.util.List;
 
 import krasa.core.frontend.commons.ProjectLink;
 import krasa.svn.backend.domain.SvnFolder;
-import krasa.svn.backend.facade.SvnFacade;
 
+import krasa.svn.backend.facade.SvnFacade;
 import org.apache.wicket.markup.html.list.*;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.*;

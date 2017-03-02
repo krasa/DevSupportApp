@@ -7,7 +7,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.http.WebRequest;
-import org.slf4j.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RemoteHostUtils {
 	private static final Logger log = LoggerFactory.getLogger(RemoteHostUtils.class);
@@ -36,7 +37,7 @@ public class RemoteHostUtils {
 			String host = addr.getHostName();
 			host = simplifyHost(host);
 			return host;
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			log.error("", e);
 			return "unknown";
 		}

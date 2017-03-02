@@ -1,37 +1,61 @@
 package krasa.build.frontend.components;
 
 import java.lang.reflect.Method;
-import java.util.*;
-
-import krasa.build.backend.domain.Environment;
-import krasa.build.backend.dto.BuildableComponentDto;
-import krasa.build.backend.exception.ProcessAlreadyRunning;
-import krasa.build.backend.facade.*;
-import krasa.build.frontend.pages.BuildLogPage;
-import krasa.core.frontend.StaticImage;
-import krasa.core.frontend.commons.*;
-import krasa.core.frontend.commons.table.*;
-import krasa.core.frontend.components.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.behavior.AttributeAppender;
-import org.apache.wicket.event.*;
+import org.apache.wicket.event.Broadcast;
+import org.apache.wicket.event.IEvent;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackDefaultDataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.DataGridView;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
-import org.apache.wicket.markup.*;
+import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.link.Link;
-import org.apache.wicket.markup.html.panel.*;
-import org.apache.wicket.markup.repeater.*;
+import org.apache.wicket.markup.html.panel.FeedbackPanel;
+import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.markup.repeater.IItemFactory;
+import org.apache.wicket.markup.repeater.Item;
+import org.apache.wicket.markup.repeater.RefreshingView;
 import org.apache.wicket.markup.repeater.data.IDataProvider;
-import org.apache.wicket.model.*;
-import org.apache.wicket.protocol.ws.api.*;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.LoadableDetachableModel;
+import org.apache.wicket.model.Model;
+import org.apache.wicket.protocol.ws.api.WebSocketBehavior;
+import org.apache.wicket.protocol.ws.api.WebSocketRequestHandler;
 import org.apache.wicket.protocol.ws.api.message.IWebSocketPushMessage;
 import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.slf4j.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import krasa.build.backend.domain.Environment;
+import krasa.build.backend.dto.BuildableComponentDto;
+import krasa.build.backend.exception.ProcessAlreadyRunning;
+import krasa.build.backend.facade.BuildFacade;
+import krasa.build.backend.facade.ComponentChangedEvent;
+import krasa.build.backend.facade.ComponentDeletedEvent;
+import krasa.build.backend.facade.UsernameException;
+import krasa.build.frontend.pages.BuildLogPage;
+import krasa.core.frontend.StaticImage;
+import krasa.core.frontend.commons.EditablePanel;
+import krasa.core.frontend.commons.LabeledBookmarkablePageLink;
+import krasa.core.frontend.commons.LinkPanel;
+import krasa.core.frontend.commons.MyFeedbackPanel;
+import krasa.core.frontend.commons.table.ButtonColumn;
+import krasa.core.frontend.commons.table.CheckBoxColumn;
+import krasa.core.frontend.commons.table.DateColumn;
+import krasa.core.frontend.commons.table.DummyModelDataProvider;
+import krasa.core.frontend.commons.table.PanelColumn;
+import krasa.core.frontend.commons.table.ProjectLinkColumn;
+import krasa.core.frontend.commons.table.PropertyEditableColumn;
+import krasa.core.frontend.commons.table.StyledLabelColumn;
+import krasa.core.frontend.components.BaseEmptyPanel;
+import krasa.core.frontend.components.BasePanel;
 
 /**
  * @author Vojtech Krasa
@@ -62,7 +86,7 @@ public class BuildComponentsTablePanel extends BasePanel {
 					ComponentChangedEvent changedEvent = (ComponentChangedEvent) message;
 					if (changedEvent.getBuildableComponentDto().getEnvironmentId().equals(environmentId)) {
 						log.debug("ComponentChangedEvent " + changedEvent.getBuildableComponentDto());
-						changedEvent.setTarget(handler);
+						changedEvent.setHandler(handler);
 						send(table, Broadcast.DEPTH, message);
 					}
 				}
@@ -77,7 +101,7 @@ public class BuildComponentsTablePanel extends BasePanel {
 
 	private void refreshRow(AjaxRequestTarget target, BuildableComponentDto buildableComponentDto) {
 		ComponentChangedEvent payload = new ComponentChangedEvent(buildableComponentDto);
-		payload.setTarget(target);
+		payload.setHandler(target);
 		send(table, Broadcast.DEPTH, payload);
 	}
 
@@ -119,7 +143,46 @@ public class BuildComponentsTablePanel extends BasePanel {
 		columns.add(new StyledLabelColumn(new Model<>(""), "status"));
 		columns.add(editColumn());
 		columns.add(deleteColumn());
+		columns.add(buildAllColumn());
+		columns.add(buildOrderColumn());
 		return columns;
+	}
+
+	private IColumn<BuildableComponentDto, String> buildAllColumn() {
+		return new CheckBoxColumn<BuildableComponentDto>(new Model<>("build all")) {
+
+			@Override
+			protected void onUpdate(AjaxRequestTarget target, IModel<Boolean> booleanIModel,
+					IModel<BuildableComponentDto> model) {
+				BuildableComponentDto object = model.getObject();
+				object.setBuild(booleanIModel.getObject());
+				buildFacade.editBuildableComponent(object);
+			}
+
+			@Override
+			protected boolean isChecked(IModel<BuildableComponentDto> model) {
+				return model.getObject().isBuild();
+			}
+		};
+	}
+
+	private IColumn<BuildableComponentDto, String> buildOrderColumn() {
+		return new PropertyEditableColumn<BuildableComponentDto, String>(new Model<>("build order"), "buildOrder", 25) {
+
+			@Override
+			protected void decoratePanel(final EditablePanel<BuildableComponentDto> panel) {
+				super.decoratePanel(panel);
+				panel.getTextfield().add(new OnChangeAjaxBehavior() {
+
+					@Override
+					protected void onUpdate(AjaxRequestTarget target) {
+						BuildableComponentDto defaultModelObject = (BuildableComponentDto) panel.getDefaultModelObject();
+						buildFacade.editBuildableComponent(defaultModelObject);
+					}
+				});
+			}
+		};
+
 	}
 
 	private PanelColumn<BuildableComponentDto> logColumn() {
@@ -158,13 +221,17 @@ public class BuildComponentsTablePanel extends BasePanel {
 		return new ButtonColumn<BuildableComponentDto>(new Model<>(""), null, StaticImage.BUILD) {
 
 			@Override
-			protected void onSubmit(IModel<BuildableComponentDto> model, AjaxRequestTarget target, Form<?> form) {
+			protected void onSubmit(IModel<BuildableComponentDto> model, AjaxRequestTarget target) {
 				try {
 					buildFacade.buildComponent(model.getObject());
 					target.add(table);
 				} catch (ProcessAlreadyRunning e) {
 					info("already building");
 					target.add(feedback);
+				} catch (UsernameException e) {
+					error(e.getMessage());
+					target.add(feedback);
+					target.appendJavaScript("alert('" + e.getMessage() + "');");
 				}
 			}
 		};
@@ -174,7 +241,7 @@ public class BuildComponentsTablePanel extends BasePanel {
 		return new ButtonColumn<BuildableComponentDto>(new Model<>(""), null, StaticImage.EDIT) {
 
 			@Override
-			protected void onSubmit(IModel<BuildableComponentDto> model, AjaxRequestTarget target, Form<?> form) {
+			protected void onSubmit(IModel<BuildableComponentDto> model, AjaxRequestTarget target) {
 				final ModalWindow modalWindow = new ModalWindow(MODAL);
 				modalWindow.setContent(new ComponentEditPanel(modalWindow.getContentId(), model) {
 
@@ -196,7 +263,7 @@ public class BuildComponentsTablePanel extends BasePanel {
 		return new ButtonColumn<BuildableComponentDto>(new Model<>(""), null, StaticImage.DELETE) {
 
 			@Override
-			protected void onSubmit(IModel<BuildableComponentDto> model, AjaxRequestTarget target, Form<?> form) {
+			protected void onSubmit(IModel<BuildableComponentDto> model, AjaxRequestTarget target) {
 				buildFacade.deleteComponentById(model.getObject().getComponentId());
 				sendDeletedRowEvent(model, target);
 			}
@@ -241,7 +308,7 @@ public class BuildComponentsTablePanel extends BasePanel {
 						BuildableComponentDto buildableComponentDto = payload.getBuildableComponentDto();
 						if (buildableComponentDto.getComponentId().equals(getModelObject().getComponentId())) {
 							setModelObject(payload.getBuildableComponentDto());
-							payload.getTarget().add(this);
+							payload.getHandler().add(this);
 							event.stop();
 						}
 					} else if (event.getPayload() instanceof ComponentDeletedEvent) {
@@ -278,7 +345,7 @@ public class BuildComponentsTablePanel extends BasePanel {
 						+ "Wicket.$('%s').getElementsByTagName(\"tbody\")[0].appendChild(item);", "tr",
 						item.getMarkupId(), getMarkupId()));
 				target.add(item);
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				throw new RuntimeException(e);
 			}
 		}

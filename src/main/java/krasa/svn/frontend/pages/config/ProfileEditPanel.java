@@ -4,8 +4,8 @@ import java.util.logging.Logger;
 
 import krasa.core.frontend.MySession;
 import krasa.svn.backend.domain.Profile;
-import krasa.svn.backend.facade.SvnFacade;
 
+import krasa.svn.backend.facade.SvnFacade;
 import org.apache.wicket.markup.html.form.*;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.*;

@@ -1,12 +1,19 @@
 package krasa.core.backend.utils;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 
-import javax.xml.bind.*;
-import javax.xml.parsers.*;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.sax.SAXSource;
 
-import org.xml.sax.*;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
 
 public class JaxbUtils {
 
@@ -23,7 +30,7 @@ public class JaxbUtils {
 		try {
 			spf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
 			return spf;
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			throw new RuntimeException(e);
 		}
 	}

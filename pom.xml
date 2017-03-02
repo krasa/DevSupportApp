@@ -12,7 +12,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.2.3.RELEASE</version>
+		<version>1.4.1.RELEASE</version>
 	</parent>
 
 
@@ -38,23 +38,20 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jrebel-maven-plugin.version>1.1.3</jrebel-maven-plugin.version>
 
-		<!--<wicket.version>7.0.0-SNAPSHOT</wicket.version>-->
-		<wicket.version>7.0.0-M5</wicket.version>
+		<wicket.version>8.0.0-SNAPSHOT</wicket.version>
+		<!--<wicket.version>7.0.0-M5</wicket.version>-->
 
 		<hibernate.version>4.3.7.Final</hibernate.version>
 		<hibernate-validator.version>5.1.3.Final</hibernate-validator.version>
 		<validation-api.version>1.1.0.Final</validation-api.version>
 
 		<svnkit.version>1.8.9</svnkit.version>
-		<guava.version>18.0</guava.version>
+		<guava.version>20.0</guava.version>
 		<hsqldb.version>2.2.9</hsqldb.version>
-		<aspectjweaver.version>1.8.5</aspectjweaver.version>
+		<aspectjweaver.version>1.8.9</aspectjweaver.version>
 
-		<jetty.version>9.2.4.v20141103</jetty.version>
-		<jetty9.version>9.2.4.v20141103</jetty9.version>
-
-		<sshj.version>0.10.0</sshj.version>
-		<jsch.version>0.1.52</jsch.version>
+		<sshj.version>0.19.0</sshj.version>
+		<jsch.version>0.1.54</jsch.version>
 		<javax.servlet-api.version>3.0.1</javax.servlet-api.version>
 		<logback.version>1.1.3</logback.version>
 		<slf4j.version>1.7.5</slf4j.version>
@@ -63,28 +60,33 @@
 		<commons-dbcp.version>1.4</commons-dbcp.version>
 		<commons-lang3.version>3.4</commons-lang3.version>
 		<commons-io.version>2.4</commons-io.version>
-		<h2.version>1.4.187</h2.version>
+		<h2.version>1.4.193</h2.version>
 		<camel-core.version>2.12.2</camel-core.version>
 		<hystrix-core.version>1.4.9</hystrix-core.version>
-		<versions-maven-plugin.version>2.2</versions-maven-plugin.version>
+		<versions-maven-plugin.version>2.3</versions-maven-plugin.version>
 		<zip4j.version>1.3.2</zip4j.version>
 		<gag.version>1.0.1</gag.version>
 		<reflectutils.version>0.9.20</reflectutils.version>
 		<gson.version>2.3.1</gson.version>
 		<mockito-all.version>2.0.2-beta</mockito-all.version>
 		<replacer.version>1.5.3</replacer.version>
-		<annotations.version>3.0.0</annotations.version>
-		<maven-enforcer-plugin.version>1.4</maven-enforcer-plugin.version>
+		<annotations.version>3.0.1u2</annotations.version>
+		<maven-enforcer-plugin.version>1.4.1</maven-enforcer-plugin.version>
 		<commons-collections.version>3.2.1</commons-collections.version>
+		<spring-boot-maven-plugin.version>1.4.1.RELEASE</spring-boot-maven-plugin.version>
+		<commons-collections4.version>4.1</commons-collections4.version>
 	</properties>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-collections4</artifactId>
-			<version>4.0</version>
+			<version>${commons-collections4.version}</version>
 		</dependency>
-
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>com.netflix.hystrix</groupId>
 			<artifactId>hystrix-metrics-event-stream</artifactId>
@@ -108,6 +110,10 @@
 					<artifactId>commons-lang3</artifactId>
 					<groupId>org.apache.commons</groupId>
 				</exclusion>
+				<exclusion>
+					<artifactId>jsr305</artifactId>
+					<groupId>com.google.code.findbugs</groupId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<!--http://stackoverflow.com/questions/21059019/cglib-is-causing-a-java-lang-verifyerror-during-query-generation-in-intuit-partn-->
@@ -117,39 +123,41 @@
 			<version>3.1</version>
 			<exclusions>
 				<exclusion>
+					<artifactId>jsr305</artifactId>
+					<groupId>com.google.code.findbugs</groupId>
+				</exclusion>
+				<exclusion>
 					<artifactId>asm</artifactId>
 					<groupId>org.ow2.asm</groupId>
 				</exclusion>
 			</exclusions>
 		</dependency>
+		<!--http://stackoverflow.com/questions/21059019/cglib-is-causing-a-java-lang-verifyerror-during-query-generation-in-intuit-partn-->
+		<!--<dependency>-->
+			<!--<groupId>cglib</groupId>-->
+			<!--<artifactId>cglib</artifactId>-->
+			<!--<version>3.1</version>-->
+			<!--<exclusions>-->
+				<!--<exclusion>-->
+					<!--<artifactId>asm</artifactId>-->
+					<!--<groupId>org.ow2.asm</groupId>-->
+				<!--</exclusion>-->
+			<!--</exclusions>-->
+		<!--</dependency>-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-websocket</artifactId>
-			<exclusions>
-				<exclusion>
-					<artifactId>spring-boot-starter-tomcat</artifactId>
-					<groupId>org.springframework.boot</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-jetty</artifactId>
-			<exclusions>
-				<exclusion>
-					<artifactId>asm</artifactId>
-					<groupId>org.ow2.asm</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>asm-tree</artifactId>
-					<groupId>org.ow2.asm</groupId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<artifactId>asm</artifactId>
+					<groupId>org.ow2.asm</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
@@ -218,16 +226,10 @@
 		</dependency>
 
 		<dependency>
-			<groupId>net.schmizz</groupId>
-			<artifactId>sshj</artifactId>
-			<version>${sshj.version}</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>slf4j-api</artifactId>
-					<groupId>org.slf4j</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
+		  <groupId>com.hierynomus</groupId>
+		  <artifactId>sshj</artifactId>
+		  <version>${sshj.version}</version>
+		</dependency>	
 		<dependency>
 			<groupId>com.jcraft</groupId>
 			<artifactId>jsch</artifactId>
@@ -359,12 +361,12 @@
 			<groupId>org.apache.wicket</groupId>
 			<artifactId>wicket-ioc</artifactId>
 			<version>${wicket.version}</version>
-			<!--<exclusions>-->
-			<!--<exclusion>-->
-			<!--<artifactId>cglib</artifactId>-->
-			<!--<groupId>cglib</groupId>-->
-			<!--</exclusion>-->
-			<!--</exclusions>-->
+			<exclusions>
+			<exclusion>
+			<artifactId>cglib</artifactId>
+			<groupId>cglib</groupId>
+			</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.wicket</groupId>
@@ -379,11 +381,6 @@
 		<dependency>
 			<groupId>org.apache.wicket</groupId>
 			<artifactId>wicket-spring</artifactId>
-			<version>${wicket.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.wicket</groupId>
-			<artifactId>wicket-native-websocket-jetty9</artifactId>
 			<version>${wicket.version}</version>
 		</dependency>
 		<dependency>
@@ -483,29 +480,6 @@
 		</dependency>
 
 
-		<!--&lt;!&ndash; Test Jetty support - start &ndash;&gt;-->
-		<!--<dependency>-->
-		<!--<groupId>org.eclipse.jetty</groupId>-->
-		<!--<artifactId>jetty-plus</artifactId>-->
-		<!--<version>${jetty.version}</version>-->
-		<!--</dependency>-->
-		<!--<dependency>-->
-		<!--<groupId>org.eclipse.jetty</groupId>-->
-		<!--<artifactId>jetty-server</artifactId>-->
-		<!--<version>${jetty.version}</version>-->
-		<!--</dependency>-->
-		<!--<dependency>-->
-		<!--<groupId>org.eclipse.jetty</groupId>-->
-		<!--<artifactId>jetty-webapp</artifactId>-->
-		<!--<version>${jetty.version}</version>-->
-		<!--</dependency>-->
-		<!--<dependency>-->
-		<!--<groupId>org.eclipse.jetty.websocket</groupId>-->
-		<!--<artifactId>websocket-server</artifactId>-->
-		<!--<version>${jetty.version}</version>-->
-		<!--</dependency>-->
-
-
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
@@ -551,6 +525,7 @@
 
 
 	<build>
+		<finalName>vojtitko</finalName>
 		<resources>
 			<resource>
 				<filtering>false</filtering>
@@ -590,33 +565,12 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>2.5.1</version>
 				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
+					<source>1.8</source>
+					<target>1.8</target>
 					<optimize>true</optimize>
 					<debug>true</debug>
 				</configuration>
 			</plugin>
-			<!--<plugin>-->
-			<!--<groupId>org.eclipse.jetty</groupId>-->
-			<!--<artifactId>jetty-maven-plugin</artifactId>-->
-			<!--<version>${jetty.plugin.version}</version>-->
-			<!--<configuration>-->
-			<!--<systemProperties>-->
-			<!--<systemProperty>-->
-			<!--<name>APPENDER</name>-->
-			<!--<value>SIFT</value>-->
-			<!--</systemProperty>-->
-			<!--</systemProperties>-->
-			<!--<webAppConfig>-->
-			<!--<contextPath>/</contextPath>-->
-			<!--</webAppConfig>-->
-			<!--<stopPort>8766</stopPort>-->
-			<!--<stopKey>foo</stopKey>-->
-			<!--<httpConnector>-->
-			<!--<port>8765</port>-->
-			<!--</httpConnector>-->
-			<!--</configuration>-->
-			<!--</plugin>-->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>versions-maven-plugin</artifactId>
@@ -625,6 +579,7 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<version>${spring-boot-maven-plugin.version}</version>
 				<configuration>
 					<mainClass>krasa.StartVojtitko</mainClass>
 				</configuration>
@@ -638,7 +593,9 @@
 						<id>enforce</id>
 						<configuration>
 							<rules>
-								<dependencyConvergence />
+								<dependencyConvergence>
+								<!--<uniqueVersions>true</uniqueVersions> -->
+							  </dependencyConvergence>
 							</rules>
 						</configuration>
 						<goals>
@@ -669,7 +626,22 @@
 				<enabled>true</enabled>
 			</snapshots>
 		</repository>
-
+		<repository>
+			<id>spring-snapshots</id>
+			<name>Spring Snapshots</name>
+			<url>http://repo.spring.io/snapshot</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>spring-libs-snapshots</id>
+			<name>Spring libs Snapshots</name>
+			<url>http://repo.spring.io/libs-snapshot</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
 	</repositories>
 
 </project>

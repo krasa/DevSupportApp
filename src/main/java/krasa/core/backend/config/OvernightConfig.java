@@ -4,9 +4,12 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
-import org.springframework.beans.factory.annotation.*;
-import org.springframework.context.annotation.*;
-import org.springframework.orm.hibernate4.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.orm.hibernate4.HibernateTransactionManager;
+import org.springframework.orm.hibernate4.LocalSessionFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @EnableTransactionManagement
@@ -18,6 +21,7 @@ public class OvernightConfig extends CommonConfig {
 	@Autowired
 	@Qualifier("overnightDataSource")
 	private DataSource dataSource;
+	@Autowired
 	@Qualifier("overnightHibernateProperties")
 	private Properties hibernateProperties;
 

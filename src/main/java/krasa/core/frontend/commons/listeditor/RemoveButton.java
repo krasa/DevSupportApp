@@ -12,7 +12,9 @@ public class RemoveButton extends EditorButton {
 		int idx = getItem().getIndex();
 
 		for (int i = idx + 1; i < getItem().getParent().size(); i++) {
-			ListItem<?> item = (ListItem<?>) getItem().getParent().get(i);
+			
+			//TODO
+			ListItem<?> item = (ListItem<?>) getItem().getParent().get(String.valueOf(i));
 			item.setIndex(item.getIndex() - 1);
 		}
 

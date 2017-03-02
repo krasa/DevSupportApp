@@ -23,7 +23,7 @@ public class TokenizationJobsLeftPanel extends BasePanel {
 	protected final Logger log = LoggerFactory.getLogger(getClass());
 
 	@SpringBean
-	private TokenizationService facade;
+	private TokenizationFacade facade;
 
 	public TokenizationJobsLeftPanel(String id) {
 		super(id);

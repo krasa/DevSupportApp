@@ -2,16 +2,18 @@ package krasa.build.frontend.components;
 
 import java.util.List;
 
+import org.apache.wicket.markup.html.list.ListItem;
+import org.apache.wicket.markup.html.list.ListView;
+import org.apache.wicket.model.LoadableDetachableModel;
+import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.spring.injection.annot.SpringBean;
+
 import krasa.build.backend.domain.Environment;
 import krasa.build.backend.facade.BuildFacade;
 import krasa.build.frontend.pages.BuildPage;
 import krasa.core.frontend.commons.LabeledBookmarkablePageLink;
 import krasa.core.frontend.components.BasePanel;
-
-import org.apache.wicket.markup.html.list.*;
-import org.apache.wicket.model.*;
-import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.apache.wicket.spring.injection.annot.SpringBean;
 
 public class BuildLeftPanel extends BasePanel {
 
@@ -39,7 +41,7 @@ public class BuildLeftPanel extends BasePanel {
 
 			@Override
 			protected void populateItem(ListItem<Environment> listItem) {
-				PageParameters pageParameters = BuildPage.createPageParameters(listItem.getModelObject());
+				PageParameters pageParameters = BuildPage.createPageParameters(listItem.getModelObject().getName());
 				PropertyModel<String> labelModel = new PropertyModel<>(listItem.getModel(), "name");
 				listItem.add(new LabeledBookmarkablePageLink("name", BuildPage.class, pageParameters, labelModel));
 			}

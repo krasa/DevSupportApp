@@ -1,18 +1,27 @@
 package krasa.release.tokenization;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
-import krasa.automerge.*;
+import org.apache.commons.io.filefilter.DirectoryFileFilter;
+import org.apache.commons.io.filefilter.FileFilterUtils;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.tmatesoft.svn.core.SVNCancelException;
+import org.tmatesoft.svn.core.SVNException;
+import org.tmatesoft.svn.core.wc.ISVNEventHandler;
+import org.tmatesoft.svn.core.wc.SVNClientManager;
+import org.tmatesoft.svn.core.wc.SVNEvent;
+import org.tmatesoft.svn.core.wc.SVNStatusType;
+
+import krasa.automerge.CommitCommand;
+import krasa.automerge.DiffCommand;
 import krasa.core.backend.LogNamePrefixes;
 import krasa.core.backend.utils.MdcUtils;
 import krasa.release.utls.SvnBranchesCheckouter;
-
-import org.apache.commons.io.filefilter.*;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.slf4j.*;
-import org.tmatesoft.svn.core.*;
-import org.tmatesoft.svn.core.wc.*;
 
 public class TokenizationJobProcess {
 
@@ -59,7 +68,7 @@ public class TokenizationJobProcess {
 			diff();
 			commit();
 			log.info("Job finished");
-		} catch (Exception ioe) {
+		} catch (Throwable ioe) {
 			log.error("Job error", ioe);
 			throw new RuntimeException(ioe);
 		} finally {

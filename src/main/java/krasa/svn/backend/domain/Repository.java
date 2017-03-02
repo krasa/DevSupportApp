@@ -1,8 +1,13 @@
 package krasa.svn.backend.domain;
 
 import java.io.Serializable;
+import java.util.List;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+
+import org.hibernate.annotations.Cascade;
 
 import krasa.core.backend.domain.AbstractEntity;
 
@@ -15,6 +20,10 @@ public class Repository extends AbstractEntity<Repository> implements Serializab
 	private String url;
 	@Column
 	private boolean indexTrunk;
+	@OneToMany(mappedBy = "repository", orphanRemoval = true)
+	@Cascade(org.hibernate.annotations.CascadeType.DELETE)
+	private List<SvnFolder> folders;
+
 	private RepositoryStructure repositoryStructure = RepositoryStructure.TRUNK_IN_PROJECTS;
 
 	public RepositoryStructure getRepositoryStructure() {
@@ -59,4 +68,11 @@ public class Repository extends AbstractEntity<Repository> implements Serializab
 		this.indexTrunk = indexTrunk;
 	}
 
+	public List<SvnFolder> getFolders() {
+		return folders;
+	}
+
+	public void setFolders(List<SvnFolder> folders) {
+		this.folders = folders;
+	}
 }

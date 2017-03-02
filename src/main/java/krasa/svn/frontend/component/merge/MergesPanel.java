@@ -7,7 +7,7 @@ import krasa.core.frontend.commons.*;
 import krasa.core.frontend.components.BasePanel;
 import krasa.core.frontend.pages.FileSystemLogPage;
 import krasa.svn.backend.dto.MergeJobDto;
-import krasa.svn.backend.service.MergeService;
+import krasa.svn.backend.service.MergeFacade;
 
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -23,7 +23,7 @@ public class MergesPanel extends BasePanel {
 	protected final Logger log = LoggerFactory.getLogger(getClass());
 
 	@SpringBean
-	private MergeService facade;
+	private MergeFacade facade;
 	private IModel<List<MergeJobDto>> model;
 
 	public MergesPanel(String id) {

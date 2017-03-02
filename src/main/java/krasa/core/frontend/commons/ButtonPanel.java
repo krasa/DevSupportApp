@@ -1,15 +1,19 @@
 package krasa.core.frontend.commons;
 
-import krasa.core.frontend.StaticImage;
-
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
-import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import krasa.core.frontend.StaticImage;
+import krasa.core.frontend.pages.BasePage;
 
 public abstract class ButtonPanel extends Panel {
 
+	private static final Logger log = LoggerFactory.getLogger(ButtonPanel.class);
 	public ButtonPanel(String id, String label) {
 		super(id);
 		addButton(label, null);
@@ -24,9 +28,21 @@ public abstract class ButtonPanel extends Panel {
 		AjaxButton button = new AjaxButton("button") {
 
 			@Override
-			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+			protected void onSubmit(AjaxRequestTarget target) {
 				target.add(this);
-				ButtonPanel.this.onSubmit(target, form);
+				try {
+					ButtonPanel.this.onSubmit(target);
+				} catch (Throwable e) {
+					BasePage s = (BasePage) this.getPage();
+					FeedbackPanel feedbackPanel = s.getFeedbackPanel();
+					feedbackPanel.error(e.getMessage());
+					target.add(feedbackPanel);
+				}
+			}
+
+			@Override
+			protected void onError(AjaxRequestTarget target) {
+				super.onError(target);
 			}
 		};
 		if (label != null) {
@@ -40,6 +56,6 @@ public abstract class ButtonPanel extends Panel {
 		add(button);
 	}
 
-	protected abstract void onSubmit(AjaxRequestTarget target, Form<?> form);
+	protected abstract void onSubmit(AjaxRequestTarget target);
 
 }
