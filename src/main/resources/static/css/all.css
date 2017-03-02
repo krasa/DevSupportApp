@@ -422,14 +422,14 @@ input.text {
 
 /* main container */
 #main {
-    width: 1262px;
+    width: 1462px;
     margin: 0 auto;
 }
 
 /* header */
 #header {
     position: relative;
-    width: 1262px;
+    width: 1462px;
     height: 106px;
     background: url(../img/bg-header.gif) no-repeat left bottom;
 }
@@ -500,7 +500,7 @@ a.logo {
 /* middle */
 #middle {
     float: left;
-    width: 1237px;
+    width: 1437px;
     background: url(../img/bg-middle.gif) repeat-y left;
     padding: 0 13px 0 12px;
 }
@@ -522,7 +522,7 @@ a.logo {
 /* center column */
 #center-column-wide {
     float: left;
-    width: 1400px;
+    width: 1600px;
     /*background: url(../img/bg-center-column2.jpg) no-repeat left top;*/
     min-height: 584px;
     padding: 12px 16px 0 13px;
@@ -531,7 +531,7 @@ a.logo {
 /* center column */
 #center-column {
     float: left;
-    width: 1020px;
+    width: 1220px;
     /*background: url(../img/bg-center-column2.jpg) no-repeat left top;*/
     min-height: 584px;
     padding: 12px 16px 0 13px;
